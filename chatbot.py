@@ -14,7 +14,7 @@ def chat_with_bot(user_input):
     return response.text
 
 if __name__ == "__main__":
-    print("🤖 Chatbot is running! Type 'exit' to quit.\n")
+    print(" Chatbot is running! Type 'exit' to quit.\n")
     while True:
         user_input = input("You: ")
         if user_input.lower() in ["exit", "quit"]:
