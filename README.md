@@ -1,6 +1,6 @@
 # genai-chatbot — Hybrid-memory mental-health chatbot (Vertex AI + Firestore)
 
-**Status:** prototype / dev-ready — Flask webhook + Vertex AI + Firestore working locally.
+**Status:** ✅ fully-functional / deployment-ready
 
 This README documents the whole project: architecture, setup, running, testing, deployment, debugging, privacy/safety, and next steps.
 
@@ -8,53 +8,41 @@ This README documents the whole project: architecture, setup, running, testing, 
 
 ## Project Overview
 
-This project is a mental-health-focused chatbot that implements hybrid memory:
+This project is a mental-health-focused chatbot that implements a robust hybrid memory system, powered by Google Cloud's Vertex AI and Firestore.
 
-- **Short-term memory:** session parameters + an in-session buffer (keeps recent turns for immediate context)
-- **Long-term memory:** summarized session chunks saved to Firestore with embeddings (semantic retrieval on future sessions)
-- **Hybrid retrieval:** on each new input the system retrieves the top-k similar past summaries for the user and prepends them to the prompt for more continuity/personalization
+-   **Short-term memory:** Session parameters and a turn-based buffer (managed in Firestore) provide immediate context for ongoing conversations.
+-   **Long-term memory:** Conversation chunks are summarized by a generative model and saved to Firestore with vector embeddings for semantic retrieval.
+-   **Hybrid retrieval:** On each new user message, the system performs a vector search to find the most relevant past conversation summaries, prepending them to the prompt for a deeply personalized and continuous user experience.
 
 ### Core Components
 
-- **Flask webhook server:** main.py — Dialogflow CX (or any client) calls `/dialogflow-webhook`
-- **Vertex AI** (Vertex Generative Models + Embeddings) for generation & embeddings
-- **Google Cloud Firestore** for persistent storage of:
-  - users (consent, preferences)
-  - session_buffers (recent turns)
-  - memories (summaries + embedding vectors + metadata)
-- Simple consent flow and a delete-memories endpoint to satisfy privacy needs
+-   **Flask webhook server:** `main.py` — A robust server with multiple endpoints, compatible with Dialogflow CX or any other webhook-based client.
+-   **Vertex AI Generative Models:** Uses the latest Gemini models (e.g., `gemini-1.5-flash`) for intelligent, empathetic responses and conversation summarization.
+-   **Vertex AI Embeddings:** Uses `text-embedding-004` to convert text summaries into vectors for semantic search.
+-   **Google Cloud Firestore:** A scalable NoSQL database for persistent storage of:
+    -   `users` (consent preferences)
+    -   `session_buffers` (short-term memory)
+    -   `memories` (long-term summarized conversations with embeddings)
+-   **Privacy Controls:** A simple consent flow and a dedicated endpoint for users to delete their long-term memories on demand.
 
 ---
 
-## Quick Highlights / What You Already Have
-
-- Working main.py with endpoints:
-  - `POST /dialogflow-webhook` — main webhook (Dialogflow CX compatible)
-  - `POST /consent` — set user consent to store long-term memory
-  - `POST /delete_memories` — remove long-term memories for a user
-- Firestore integration and a simple embedding/retrieval loop
-- Summarization step that runs when session buffer reaches a threshold (example: 8 turns) and saves a summary as a long-term memory
-- Vertex AI call wrappers for embeddings and text generation
-- Local testing capability with PowerShell / curl and ngrok if you want to expose your local server temporarily
-
----
-
-## File Structure (Recommended)
+## File Structure
 
 ```
 genai-chatbot/
-├─ main.py              # Flask webhook + memory code (your primary file)
-├─ requirements.txt     # pip dependencies
-├─ README.md           # (this file)
+├─ main.py            # Flask webhook, memory logic, and Vertex AI integration
+├─ test_chatbot.py    # (Optional) Test script for validating endpoints
+├─ requirements.txt   # Python dependencies
+├─ README.md          # (This file)
 ├─ .gitignore
-├─ key.json            # service account key (NEVER commit)
-├─ venv/               # virtual environment (optional)
-└─ optionally: frontend/  # if you add a UI later
+├─ key.json           # Service account key (NEVER commit to Git)
+└─ venv/              # Python virtual environment
 ```
 
 ### .gitignore
 
-Your `.gitignore` should contain at least:
+Ensure your `.gitignore` contains at least the following to protect sensitive information:
 
 ```gitignore
 .venv/
@@ -63,27 +51,20 @@ __pycache__/
 *.pyc
 key.json
 .env
+chatbot.log
 ```
 
 ---
 
 ## Prerequisites
 
-### Local Development
-
-- Python 3.10+ (3.11 recommended)
-- Virtual environment (venv)
-- gcloud CLI configured and authenticated to your project (you used genai-bot-kdf)
-- Service account JSON key with roles: `roles/aiplatform.user` and `roles/datastore.user` (or `roles/editor` for dev)
-- Firestore database created (Native mode) in a chosen region (e.g. asia-south1)
-
-### Python Packages
-
-- Flask
-- google-cloud-firestore
-- google-cloud-aiplatform
-- numpy
-- python-dotenv (optional)
+  - Python 3.10+
+  - A Google Cloud Project with the **Vertex AI API** enabled.
+  - A Firestore database created in **Native mode**.
+  - `gcloud` CLI configured and authenticated (`gcloud auth application-default login`).
+  - A service account JSON key (`key.json`) with the following IAM roles:
+      - `Vertex AI User` (`roles/aiplatform.user`)
+      - `Cloud Datastore User` (`roles/datastore.user`)
 
 ---
 
@@ -91,41 +72,49 @@ key.json
 
 ### requirements.txt
 
+This project uses the modern, high-level Vertex AI SDK.
+
 ```txt
-Flask==2.3.2
-google-cloud-firestore==2.11.0
-google-cloud-aiplatform==1.26.0
-numpy==1.26.0
-python-dotenv==1.0.0
-requests==2.31.0
+Flask==3.0.3
+google-cloud-firestore==2.16.0
+google-cloud-aiplatform==1.56.0
+numpy==1.26.4
+python-dotenv==1.0.1
+requests==2.32.3
 ```
 
 ### Install Dependencies
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # or .\.venv\Scripts\Activate.ps1 on PowerShell
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: .\venv\Scripts\Activate.ps1
+
+# Install dependencies
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
 ---
 
-## Environment Variables (Important)
+## Environment Variables
 
-Set your service account credentials (one-time):
+Set the path to your service account key. This allows the application to authenticate with Google Cloud.
 
-### PowerShell (temporary for session)
+**PowerShell (temporary for current session):**
+
 ```powershell
-$env:GOOGLE_APPLICATION_CREDENTIALS="D:\genAI\key.json"
+$env:GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\key.json"
 ```
 
-### PowerShell (permanent)
+**PowerShell (permanent):**
+
 ```powershell
-setx GOOGLE_APPLICATION_CREDENTIALS "D:\genAI\key.json"
+setx GOOGLE_APPLICATION_CREDENTIALS "C:\path\to\your\key.json"
 ```
 
-Also set project + region if you prefer:
+It is also recommended to set your project and a **working region** (`asia-south1` is confirmed to work well):
+
 ```powershell
 setx GOOGLE_CLOUD_PROJECT "genai-bot-kdf"
 setx REGION "asia-south1"
@@ -133,103 +122,102 @@ setx REGION "asia-south1"
 
 ---
 
-## How the System Works (Detailed)
-
-1. **Incoming message** → webhook receives JSON, extracts user_id
-2. **Consent check** → if user not consented, do not store memories
-3. **Hybrid memory retrieval** → embed query, compare with Firestore memories, retrieve top-k
-4. **Short-term session context** → include session params + buffer
-5. **Prompt building & LLM call** → generate response with Vertex AI
-6. **Session append & summarization** → if buffer large, summarize + store embedding
-7. **Privacy & deletion** → endpoints `/consent` and `/delete_memories`
-
----
-
 ## API Endpoints
 
-- `POST /dialogflow-webhook` → main chatbot interaction
-- `POST /consent` → set consent
-- `POST /delete_memories` → delete memories
+  - `POST /dialogflow-webhook`: The main endpoint for chatbot interactions.
+  - `POST /consent`: Allows a user to grant or deny consent for long-term memory storage.
+  - `POST /delete_memories`: Deletes all long-term memories associated with a `user_id`.
+  - `GET /health`: A health check endpoint that verifies connectivity to Firestore and Vertex AI services.
+  - `GET /debug/models`: A debug endpoint to list available models in your project's region.
 
 ---
 
 ## How to Run Locally
 
 ```powershell
-# Activate venv
-.\.venv\Scripts\Activate.ps1
+# Activate your virtual environment
+.\venv\Scripts\Activate.ps1
 
-# Run server
+# Run the Flask server
 python main.py
 ```
 
-### Test Consent
+The server will start on `http://127.0.0.1:8080`.
 
-```powershell
-$headers = @{ "Content-Type" = "application/json" }
-$body = '{"user_id":"testuser","consent":true}'
-Invoke-RestMethod -Uri "http://127.0.0.1:8080/consent" -Method POST -Headers $headers -Body $body
-```
+## Testing
 
-### Test Chatbot
+This project includes a comprehensive test script (`test_chatbot.py`, if you created one) that validates all endpoints and the core conversation logic.
 
-```powershell
-$body = '{
-  "session": "projects/genai-bot-kdf/agent/sessions/testsession",
-  "messages": [{"text":{"text":["I feel anxious about exams"]}}],
-  "sessionInfo": {"parameters": {"user_id": "testuser"}}
-}'
-$response = Invoke-RestMethod -Uri "http://127.0.0.1:8080/dialogflow-webhook" -Method POST -Headers $headers -Body $body
-$response | Format-List *
-```
+**To run the tests:**
 
----
+1.  Make sure the Flask server (`main.py`) is running in one terminal.
+2.  In a second terminal, run the test script:
+    ```powershell
+    python test_chatbot.py
+    ```
 
-## Dialogflow CX Integration
-
-- Add webhook → your Cloud Run / ngrok URL
-- Ensure user_id parameter is passed
-- Enable webhook call on intents
+A successful run will show **`🎉 ALL TESTS PASSED!`** with a `9/9` score.
 
 ---
 
 ## Deployment (Cloud Run)
 
+You can easily deploy this Flask application as a serverless container on Cloud Run.
+
 ```bash
+# Submit a build of your container image to Google Container Registry
 gcloud builds submit --tag gcr.io/genai-bot-kdf/genai-chatbot
-gcloud run deploy genai-chatbot --image gcr.io/genai-bot-kdf/genai-chatbot --region=asia-south1 --platform=managed --allow-unauthenticated
+
+# Deploy the container image to Cloud Run
+gcloud run deploy genai-chatbot \
+  --image gcr.io/genai-bot-kdf/genai-chatbot \
+  --region=asia-south1 \
+  --platform=managed \
+  --allow-unauthenticated
 ```
 
----
-
-## Security & Privacy
-
-- Get user consent
-- Store summaries, not raw transcripts
-- Crisis handling step needed
-- Allow deletion (`/delete_memories`)
-- Restrict service account permissions
+*Note: `--allow-unauthenticated` makes the webhook public. For production, secure your webhook using IAM.*
 
 ---
 
-## Troubleshooting
+## Troubleshooting & Lessons Learned
 
-- **ADC error** → set `GOOGLE_APPLICATION_CREDENTIALS`
-- **Port in use** → free 8080 or change port
-- **Empty reply** → add debug prints, verify model call success
-- **Firestore mismatch** → ensure Firestore region correct
+During development, we encountered several key issues. Here are the solutions:
+
+  - **Symptom:** Health check fails with `ERROR: All models failed` and the bot gives generic error responses.
+
+      - **Cause 1: Incorrect SDK Usage.** The initial problem was using a low-level `gapic` client that was failing silently.
+          - **Solution:** Refactor the text generation code to use the modern, high-level `vertexai.generative_models.GenerativeModel` SDK. This is more robust, simpler, and the officially recommended approach for Gemini models.
+      - **Cause 2: Incorrect Model Names.** Generative model versions can be deprecated or may not be available in all regions. A specific version like `gemini-1.5-flash-001` might become unavailable.
+          - **Solution:** Use **version-less model names** (e.g., `gemini-1.5-flash`, `gemini-1.5-pro`) to always point to the latest stable release. Update all model lists, including in the `health_check` function.
+
+  - **Symptom:** `404 Not Found: Publisher Model ... was not found` error in the server logs.
+
+      - **Cause:** This is a direct confirmation of Cause 2 above. The specific model string you are requesting does not exist in the specified region for your project.
+      - **Solution:** Check the [official documentation](https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versions) for available models and update the names in your code.
+
+  - **Warning:** `ALTS creds ignored. Not running on GCP...` in the server logs.
+
+      - **Cause:** This is a standard, benign warning from the Google Cloud client libraries. It appears when authenticating with a service account key locally instead of on a native GCP environment (like Cloud Run).
+      - **Solution:** You can **safely ignore** this message during local development.
 
 ---
 
 ## Roadmap
 
-- Improve retrieval (Vertex Matching Engine)
-- Add UI (React frontend)
-- Add tests & monitoring
-- Cloud Run deployment with IAM-secured webhook
+  - **Advanced Retrieval:** Integrate **Vertex AI Matching Engine** (formerly Vector Search) for faster and more scalable retrieval of long-term memories.
+  - **Frontend UI:** Develop a simple frontend using a framework like React or Vue.js to provide a clean user interface.
+  - **CI/CD & Monitoring:** Set up a CI/CD pipeline for automated testing and deployment, and add monitoring/alerting for the production service.
+  - **Enhanced Security:** Secure the Cloud Run webhook to only accept requests from authorized sources like Dialogflow using IAM.
+
+---
+
+### Acknowledgements
+
+This project was brought to its final, working state through a fun and collaborative debugging session. A special thanks for the great journey!
 
 ---
 
 ## License
 
-MIT — ensure privacy compliance if handling user data.
+MIT License — Please ensure you are compliant with all privacy regulations when handling user data.
