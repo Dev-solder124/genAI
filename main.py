@@ -3,6 +3,7 @@ import json
 import logging
 import traceback
 import numpy as np
+import re
 from flask import Flask, request, jsonify
 from google.cloud import firestore
 from google.cloud import aiplatform
@@ -52,6 +53,20 @@ except Exception as e:
 
 app = Flask(__name__)
 
+# Function to sanitize user_id for use as Firestore collection name
+def sanitize_collection_name(user_id):
+    """Sanitize user_id to be valid Firestore collection name"""
+    # Replace invalid characters with underscores
+    sanitized = re.sub(r'[^a-zA-Z0-9_-]', '_', user_id)
+    # Ensure it doesn't start with a number
+    if sanitized and sanitized[0].isdigit():
+        sanitized = f"user_{sanitized}"
+    # Ensure minimum length
+    if not sanitized:
+        sanitized = "anonymous_user"
+    logger.debug(f"Sanitized user_id '{user_id}' to '{sanitized}'")
+    return sanitized
+
 # Function to list available models for debugging
 def list_available_models():
     try:
@@ -89,7 +104,8 @@ def health_check():
     
     # Test Firestore
     try:
-        test_ref = db.collection("health_check").document("test")
+        test_collection = sanitize_collection_name("health_check_user")
+        test_ref = db.collection(test_collection).document("profile").collection("test").document("health")
         test_ref.set({"test": True, "timestamp": datetime.now(timezone.utc).isoformat()})
         test_ref.delete()
         health_status["services"]["firestore"] = "OK"
@@ -256,11 +272,13 @@ def generate_text(prompt, max_output_tokens=300, temperature=0.2):
     logger.error("All models failed to generate text")
     return "I'm having trouble generating a response right now. Please try again in a moment."
 
-# --- Firestore helpers with debugging
+# --- Updated Firestore helpers for new structure
 def get_user_profile(user_id):
     try:
-        logger.debug(f"Getting user profile for: {user_id}")
-        doc = db.collection("users").document(user_id).get()
+        sanitized_user_id = sanitize_collection_name(user_id)
+        logger.debug(f"Getting user profile for: {user_id} (sanitized: {sanitized_user_id})")
+        
+        doc = db.collection(sanitized_user_id).document("profile").collection("info").document("data").get()
         if doc.exists:
             profile = doc.to_dict()
             logger.debug(f"Found user profile: {profile}")
@@ -275,8 +293,10 @@ def get_user_profile(user_id):
 
 def upsert_user_profile(user_id, profile):
     try:
-        logger.debug(f"Upserting profile for {user_id}: {profile}")
-        db.collection("users").document(user_id).set(profile, merge=True)
+        sanitized_user_id = sanitize_collection_name(user_id)
+        logger.debug(f"Upserting profile for {user_id} (sanitized: {sanitized_user_id}): {profile}")
+        
+        db.collection(sanitized_user_id).document("profile").collection("info").document("data").set(profile, merge=True)
         logger.debug(f"Profile upserted successfully for {user_id}")
     except Exception as e:
         logger.error(f"Error upserting user profile: {e}")
@@ -288,12 +308,16 @@ def save_memory(user_id, summary_text, metadata=None):
         if metadata is None:
             metadata = {}
         
-        logger.debug(f"Saving memory for {user_id}")
+        sanitized_user_id = sanitize_collection_name(user_id)
+        logger.debug(f"Saving memory for {user_id} (sanitized: {sanitized_user_id})")
         logger.debug(f"Summary: {summary_text[:100]}...")
         logger.debug(f"Metadata: {metadata}")
         
         created_at = datetime.now(timezone.utc).isoformat()
         vec = embed_texts([summary_text])[0].tolist()
+        
+        # Use timestamp-based ID for memory documents
+        memory_id = f"mem_{int(datetime.now(timezone.utc).timestamp() * 1000)}"
         
         mem_doc = {
             "user_id": user_id,
@@ -303,8 +327,8 @@ def save_memory(user_id, summary_text, metadata=None):
             "created_at": created_at
         }
         
-        doc_ref = db.collection("memories").add(mem_doc)
-        logger.debug(f"Memory saved with ID: {doc_ref[1].id}")
+        db.collection(sanitized_user_id).document("memories").collection("data").document(memory_id).set(mem_doc)
+        logger.debug(f"Memory saved with ID: {memory_id}")
         return True
     except Exception as e:
         logger.error(f"Error saving memory: {e}")
@@ -313,11 +337,12 @@ def save_memory(user_id, summary_text, metadata=None):
 
 def retrieve_similar_memories(user_id, query_text, top_k=3):
     try:
-        logger.debug(f"Retrieving similar memories for {user_id}")
+        sanitized_user_id = sanitize_collection_name(user_id)
+        logger.debug(f"Retrieving similar memories for {user_id} (sanitized: {sanitized_user_id})")
         logger.debug(f"Query: {query_text[:100]}...")
         
         q_vec = embed_texts([query_text])[0]
-        docs = db.collection("memories").where("user_id", "==", user_id).stream()
+        docs = db.collection(sanitized_user_id).document("memories").collection("data").stream()
         
         scored = []
         doc_count = 0
@@ -367,18 +392,19 @@ def summarize_conversation(turns_text):
         logger.error(traceback.format_exc())
         return "Error generating summary"
     
-# --- session buffer stored in Firestore with debugging
-def append_session_turn(user_id, user_text, assistant_text):
+# --- Updated session buffer stored in new structure with multiple sessions
+def append_session_turn(user_id, session_id, user_text, assistant_text):
     try:
-        logger.debug(f"Appending session turn for {user_id}")
+        sanitized_user_id = sanitize_collection_name(user_id)
+        logger.debug(f"Appending session turn for {user_id} (sanitized: {sanitized_user_id}), session: {session_id}")
         logger.debug(f"User: {user_text[:50]}...")
         logger.debug(f"Assistant: {assistant_text[:50]}...")
         
-        ref = db.collection("session_buffers").document(user_id)
+        ref = db.collection(sanitized_user_id).document("session").collection("data").document(session_id)
         doc = ref.get()
         turns = doc.to_dict().get("turns", []) if doc.exists else []
         
-        logger.debug(f"Current buffer has {len(turns)} turns")
+        logger.debug(f"Current session buffer has {len(turns)} turns")
         
         turns.append({
             "user": user_text, 
@@ -391,6 +417,8 @@ def append_session_turn(user_id, user_text, assistant_text):
             turns = turns[-60:]
         
         ref.set({
+            "user_id": user_id,
+            "session_id": session_id,
             "turns": turns, 
             "updated_at": datetime.now(timezone.utc).isoformat()
         })
@@ -461,7 +489,7 @@ def dialogflow_webhook():
         logger.info(f"Generated reply: '{reply_text}'")
 
         logger.info("Updating session buffer...")
-        turns = append_session_turn(user_id, user_text, reply_text)
+        turns = append_session_turn(user_id, session_id, user_text, reply_text)
         
         # Check if we need to summarize
         if len(turns) >= 8:
@@ -469,10 +497,13 @@ def dialogflow_webhook():
             combined_text = "\n".join([f"User: {t['user']}\nAssistant: {t['assistant']}" for t in turns])
             summary = summarize_conversation(combined_text)
             
-            if save_memory(user_id, summary, {"topic":"session_summary"}):
+            if save_memory(user_id, summary, {"topic":"session_summary", "session_id": session_id}):
                 logger.info("Memory saved, trimming buffer...")
                 # keep only last 2 turns after summarizing
-                db.collection("session_buffers").document(user_id).set({
+                sanitized_user_id = sanitize_collection_name(user_id)
+                db.collection(sanitized_user_id).document("session").collection("data").document(session_id).set({
+                    "user_id": user_id,
+                    "session_id": session_id,
                     "turns": turns[-2:], 
                     "updated_at": datetime.now(timezone.utc).isoformat()
                 })
@@ -518,7 +549,7 @@ def consent():
         logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
-# --- delete memories with debugging
+# --- delete memories with debugging for new structure
 @app.route("/delete_memories", methods=["POST"])
 def delete_memories():
     try:
@@ -531,8 +562,11 @@ def delete_memories():
             logger.warning("Missing user_id in delete request")
             return jsonify({"error":"user_id required"}), 400
         
-        logger.info(f"Deleting memories for user: {user_id}")
-        mems = db.collection("memories").where("user_id","==",user_id).stream()
+        sanitized_user_id = sanitize_collection_name(user_id)
+        logger.info(f"Deleting memories for user: {user_id} (sanitized: {sanitized_user_id})")
+        
+        # Delete all memories in the user's memory subcollection
+        mems = db.collection(sanitized_user_id).document("memories").collection("data").stream()
         
         count = 0
         for m in mems:

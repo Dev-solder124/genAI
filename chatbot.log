@@ -8303,3 +8303,1119 @@ usage_metadata {
 2025-09-18 15:49:58,272 - __main__ - DEBUG - Session buffer updated, now has 6 turns
 2025-09-18 15:49:58,272 - __main__ - INFO - Request completed successfully
 2025-09-18 15:49:58,272 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 15:49:58] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:13:07,167 - __main__ - INFO - Starting chatbot with config:
+2025-09-18 16:13:07,167 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-18 16:13:07,167 - __main__ - INFO -    REGION: asia-south1
+2025-09-18 16:13:07,167 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-18 16:13:07,167 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-18 16:13:07,167 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-18 16:13:07,167 - google.auth._default - DEBUG - Checking D:\genAI\key.json for explicit credentials as part of auth process...
+2025-09-18 16:13:07,199 - __main__ - INFO - Firestore client initialized successfully
+2025-09-18 16:13:07,213 - __main__ - INFO - Starting Flask application...
+2025-09-18 16:13:07,279 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.20.148.169:8080
+2025-09-18 16:13:07,279 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-18 16:13:07,280 - werkzeug - INFO -  * Restarting with stat
+2025-09-18 16:13:12,629 - __main__ - INFO - Starting chatbot with config:
+2025-09-18 16:13:12,629 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-18 16:13:12,629 - __main__ - INFO -    REGION: asia-south1
+2025-09-18 16:13:12,629 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-18 16:13:12,635 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-18 16:13:12,635 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-18 16:13:12,635 - google.auth._default - DEBUG - Checking D:\genAI\key.json for explicit credentials as part of auth process...
+2025-09-18 16:13:12,656 - __main__ - INFO - Firestore client initialized successfully
+2025-09-18 16:13:12,670 - __main__ - INFO - Starting Flask application...
+2025-09-18 16:13:12,715 - werkzeug - WARNING -  * Debugger is active!
+2025-09-18 16:13:12,723 - werkzeug - INFO -  * Debugger PIN: 498-328-312
+2025-09-18 16:13:24,610 - werkzeug - INFO -  * Detected change in 'd:\\genAI\\main.py', reloading
+2025-09-18 16:13:25,354 - werkzeug - INFO -  * Restarting with stat
+2025-09-18 16:18:21,824 - __main__ - INFO - Starting chatbot with config:
+2025-09-18 16:18:21,824 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-18 16:18:21,824 - __main__ - INFO -    REGION: asia-south1
+2025-09-18 16:18:21,824 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-18 16:18:21,824 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-18 16:18:21,824 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-18 16:18:21,824 - google.auth._default - DEBUG - Checking D:\genAI\key.json for explicit credentials as part of auth process...
+2025-09-18 16:18:21,862 - __main__ - INFO - Firestore client initialized successfully
+2025-09-18 16:18:21,870 - __main__ - INFO - Starting Flask application...
+2025-09-18 16:18:21,941 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://172.20.148.169:8080
+2025-09-18 16:18:21,941 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-18 16:18:21,947 - werkzeug - INFO -  * Restarting with stat
+2025-09-18 16:18:27,404 - __main__ - INFO - Starting chatbot with config:
+2025-09-18 16:18:27,404 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-18 16:18:27,404 - __main__ - INFO -    REGION: asia-south1
+2025-09-18 16:18:27,404 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-18 16:18:27,404 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-18 16:18:27,404 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-18 16:18:27,416 - google.auth._default - DEBUG - Checking D:\genAI\key.json for explicit credentials as part of auth process...
+2025-09-18 16:18:27,437 - __main__ - INFO - Firestore client initialized successfully
+2025-09-18 16:18:27,441 - __main__ - INFO - Starting Flask application...
+2025-09-18 16:18:27,488 - werkzeug - WARNING -  * Debugger is active!
+2025-09-18 16:18:27,494 - werkzeug - INFO -  * Debugger PIN: 498-328-312
+2025-09-18 16:18:42,031 - __main__ - DEBUG - Sanitized user_id 'health_check_user' to 'health_check_user'
+2025-09-18 16:18:43,302 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): oauth2.googleapis.com:443
+2025-09-18 16:18:43,973 - urllib3.connectionpool - DEBUG - https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2025-09-18 16:18:44,270 - __main__ - INFO - Firestore health check passed
+2025-09-18 16:18:44,270 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:18:44,270 - __main__ - DEBUG - Texts preview: ['health check test']
+2025-09-18 16:18:45,291 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:18:45,291 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:18:45,291 - __main__ - INFO - Vertex AI embeddings health check passed
+2025-09-18 16:18:45,292 - __main__ - DEBUG - Testing model: gemini-1.5-flash
+2025-09-18 16:18:45,292 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:18:45,292 - __main__ - DEBUG - Prompt preview: Say 'hello' if you can hear me...
+2025-09-18 16:18:45,890 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello\n"
+    }
+  }
+  avg_logprobs: -0.23704090714454651
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758192526
+  nanos: 99581000
+}
+response_id: "juPLaP2JBqqbu8MPysec4AY"
+usage_metadata {
+  prompt_token_count: 9
+  candidates_token_count: 2
+  total_token_count: 11
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 9
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 2
+  }
+}
+
+2025-09-18 16:18:45,892 - __main__ - DEBUG - Generated text: Hello
+...
+2025-09-18 16:18:45,892 - __main__ - INFO - Vertex AI generation health check passed with gemini-1.5-flash
+2025-09-18 16:18:45,892 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:18:45] "GET /health HTTP/1.1" 200 -
+2025-09-18 16:19:23,602 - __main__ - DEBUG - Sanitized user_id 'health_check_user' to 'health_check_user'
+2025-09-18 16:19:23,845 - __main__ - INFO - Firestore health check passed
+2025-09-18 16:19:23,845 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:19:23,845 - __main__ - DEBUG - Texts preview: ['health check test']
+2025-09-18 16:19:24,751 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:19:24,751 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:19:24,751 - __main__ - INFO - Vertex AI embeddings health check passed
+2025-09-18 16:19:24,753 - __main__ - DEBUG - Testing model: gemini-1.5-flash
+2025-09-18 16:19:24,753 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:19:24,753 - __main__ - DEBUG - Prompt preview: Say 'hello' if you can hear me...
+2025-09-18 16:19:25,609 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello\n"
+    }
+  }
+  avg_logprobs: -0.23704084753990173
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758192565
+  nanos: 536663000
+}
+response_id: "tePLaNfgIJSku8MP4JzIuA8"
+usage_metadata {
+  prompt_token_count: 9
+  candidates_token_count: 2
+  total_token_count: 11
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 9
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 2
+  }
+}
+
+2025-09-18 16:19:25,609 - __main__ - DEBUG - Generated text: Hello
+...
+2025-09-18 16:19:25,609 - __main__ - INFO - Vertex AI generation health check passed with gemini-1.5-flash
+2025-09-18 16:19:25,614 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:19:25] "GET /health HTTP/1.1" 200 -
+2025-09-18 16:20:08,647 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:20:08,648 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "heyy"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:20:08,648 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:20:08,648 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:20:08,648 - __main__ - INFO - User message: 'heyy'
+2025-09-18 16:20:08,648 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:20:08,651 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:20:08,737 - __main__ - DEBUG - No profile found for user: user_1092
+2025-09-18 16:20:08,737 - __main__ - INFO - User consent status: False
+2025-09-18 16:20:08,737 - __main__ - INFO - Sending consent request
+2025-09-18 16:20:08,745 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:20:08] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:20:21,913 - __main__ - INFO - === CONSENT REQUEST ===
+2025-09-18 16:20:21,913 - __main__ - DEBUG - Consent payload: {'user_id': 'user_1092', 'consent': True}
+2025-09-18 16:20:21,913 - __main__ - INFO - Setting consent for user_1092: True
+2025-09-18 16:20:21,913 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:20:21,915 - __main__ - DEBUG - Upserting profile for user_1092 (sanitized: user_1092): {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:20:21,998 - __main__ - DEBUG - Profile upserted successfully for user_1092
+2025-09-18 16:20:21,998 - __main__ - INFO - Consent updated successfully
+2025-09-18 16:20:22,007 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:20:21] "POST /consent HTTP/1.1" 200 -
+2025-09-18 16:20:26,386 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:20:26,388 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hiii"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:20:26,388 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:20:26,391 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:20:26,391 - __main__ - INFO - User message: 'hiii'
+2025-09-18 16:20:26,391 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:20:26,391 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:20:26,481 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:20:26,481 - __main__ - INFO - User consent status: True
+2025-09-18 16:20:26,481 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:20:26,481 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:20:26,483 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:20:26,483 - __main__ - DEBUG - Query: hiii...
+2025-09-18 16:20:26,483 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:20:26,483 - __main__ - DEBUG - Texts preview: ['hiii']
+2025-09-18 16:20:27,403 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:20:27,403 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:20:27,500 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:20:27,500 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:20:27,500 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:20:27,500 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:20:27,503 - __main__ - INFO - Generating response...
+2025-09-18 16:20:27,503 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:20:27,504 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:20:28,489 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hi!  It\'s good to see you again.\n"
+    }
+  }
+  avg_logprobs: -0.061304853512690619
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758192628
+  nanos: 268783000
+}
+response_id: "9OPLaO-zELevu8MP0MzdkAc"
+usage_metadata {
+  prompt_token_count: 192
+  candidates_token_count: 13
+  total_token_count: 205
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 192
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 13
+  }
+}
+
+2025-09-18 16:20:28,489 - __main__ - DEBUG - Generated text: Hi!  It's good to see you again.
+...
+2025-09-18 16:20:28,489 - __main__ - INFO - Generated reply: 'Hi!  It's good to see you again.'
+2025-09-18 16:20:28,489 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:20:28,489 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:20:28,489 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:20:28,489 - __main__ - DEBUG - User: hiii...
+2025-09-18 16:20:28,497 - __main__ - DEBUG - Assistant: Hi!  It's good to see you again....
+2025-09-18 16:20:28,553 - __main__ - DEBUG - Current session buffer has 0 turns
+2025-09-18 16:20:28,628 - __main__ - DEBUG - Session buffer updated, now has 1 turns
+2025-09-18 16:20:28,645 - __main__ - INFO - Request completed successfully
+2025-09-18 16:20:28,645 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:20:28] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:20:59,420 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:20:59,424 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "i am new to this, what can talk here?"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:20:59,424 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:20:59,424 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:20:59,424 - __main__ - INFO - User message: 'i am new to this, what can talk here?'
+2025-09-18 16:20:59,426 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:20:59,426 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:21:00,050 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:21:00,050 - __main__ - INFO - User consent status: True
+2025-09-18 16:21:00,055 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:21:00,055 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:21:00,055 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:21:00,055 - __main__ - DEBUG - Query: i am new to this, what can talk here?...
+2025-09-18 16:21:00,056 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:21:00,056 - __main__ - DEBUG - Texts preview: ['i am new to this, what can talk here?']
+2025-09-18 16:21:01,010 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:21:01,010 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:21:01,074 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:21:01,074 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:21:01,074 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:21:01,074 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:21:01,074 - __main__ - INFO - Generating response...
+2025-09-18 16:21:01,074 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:21:01,074 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:21:02,890 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "It\'s understandable to feel a little unsure starting something new.  You can talk about anything that\'s on your mind.  Remember how helpful you found tutoring in the past?  This is a safe space to explore your thoughts and feelings.\n"
+    }
+  }
+  avg_logprobs: -0.11899489982455384
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758192661
+  nanos: 906884000
+}
+response_id: "FeTLaIStN6qbu8MPysec4AY"
+usage_metadata {
+  prompt_token_count: 201
+  candidates_token_count: 51
+  total_token_count: 252
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 201
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 51
+  }
+}
+
+2025-09-18 16:21:02,892 - __main__ - DEBUG - Generated text: It's understandable to feel a little unsure starting something new.  You can talk about anything tha...
+2025-09-18 16:21:02,892 - __main__ - INFO - Generated reply: 'It's understandable to feel a little unsure starting something new.  You can talk about anything that's on your mind.  Remember how helpful you found tutoring in the past?  This is a safe space to explore your thoughts and feelings.'
+2025-09-18 16:21:02,894 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:21:02,894 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:21:02,894 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:21:02,894 - __main__ - DEBUG - User: i am new to this, what can talk here?...
+2025-09-18 16:21:02,897 - __main__ - DEBUG - Assistant: It's understandable to feel a little unsure starti...
+2025-09-18 16:21:02,953 - __main__ - DEBUG - Current session buffer has 1 turns
+2025-09-18 16:21:03,030 - __main__ - DEBUG - Session buffer updated, now has 2 turns
+2025-09-18 16:21:03,030 - __main__ - INFO - Request completed successfully
+2025-09-18 16:21:03,030 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:21:03] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:27:34,306 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:27:34,307 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "okayy, so i am very overthinking , enough to stay up all night thinking about something, every night i goo to bed at like 12am or 1am , but mostly i wont be able to spleep till like  3am , sometimes i dont sleep at all!  and i have to wake up at 5:30am for my colleg"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:27:34,308 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:27:34,308 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:27:34,308 - __main__ - INFO - User message: 'okayy, so i am very overthinking , enough to stay up all night thinking about something, every night i goo to bed at like 12am or 1am , but mostly i wont be able to spleep till like  3am , sometimes i dont sleep at all!  and i have to wake up at 5:30am for my colleg'
+2025-09-18 16:27:34,308 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:27:34,308 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:27:34,567 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:27:34,567 - __main__ - INFO - User consent status: True
+2025-09-18 16:27:34,567 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:27:34,567 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:27:34,567 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:27:34,567 - __main__ - DEBUG - Query: okayy, so i am very overthinking , enough to stay up all night thinking about something, every night...
+2025-09-18 16:27:34,567 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:27:34,567 - __main__ - DEBUG - Texts preview: ['okayy, so i am very overthinking , enough to stay ...']
+2025-09-18 16:27:35,536 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:27:35,536 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:27:35,631 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:27:35,631 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:27:35,641 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:27:35,641 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:27:35,641 - __main__ - INFO - Generating response...
+2025-09-18 16:27:35,643 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:27:35,643 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:27:38,289 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I hear you.  It sounds incredibly draining to struggle with overthinking every night, impacting your sleep so significantly, especially with your early college start time.  It\'s understandable that you\'re feeling this way.  Have you considered if any strategies we\'ve talked about before, like [mention specific coping strategies if any exist in the retrieved memories, otherwise omit this sentence], might help you relax before bed?\n"
+    }
+  }
+  avg_logprobs: -0.2521018757539637
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193056
+  nanos: 431885000
+}
+response_id: "oOXLaI2uGpKKxbsPrPfsuQM"
+usage_metadata {
+  prompt_token_count: 266
+  candidates_token_count: 85
+  total_token_count: 351
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 266
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 85
+  }
+}
+
+2025-09-18 16:27:38,289 - __main__ - DEBUG - Generated text: I hear you.  It sounds incredibly draining to struggle with overthinking every night, impacting your...
+2025-09-18 16:27:38,298 - __main__ - INFO - Generated reply: 'I hear you.  It sounds incredibly draining to struggle with overthinking every night, impacting your sleep so significantly, especially with your early college start time.  It's understandable that you're feeling this way.  Have you considered if any strategies we've talked about before, like [mention specific coping strategies if any exist in the retrieved memories, otherwise omit this sentence], might help you relax before bed?'
+2025-09-18 16:27:38,300 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:27:38,300 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:27:38,300 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:27:38,301 - __main__ - DEBUG - User: okayy, so i am very overthinking , enough to stay ...
+2025-09-18 16:27:38,301 - __main__ - DEBUG - Assistant: I hear you.  It sounds incredibly draining to stru...
+2025-09-18 16:27:38,365 - __main__ - DEBUG - Current session buffer has 2 turns
+2025-09-18 16:27:38,471 - __main__ - DEBUG - Session buffer updated, now has 3 turns
+2025-09-18 16:27:38,471 - __main__ - INFO - Request completed successfully
+2025-09-18 16:27:38,485 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:27:38] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:29:30,594 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:29:30,597 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "i can relieve stress by listening to songs, sing out aloud, and interact with other people."
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:29:30,598 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:29:30,598 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:29:30,598 - __main__ - INFO - User message: 'i can relieve stress by listening to songs, sing out aloud, and interact with other people.'
+2025-09-18 16:29:30,598 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:29:30,601 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:29:30,659 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:29:30,660 - __main__ - INFO - User consent status: True
+2025-09-18 16:29:30,660 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:29:30,660 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:29:30,660 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:29:30,660 - __main__ - DEBUG - Query: i can relieve stress by listening to songs, sing out aloud, and interact with other people....
+2025-09-18 16:29:30,660 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:29:30,660 - __main__ - DEBUG - Texts preview: ['i can relieve stress by listening to songs, sing o...']
+2025-09-18 16:29:31,554 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:29:31,554 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:29:31,641 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:29:31,641 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:29:31,641 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:29:31,643 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:29:31,643 - __main__ - INFO - Generating response...
+2025-09-18 16:29:31,643 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:29:31,643 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:29:33,436 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "That\'s great you\'ve found ways to manage stress!  Listening to songs, singing, and connecting with others are all really helpful coping mechanisms.  I remember you mentioned these before, and it\'s wonderful that you\'re using them.\n"
+    }
+  }
+  avg_logprobs: -0.13591029093815729
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193172
+  nanos: 439624000
+}
+response_id: "FObLaMjqGu-IxbsPrYjy-Q4"
+usage_metadata {
+  prompt_token_count: 209
+  candidates_token_count: 52
+  total_token_count: 261
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 209
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 52
+  }
+}
+
+2025-09-18 16:29:33,436 - __main__ - DEBUG - Generated text: That's great you've found ways to manage stress!  Listening to songs, singing, and connecting with o...
+2025-09-18 16:29:33,436 - __main__ - INFO - Generated reply: 'That's great you've found ways to manage stress!  Listening to songs, singing, and connecting with others are all really helpful coping mechanisms.  I remember you mentioned these before, and it's wonderful that you're using them.'
+2025-09-18 16:29:33,436 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:29:33,436 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:29:33,444 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:29:33,444 - __main__ - DEBUG - User: i can relieve stress by listening to songs, sing o...
+2025-09-18 16:29:33,444 - __main__ - DEBUG - Assistant: That's great you've found ways to manage stress!  ...
+2025-09-18 16:29:33,492 - __main__ - DEBUG - Current session buffer has 3 turns
+2025-09-18 16:29:33,641 - __main__ - DEBUG - Session buffer updated, now has 4 turns
+2025-09-18 16:29:33,641 - __main__ - INFO - Request completed successfully
+2025-09-18 16:29:33,641 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:29:33] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:32:44,449 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:32:44,454 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "this one day, i hada very improtant exam the next day, i prepared very well but the exam was soo important to me that i could not stop thinking about it , so i was not  able to sleep , a i handnt slept the  previous night either, so on the day of exam i was super exhausted and couldnt perform well"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:32:44,455 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:32:44,455 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:32:44,455 - __main__ - INFO - User message: 'this one day, i hada very improtant exam the next day, i prepared very well but the exam was soo important to me that i could not stop thinking about it , so i was not  able to sleep , a i handnt slept the  previous night either, so on the day of exam i was super exhausted and couldnt perform well'
+2025-09-18 16:32:44,455 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:32:44,455 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:32:44,576 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:32:44,577 - __main__ - INFO - User consent status: True
+2025-09-18 16:32:44,577 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:32:44,577 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:32:44,579 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:32:44,579 - __main__ - DEBUG - Query: this one day, i hada very improtant exam the next day, i prepared very well but the exam was soo imp...
+2025-09-18 16:32:44,579 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:32:44,579 - __main__ - DEBUG - Texts preview: ['this one day, i hada very improtant exam the next ...']
+2025-09-18 16:32:45,617 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:32:45,617 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:32:45,707 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:32:45,707 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:32:45,712 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:32:45,712 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:32:45,712 - __main__ - INFO - Generating response...
+2025-09-18 16:32:45,712 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:32:45,712 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:32:48,024 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "That sounds incredibly stressful.  Facing a crucial exam after already having a sleepless night is tough. I remember you finding tutoring helpful in the past – perhaps revisiting that approach for future exams might be beneficial in managing the pressure and anxiety.  It\'s completely understandable that you didn\'t perform as well as you\'d hoped under those circumstances.\n"
+    }
+  }
+  avg_logprobs: -0.20763117830518266
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193366
+  nanos: 506396000
+}
+response_id: "1ubLaJz0HpSku8MP4JzIuA8"
+usage_metadata {
+  prompt_token_count: 260
+  candidates_token_count: 71
+  total_token_count: 331
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 260
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 71
+  }
+}
+
+2025-09-18 16:32:48,024 - __main__ - DEBUG - Generated text: That sounds incredibly stressful.  Facing a crucial exam after already having a sleepless night is t...
+2025-09-18 16:32:48,026 - __main__ - INFO - Generated reply: 'That sounds incredibly stressful.  Facing a crucial exam after already having a sleepless night is tough. I remember you finding tutoring helpful in the past – perhaps revisiting that approach for future exams might be beneficial in managing the pressure and anxiety.  It's completely understandable that you didn't perform as well as you'd hoped under those circumstances.'
+2025-09-18 16:32:48,026 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:32:48,026 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:32:48,026 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:32:48,026 - __main__ - DEBUG - User: this one day, i hada very improtant exam the next ...
+2025-09-18 16:32:48,029 - __main__ - DEBUG - Assistant: That sounds incredibly stressful.  Facing a crucia...
+2025-09-18 16:32:48,089 - __main__ - DEBUG - Current session buffer has 4 turns
+2025-09-18 16:32:48,277 - __main__ - DEBUG - Session buffer updated, now has 5 turns
+2025-09-18 16:32:48,280 - __main__ - INFO - Request completed successfully
+2025-09-18 16:32:48,280 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:32:48] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:34:17,869 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:34:17,870 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "yeahh i know right, tell me about the ways you can help me"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:34:17,870 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:34:17,870 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:34:17,870 - __main__ - INFO - User message: 'yeahh i know right, tell me about the ways you can help me'
+2025-09-18 16:34:17,873 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:34:17,873 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:34:17,932 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:34:17,932 - __main__ - INFO - User consent status: True
+2025-09-18 16:34:17,932 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:34:17,932 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:34:17,932 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:34:17,932 - __main__ - DEBUG - Query: yeahh i know right, tell me about the ways you can help me...
+2025-09-18 16:34:17,932 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:34:17,936 - __main__ - DEBUG - Texts preview: ['yeahh i know right, tell me about the ways you can...']
+2025-09-18 16:34:18,795 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:34:18,795 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:34:18,856 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:34:18,857 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:34:18,857 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:34:18,857 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:34:18,857 - __main__ - INFO - Generating response...
+2025-09-18 16:34:18,859 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:34:18,859 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:34:20,505 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I\'m here to listen and support you.  We can explore different ways to manage things, perhaps revisiting strategies like tutoring that you found helpful before.  What\'s on your mind today?\n"
+    }
+  }
+  avg_logprobs: -0.11417627334594727
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193459
+  nanos: 681958000
+}
+response_id: "M-fLaObPKZSku8MP4JzIuA8"
+usage_metadata {
+  prompt_token_count: 205
+  candidates_token_count: 42
+  total_token_count: 247
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 205
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 42
+  }
+}
+
+2025-09-18 16:34:20,507 - __main__ - DEBUG - Generated text: I'm here to listen and support you.  We can explore different ways to manage things, perhaps revisit...
+2025-09-18 16:34:20,507 - __main__ - INFO - Generated reply: 'I'm here to listen and support you.  We can explore different ways to manage things, perhaps revisiting strategies like tutoring that you found helpful before.  What's on your mind today?'
+2025-09-18 16:34:20,507 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:34:20,510 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:34:20,510 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:34:20,510 - __main__ - DEBUG - User: yeahh i know right, tell me about the ways you can...
+2025-09-18 16:34:20,510 - __main__ - DEBUG - Assistant: I'm here to listen and support you.  We can explor...
+2025-09-18 16:34:20,564 - __main__ - DEBUG - Current session buffer has 5 turns
+2025-09-18 16:34:20,646 - __main__ - DEBUG - Session buffer updated, now has 6 turns
+2025-09-18 16:34:20,646 - __main__ - INFO - Request completed successfully
+2025-09-18 16:34:20,646 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:34:20] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:35:15,023 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:35:15,024 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "nothing , just feeling sad about that exam"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:35:15,026 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:35:15,026 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:35:15,026 - __main__ - INFO - User message: 'nothing , just feeling sad about that exam'
+2025-09-18 16:35:15,027 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:15,027 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:35:15,078 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:35:15,080 - __main__ - INFO - User consent status: True
+2025-09-18 16:35:15,080 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:35:15,080 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:15,080 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:35:15,080 - __main__ - DEBUG - Query: nothing , just feeling sad about that exam...
+2025-09-18 16:35:15,083 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:35:15,083 - __main__ - DEBUG - Texts preview: ['nothing , just feeling sad about that exam']
+2025-09-18 16:35:15,990 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:35:15,990 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:35:16,051 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:35:16,051 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:35:16,054 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:35:16,054 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:35:16,054 - __main__ - INFO - Generating response...
+2025-09-18 16:35:16,054 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:35:16,054 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:35:17,862 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I hear you.  It\'s okay to feel sad about the exam.  Remember how helpful you found tutoring last time? Maybe that could be an option again, or perhaps we could brainstorm some other ways to cope with this feeling.\n"
+    }
+  }
+  avg_logprobs: -0.14898188260136819
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193516
+  nanos: 744721000
+}
+response_id: "bOfLaJG6LZSku8MP4JzIuA8"
+usage_metadata {
+  prompt_token_count: 198
+  candidates_token_count: 49
+  total_token_count: 247
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 198
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 49
+  }
+}
+
+2025-09-18 16:35:17,862 - __main__ - DEBUG - Generated text: I hear you.  It's okay to feel sad about the exam.  Remember how helpful you found tutoring last tim...
+2025-09-18 16:35:17,869 - __main__ - INFO - Generated reply: 'I hear you.  It's okay to feel sad about the exam.  Remember how helpful you found tutoring last time? Maybe that could be an option again, or perhaps we could brainstorm some other ways to cope with this feeling.'
+2025-09-18 16:35:17,869 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:35:17,869 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:17,869 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:35:17,869 - __main__ - DEBUG - User: nothing , just feeling sad about that exam...
+2025-09-18 16:35:17,869 - __main__ - DEBUG - Assistant: I hear you.  It's okay to feel sad about the exam....
+2025-09-18 16:35:17,930 - __main__ - DEBUG - Current session buffer has 6 turns
+2025-09-18 16:35:18,008 - __main__ - DEBUG - Session buffer updated, now has 7 turns
+2025-09-18 16:35:18,008 - __main__ - INFO - Request completed successfully
+2025-09-18 16:35:18,008 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:35:18] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:35:33,894 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:35:33,894 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "what other ways"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:35:33,898 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:35:33,898 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:35:33,898 - __main__ - INFO - User message: 'what other ways'
+2025-09-18 16:35:33,898 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:33,900 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:35:33,948 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:35:33,948 - __main__ - INFO - User consent status: True
+2025-09-18 16:35:33,951 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:35:33,951 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:33,951 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:35:33,951 - __main__ - DEBUG - Query: what other ways...
+2025-09-18 16:35:33,951 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:35:33,951 - __main__ - DEBUG - Texts preview: ['what other ways']
+2025-09-18 16:35:34,827 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:35:34,827 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:35:34,891 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-18 16:35:34,891 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-18 16:35:34,891 - __main__ - INFO - Found 0 relevant memories
+2025-09-18 16:35:34,892 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:35:34,892 - __main__ - INFO - Generating response...
+2025-09-18 16:35:34,892 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:35:34,892 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:35:36,395 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "What other ways are you thinking about?  Perhaps we could explore options similar to tutoring, which you found helpful before.\n"
+    }
+  }
+  avg_logprobs: -0.16632463455200194
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193535
+  nanos: 667035000
+}
+response_id: "f-fLaJvbKKqbu8MPysec4AY"
+usage_metadata {
+  prompt_token_count: 193
+  candidates_token_count: 25
+  total_token_count: 218
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 193
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 25
+  }
+}
+
+2025-09-18 16:35:36,395 - __main__ - DEBUG - Generated text: What other ways are you thinking about?  Perhaps we could explore options similar to tutoring, which...
+2025-09-18 16:35:36,395 - __main__ - INFO - Generated reply: 'What other ways are you thinking about?  Perhaps we could explore options similar to tutoring, which you found helpful before.'
+2025-09-18 16:35:36,395 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:35:36,395 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:36,395 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:35:36,395 - __main__ - DEBUG - User: what other ways...
+2025-09-18 16:35:36,395 - __main__ - DEBUG - Assistant: What other ways are you thinking about?  Perhaps w...
+2025-09-18 16:35:36,462 - __main__ - DEBUG - Current session buffer has 7 turns
+2025-09-18 16:35:36,518 - __main__ - DEBUG - Session buffer updated, now has 8 turns
+2025-09-18 16:35:36,518 - __main__ - INFO - Buffer threshold reached, creating summary...
+2025-09-18 16:35:36,518 - __main__ - DEBUG - Summarizing conversation (2788 chars)
+2025-09-18 16:35:36,532 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:35:36,532 - __main__ - DEBUG - Prompt preview: Carefully analyze the following conversation. Your task is to create a concise summary focusing on the user's emotional state, key topics, and any coping strategies discussed.
+**Specifically list any ...
+2025-09-18 16:35:40,455 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "The user is experiencing significant sleep disruption (insomnia) due to chronic overthinking, impacting their academic performance.  They feel sad and disappointed about a recent exam, despite adequate preparation, due to exhaustion from lack of sleep.  The user\'s emotional state is characterized by sadness, anxiety, and frustration.  Key topics include sleeplessness, exam anxiety, and stress management.\n\nSuccessful coping strategies mentioned from the user\'s past include:\n\n* **Tutoring:**  The user found tutoring helpful in managing exam stress and improving academic performance.\n* **Listening to music:**  Helps relieve stress.\n* **Singing:** Helps relieve stress.\n* **Social interaction:** Helps relieve stress.\n\nThe conversation focuses on identifying and re-implementing previously successful coping mechanisms, particularly tutoring, to address the current issues.  No new coping strategies were explored in this conversation.\n"
+    }
+  }
+  avg_logprobs: -0.17239544900615564
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193537
+  nanos: 279005000
+}
+response_id: "gefLaN2DEbevu8MP0MzdkAc"
+usage_metadata {
+  prompt_token_count: 697
+  candidates_token_count: 178
+  total_token_count: 875
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 697
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 178
+  }
+}
+
+2025-09-18 16:35:40,455 - __main__ - DEBUG - Generated text: The user is experiencing significant sleep disruption (insomnia) due to chronic overthinking, impact...
+2025-09-18 16:35:40,455 - __main__ - DEBUG - Generated summary: The user is experiencing significant sleep disruption (insomnia) due to chronic overthinking, impact...
+2025-09-18 16:35:40,455 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:40,455 - __main__ - DEBUG - Saving memory for user_1092 (sanitized: user_1092)
+2025-09-18 16:35:40,455 - __main__ - DEBUG - Summary: The user is experiencing significant sleep disruption (insomnia) due to chronic overthinking, impact...
+2025-09-18 16:35:40,458 - __main__ - DEBUG - Metadata: {'topic': 'session_summary', 'session_id': 'session_1758192597_user_1092'}
+2025-09-18 16:35:40,458 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:35:40,458 - __main__ - DEBUG - Texts preview: ['The user is experiencing significant sleep disrupt...']
+2025-09-18 16:35:41,389 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:35:41,389 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:35:41,559 - __main__ - DEBUG - Memory saved with ID: mem_1758193541389
+2025-09-18 16:35:41,559 - __main__ - INFO - Memory saved, trimming buffer...
+2025-09-18 16:35:41,571 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:41,648 - __main__ - INFO - Request completed successfully
+2025-09-18 16:35:41,705 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:35:41] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 16:35:56,903 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 16:35:56,907 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758192597_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "i dont know , you  tell?"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 16:35:56,908 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 16:35:56,908 - __main__ - INFO - Session: session_1758192597_user_1092
+2025-09-18 16:35:56,908 - __main__ - INFO - User message: 'i dont know , you  tell?'
+2025-09-18 16:35:56,908 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:56,908 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 16:35:56,972 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 16:35:56,975 - __main__ - INFO - User consent status: True
+2025-09-18 16:35:56,975 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 16:35:56,975 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:35:56,976 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 16:35:56,976 - __main__ - DEBUG - Query: i dont know , you  tell?...
+2025-09-18 16:35:56,976 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 16:35:56,976 - __main__ - DEBUG - Texts preview: ['i dont know , you  tell?']
+2025-09-18 16:35:57,889 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 16:35:57,889 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 16:35:57,953 - __main__ - DEBUG - Cosine similarity calculated: 0.3492
+2025-09-18 16:35:57,953 - __main__ - DEBUG - Doc mem_1758193541389: similarity = 0.3492
+2025-09-18 16:35:57,953 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-18 16:35:57,956 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-18 16:35:57,956 - __main__ - DEBUG -    #1: The user is experiencing significant sleep disrupt...
+2025-09-18 16:35:57,956 - __main__ - INFO - Found 1 relevant memories
+2025-09-18 16:35:57,956 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 16:35:57,956 - __main__ - INFO - Generating response...
+2025-09-18 16:35:57,956 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 16:35:57,956 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 16:36:00,264 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I hear you\'re feeling lost and unsure right now.  It sounds really tough dealing with sleep problems and the added pressure of exams. Remember how helpful tutoring was for managing exam stress before?  Perhaps revisiting that could help you feel more in control and improve your academic performance.  We could also explore listening to music or singing – things you\'ve found helpful in the past for relieving stress.\n"
+    }
+  }
+  avg_logprobs: -0.17563838493533251
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758193558
+  nanos: 740624000
+}
+response_id: "lufLaJCaLaqbu8MPysec4AY"
+usage_metadata {
+  prompt_token_count: 385
+  candidates_token_count: 82
+  total_token_count: 467
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 385
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 82
+  }
+}
+
+2025-09-18 16:36:00,264 - __main__ - DEBUG - Generated text: I hear you're feeling lost and unsure right now.  It sounds really tough dealing with sleep problems...
+2025-09-18 16:36:00,264 - __main__ - INFO - Generated reply: 'I hear you're feeling lost and unsure right now.  It sounds really tough dealing with sleep problems and the added pressure of exams. Remember how helpful tutoring was for managing exam stress before?  Perhaps revisiting that could help you feel more in control and improve your academic performance.  We could also explore listening to music or singing – things you've found helpful in the past for relieving stress.'
+2025-09-18 16:36:00,264 - __main__ - INFO - Updating session buffer...
+2025-09-18 16:36:00,264 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 16:36:00,264 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758192597_user_1092
+2025-09-18 16:36:00,264 - __main__ - DEBUG - User: i dont know , you  tell?...
+2025-09-18 16:36:00,264 - __main__ - DEBUG - Assistant: I hear you're feeling lost and unsure right now.  ...
+2025-09-18 16:36:00,345 - __main__ - DEBUG - Current session buffer has 2 turns
+2025-09-18 16:36:00,410 - __main__ - DEBUG - Session buffer updated, now has 3 turns
+2025-09-18 16:36:00,410 - __main__ - INFO - Request completed successfully
+2025-09-18 16:36:00,418 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 16:36:00] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-18 20:09:59,034 - __main__ - INFO - Starting chatbot with config:
+2025-09-18 20:09:59,034 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-18 20:09:59,034 - __main__ - INFO -    REGION: asia-south1
+2025-09-18 20:09:59,034 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-18 20:09:59,034 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-18 20:09:59,034 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-18 20:09:59,034 - google.auth._default - DEBUG - Checking D:\genAI\key.json for explicit credentials as part of auth process...
+2025-09-18 20:09:59,062 - __main__ - INFO - Firestore client initialized successfully
+2025-09-18 20:09:59,070 - __main__ - INFO - Starting Flask application...
+2025-09-18 20:09:59,160 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.0.106:8080
+2025-09-18 20:09:59,160 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-18 20:09:59,160 - werkzeug - INFO -  * Restarting with stat
+2025-09-18 20:10:04,086 - __main__ - INFO - Starting chatbot with config:
+2025-09-18 20:10:04,086 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-18 20:10:04,086 - __main__ - INFO -    REGION: asia-south1
+2025-09-18 20:10:04,086 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-18 20:10:04,086 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-18 20:10:04,086 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-18 20:10:04,086 - google.auth._default - DEBUG - Checking D:\genAI\key.json for explicit credentials as part of auth process...
+2025-09-18 20:10:04,109 - __main__ - INFO - Firestore client initialized successfully
+2025-09-18 20:10:04,119 - __main__ - INFO - Starting Flask application...
+2025-09-18 20:10:04,152 - werkzeug - WARNING -  * Debugger is active!
+2025-09-18 20:10:04,163 - werkzeug - INFO -  * Debugger PIN: 498-328-312
+2025-09-18 20:10:20,869 - __main__ - DEBUG - Sanitized user_id 'health_check_user' to 'health_check_user'
+2025-09-18 20:10:21,016 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): oauth2.googleapis.com:443
+2025-09-18 20:10:21,690 - urllib3.connectionpool - DEBUG - https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2025-09-18 20:10:21,944 - __main__ - INFO - Firestore health check passed
+2025-09-18 20:10:21,944 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 20:10:21,944 - __main__ - DEBUG - Texts preview: ['health check test']
+2025-09-18 20:10:22,905 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 20:10:22,905 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 20:10:22,905 - __main__ - INFO - Vertex AI embeddings health check passed
+2025-09-18 20:10:22,905 - __main__ - DEBUG - Testing model: gemini-1.5-flash
+2025-09-18 20:10:22,905 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 20:10:22,905 - __main__ - DEBUG - Prompt preview: Say 'hello' if you can hear me...
+2025-09-18 20:10:23,452 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello\n"
+    }
+  }
+  avg_logprobs: -0.23704096674919128
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758206423
+  nanos: 589862000
+}
+response_id: "1xnMaKaAJLuO9b4P3MCV8A4"
+usage_metadata {
+  prompt_token_count: 9
+  candidates_token_count: 2
+  total_token_count: 11
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 9
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 2
+  }
+}
+
+2025-09-18 20:10:23,452 - __main__ - DEBUG - Generated text: Hello
+...
+2025-09-18 20:10:23,452 - __main__ - INFO - Vertex AI generation health check passed with gemini-1.5-flash
+2025-09-18 20:10:23,452 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 20:10:23] "GET /health HTTP/1.1" 200 -
+2025-09-18 20:11:15,550 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-18 20:11:15,551 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758206472_user_1092",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "heyy"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "user_1092"
+    }
+  }
+}
+2025-09-18 20:11:15,551 - __main__ - INFO - Processing request for user_id: user_1092
+2025-09-18 20:11:15,551 - __main__ - INFO - Session: session_1758206472_user_1092
+2025-09-18 20:11:15,552 - __main__ - INFO - User message: 'heyy'
+2025-09-18 20:11:15,552 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 20:11:15,552 - __main__ - DEBUG - Getting user profile for: user_1092 (sanitized: user_1092)
+2025-09-18 20:11:15,616 - __main__ - DEBUG - Found user profile: {'consent': True, 'updated_at': '2025-09-18T10:50:21.913442+00:00'}
+2025-09-18 20:11:15,617 - __main__ - INFO - User consent status: True
+2025-09-18 20:11:15,617 - __main__ - INFO - Retrieving similar memories...
+2025-09-18 20:11:15,617 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 20:11:15,617 - __main__ - DEBUG - Retrieving similar memories for user_1092 (sanitized: user_1092)
+2025-09-18 20:11:15,619 - __main__ - DEBUG - Query: heyy...
+2025-09-18 20:11:15,619 - __main__ - DEBUG - Embedding 1 texts
+2025-09-18 20:11:15,619 - __main__ - DEBUG - Texts preview: ['heyy']
+2025-09-18 20:11:16,421 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-18 20:11:16,437 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-18 20:11:16,549 - __main__ - DEBUG - Cosine similarity calculated: 0.3477
+2025-09-18 20:11:16,549 - __main__ - DEBUG - Doc mem_1758193541389: similarity = 0.3477
+2025-09-18 20:11:16,549 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-18 20:11:16,549 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-18 20:11:16,552 - __main__ - DEBUG -    #1: The user is experiencing significant sleep disrupt...
+2025-09-18 20:11:16,552 - __main__ - INFO - Found 1 relevant memories
+2025-09-18 20:11:16,552 - __main__ - DEBUG - Session params: {"user_id": "user_1092"}
+2025-09-18 20:11:16,552 - __main__ - INFO - Generating response...
+2025-09-18 20:11:16,552 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-18 20:11:16,552 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-18 20:11:18,442 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hey there.  I understand you\'re having a tough time with sleep and that\'s affecting your studies.  It sounds really frustrating, especially after feeling prepared for that exam. Remember how helpful tutoring was for you in the past?  Maybe revisiting that, along with listening to music or singing—things that helped relieve stress before—could make a difference now.\n"
+    }
+  }
+  avg_logprobs: -0.22006263230976306
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758206477
+  nanos: 219853000
+}
+response_id: "DRrMaM21Dcut9b4P7-COwAY"
+usage_metadata {
+  prompt_token_count: 379
+  candidates_token_count: 76
+  total_token_count: 455
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 379
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 76
+  }
+}
+
+2025-09-18 20:11:18,442 - __main__ - DEBUG - Generated text: Hey there.  I understand you're having a tough time with sleep and that's affecting your studies.  I...
+2025-09-18 20:11:18,442 - __main__ - INFO - Generated reply: 'Hey there.  I understand you're having a tough time with sleep and that's affecting your studies.  It sounds really frustrating, especially after feeling prepared for that exam. Remember how helpful tutoring was for you in the past?  Maybe revisiting that, along with listening to music or singing—things that helped relieve stress before—could make a difference now.'
+2025-09-18 20:11:18,442 - __main__ - INFO - Updating session buffer...
+2025-09-18 20:11:18,442 - __main__ - DEBUG - Sanitized user_id 'user_1092' to 'user_1092'
+2025-09-18 20:11:18,442 - __main__ - DEBUG - Appending session turn for user_1092 (sanitized: user_1092), session: session_1758206472_user_1092
+2025-09-18 20:11:18,442 - __main__ - DEBUG - User: heyy...
+2025-09-18 20:11:18,442 - __main__ - DEBUG - Assistant: Hey there.  I understand you're having a tough tim...
+2025-09-18 20:11:18,500 - __main__ - DEBUG - Current session buffer has 0 turns
+2025-09-18 20:11:18,583 - __main__ - DEBUG - Session buffer updated, now has 1 turns
+2025-09-18 20:11:18,583 - __main__ - INFO - Request completed successfully
+2025-09-18 20:11:18,583 - werkzeug - INFO - 127.0.0.1 - - [18/Sep/2025 20:11:18] "POST /dialogflow-webhook HTTP/1.1" 200 -

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Multi-User Interactive Chat Client for genai-chatbot
-Provides a persistent chat interface with memory across sessions and multiple user support
+Interactive Chat Client for EmpathicBot
+Connects to the Flask chatbot server and provides a user-friendly chat interface
 """
 
 import requests
@@ -12,6 +12,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 import uuid
+import re
 
 # Configuration
 CHATBOT_URL = "http://127.0.0.1:8080"
@@ -19,13 +20,25 @@ USERS_DATA_FILE = "chat_users_data.json"
 CHAT_HISTORY_FILE = "chat_history.json"
 CURRENT_USER_FILE = "current_user.json"
 
-class MultiUserChatClient:
+class EmpathicChatClient:
     def __init__(self):
         self.current_user_id = None
         self.session_id = None
         self.users_data = self.load_users_data()
         self.chat_history = self.load_chat_history()
         self.current_user_data = {}
+        
+    def sanitize_user_id(self, user_id):
+        """Sanitize user_id to match server-side sanitization"""
+        # Replace invalid characters with underscores
+        sanitized = re.sub(r'[^a-zA-Z0-9_-]', '_', user_id)
+        # Ensure it doesn't start with a number
+        if sanitized and sanitized[0].isdigit():
+            sanitized = f"user_{sanitized}"
+        # Ensure minimum length
+        if not sanitized:
+            sanitized = "anonymous_user"
+        return sanitized
         
     def load_users_data(self):
         """Load all users data"""
@@ -89,6 +102,7 @@ class MultiUserChatClient:
         self.chat_history.append({
             "timestamp": datetime.now().isoformat(),
             "user_id": self.current_user_id,
+            "session_id": self.session_id,
             "user_message": user_message,
             "bot_response": bot_response
         })
@@ -205,6 +219,7 @@ class MultiUserChatClient:
         # Get user ID
         print(f"\nPlease choose a unique user ID.")
         print("This ID will be used to remember conversations across sessions.")
+        print("Note: Special characters will be sanitized for database compatibility.")
         
         while True:
             custom_id = input("Enter user ID: ").strip()
@@ -212,6 +227,15 @@ class MultiUserChatClient:
             if not custom_id:
                 print("User ID cannot be empty. Please try again.")
                 continue
+                
+            # Show sanitized version
+            sanitized_id = self.sanitize_user_id(custom_id)
+            if sanitized_id != custom_id:
+                print(f"ID will be sanitized to: {sanitized_id}")
+                confirm = input("Continue with sanitized ID? (y/n): ").strip().lower()
+                if confirm != 'y':
+                    continue
+                custom_id = sanitized_id
                 
             if custom_id in self.users_data:
                 print(f"User ID '{custom_id}' already exists. Please choose a different one.")
@@ -222,35 +246,15 @@ class MultiUserChatClient:
         print(f"\nUser ID: {custom_id}")
         print("Save this ID - you'll need it to resume conversations later!")
         
-        # Get consent
-        print("\nPrivacy & Memory")
-        print("This bot can remember helpful things from conversations")
-        print("to provide better support across sessions. Conversations")
-        print("are summarized (not stored word-for-word) and linked to the user ID.")
-        
-        consent = input("\nDo you consent to having conversation memories stored? (y/n): ").strip().lower()
-        consent_bool = consent == 'y'
-        
-        if consent_bool:
-            print("Great! The bot will remember helpful things from conversations.")
-        else:
-            print("Without consent, the bot won't remember conversations between sessions.")
-        
-        # Send consent to server
-        try:
-            response = self.send_consent(custom_id, consent_bool)
-            if response and response.get("ok"):
-                print("✅ Consent settings saved to server!")
-            else:
-                print("⚠️  Warning: Could not save consent to server")
-        except Exception as e:
-            print(f"⚠️  Warning: Error setting consent: {e}")
+        print("\nEmpathicBot will ask for your consent when you start chatting.")
+        print("The bot can remember helpful things from conversations to provide")
+        print("better support across sessions.")
         
         # Save user data
         user_data = {
             "user_id": custom_id,
             "username": username,
-            "consent": consent_bool,
+            "consent": None,  # Will be set during first chat
             "created_date": datetime.now().isoformat(),
             "last_chat_date": datetime.now().isoformat()
         }
@@ -343,21 +347,8 @@ class MultiUserChatClient:
         except (ValueError, KeyboardInterrupt):
             print("❌ Deletion cancelled.")
     
-    def send_consent(self, user_id, consent_bool):
-        """Send consent to the chatbot server"""
-        try:
-            response = requests.post(
-                f"{CHATBOT_URL}/consent",
-                json={"user_id": user_id, "consent": consent_bool},
-                headers={"Content-Type": "application/json"},
-                timeout=10
-            )
-            return response.json() if response.status_code == 200 else None
-        except Exception as e:
-            raise Exception(f"Network error: {e}")
-    
     def send_message(self, message):
-        """Send message to chatbot and return response"""
+        """Send message to EmpathicBot and return response"""
         webhook_data = {
             "session": f"projects/genai-bot-kdf/agent/sessions/{self.session_id}",
             "messages": [{"text": {"text": [message]}}],
@@ -380,22 +371,70 @@ class MultiUserChatClient:
                 return f"Error: Server returned {response.status_code}"
                 
         except requests.exceptions.ConnectionError:
-            return "❌ Connection Error: Is the chatbot server running on port 8080?"
+            return "❌ Connection Error: Is the EmpathicBot server running on port 8080?"
         except requests.exceptions.Timeout:
             return "❌ Timeout: The server is taking too long to respond."
         except Exception as e:
             return f"❌ Error: {e}"
+    
+    def handle_consent_response(self, user_input):
+        """Handle user's consent response"""
+        if user_input.lower() in ['yes', 'y', 'ok', 'sure', 'yeah', 'yep']:
+            consent_bool = True
+        elif user_input.lower() in ['no', 'n', 'nope', 'nah']:
+            consent_bool = False
+        else:
+            print("Please answer 'yes' or 'no'")
+            return None
+        
+        try:
+            response = requests.post(
+                f"{CHATBOT_URL}/consent",
+                json={"user_id": self.current_user_id, "consent": consent_bool},
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            
+            if response.status_code == 200:
+                self.current_user_data["consent"] = consent_bool
+                self.users_data[self.current_user_id] = self.current_user_data
+                self.save_users_data()
+                
+                if consent_bool:
+                    print("✅ Great! EmpathicBot will remember helpful things from our conversations.")
+                else:
+                    print("✅ Understood. EmpathicBot won't remember conversations between sessions.")
+                
+                return consent_bool
+            else:
+                print("❌ Error setting consent. Please try again.")
+                return None
+                
+        except Exception as e:
+            print(f"❌ Error: {e}")
+            return None
     
     def chat_loop(self):
         """Main chat interaction loop"""
         username = self.current_user_data.get('username', 'User')
         user_id = self.current_user_id
         
-        print(f"\n💬 Chat started!")
+        print(f"\n💬 EmpathicBot Chat Started!")
         print(f"👤 User: {username} (ID: {user_id})")
-        print(f"🛡️  Memory Consent: {'Yes' if self.current_user_data.get('consent') else 'No'}")
+        print(f"🔗 Session: {self.session_id}")
+        
+        consent_status = self.current_user_data.get('consent')
+        if consent_status is not None:
+            print(f"🛡️  Memory Consent: {'Yes' if consent_status else 'No'}")
+        else:
+            print(f"🛡️  Memory Consent: Will be asked during chat")
+        
         print("\nType '/menu' to access options, or 'quit' to exit chat.")
+        print("EmpathicBot is here to listen and support you.")
         print("-" * 50)
+        
+        # Check if this is first time and consent is needed
+        awaiting_consent = self.current_user_data.get('consent') is None
         
         while True:
             try:
@@ -404,7 +443,7 @@ class MultiUserChatClient:
                 
                 # Check for commands
                 if user_input.lower() in ['quit', 'exit', 'bye', 'goodbye']:
-                    print(f"\n👋 Goodbye, {username}!")
+                    print(f"\n👋 Take care, {username}! Remember, you're not alone.")
                     break
                 
                 if user_input.lower() == '/menu':
@@ -419,14 +458,31 @@ class MultiUserChatClient:
                     self.show_user_history(user_id, limit=5)
                     continue
                 
+                if user_input.lower() == '/newsession':
+                    self.session_id = f"session_{int(time.time())}_{user_id}"
+                    print(f"🔄 Started new session: {self.session_id}")
+                    continue
+                
                 if not user_input:
                     continue
                 
+                # If awaiting consent and user gives consent response
+                if awaiting_consent:
+                    consent_result = self.handle_consent_response(user_input)
+                    if consent_result is not None:
+                        awaiting_consent = False
+                        continue
+                    # If not a valid consent response, continue with normal chat
+                
                 # Show typing indicator
-                print("🤖 EmpathicBot is typing...")
+                print("🤖 EmpathicBot is thinking...")
                 
                 # Send message and get response
                 bot_response = self.send_message(user_input)
+                
+                # Check if bot is asking for consent
+                if "remember" in bot_response.lower() and "consent" in bot_response.lower():
+                    awaiting_consent = True
                 
                 # Display response
                 print(f"\n🤖 EmpathicBot: {bot_response}")
@@ -440,7 +496,7 @@ class MultiUserChatClient:
                 self.save_users_data()
                 
             except KeyboardInterrupt:
-                print(f"\n\n👋 Chat interrupted. Goodbye, {username}!")
+                print(f"\n\n👋 Chat interrupted. Take care, {username}!")
                 break
             except Exception as e:
                 print(f"\n❌ Unexpected error: {e}")
@@ -454,10 +510,11 @@ class MultiUserChatClient:
         print("💬 Chat Menu")
         print("="*40)
         print("Commands:")
-        print("  /menu     - Show this menu")
-        print("  /switch   - Switch to different user")
-        print("  /history  - Show recent chat history")
-        print("  quit      - Exit chat")
+        print("  /menu       - Show this menu")
+        print("  /switch     - Switch to different user")
+        print("  /history    - Show recent chat history")
+        print("  /newsession - Start a new session")
+        print("  quit        - Exit chat")
         print("-" * 40)
     
     def show_user_history(self, user_id, limit=10):
@@ -476,6 +533,7 @@ class MultiUserChatClient:
         
         for entry in recent:
             timestamp = entry.get("timestamp", "")
+            session_id = entry.get("session_id", "unknown")
             if timestamp:
                 try:
                     dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
@@ -488,9 +546,9 @@ class MultiUserChatClient:
             user_msg = entry.get('user_message', '')
             bot_msg = entry.get('bot_response', '')
             
-            print(f"[{time_str}]")
+            print(f"[{time_str}] (Session: {session_id[:8]}...)")
             print(f"You: {user_msg[:100]}{'...' if len(user_msg) > 100 else ''}")
-            print(f"Bot: {bot_msg[:100]}{'...' if len(bot_msg) > 100 else ''}")
+            print(f"EmpathicBot: {bot_msg[:100]}{'...' if len(bot_msg) > 100 else ''}")
             print()
     
     def main_menu(self):
@@ -499,14 +557,18 @@ class MultiUserChatClient:
             current_user = self.current_user_data.get('username', 'None') if self.current_user_id else 'None'
             
             print("\n" + "="*60)
-            print("🤖 EmpathicBot Multi-User Chat Client")
+            print("🤖 EmpathicBot Chat Client")
             print("="*60)
             print(f"👤 Current User: {current_user}")
             
             if self.current_user_id:
                 message_count = len([h for h in self.chat_history if h.get("user_id") == self.current_user_id])
-                consent_status = "✅" if self.current_user_data.get('consent') else "❌"
-                print(f"💬 Messages: {message_count} | 🛡️  Consent: {consent_status}")
+                consent_status = self.current_user_data.get('consent')
+                if consent_status is not None:
+                    consent_icon = "✅" if consent_status else "❌"
+                else:
+                    consent_icon = "❓"
+                print(f"💬 Messages: {message_count} | 🛡️  Consent: {consent_icon}")
             
             print("\nOptions:")
             print("1. 💬 Start Chat")
@@ -525,7 +587,8 @@ class MultiUserChatClient:
                     print("\n⚠️  Please select a user first!")
                     continue
                 
-                self.session_id = f"session_{int(time.time())}"
+                # Generate unique session ID with user context
+                self.session_id = f"session_{int(time.time())}_{self.current_user_id}"
                 result = self.chat_loop()
                 if result == "switch_user":
                     user_action = self.select_user()
@@ -554,7 +617,7 @@ class MultiUserChatClient:
                 self.settings_menu()
             
             elif choice == "7":
-                print("\n👋 Goodbye!")
+                print("\n👋 Goodbye! Take care!")
                 break
             
             else:
@@ -574,7 +637,11 @@ class MultiUserChatClient:
         for i, user in enumerate(users, 1):
             username = user["username"]
             user_id = user["user_id"] 
-            consent = "Yes" if user["consent"] else "No"
+            consent = user["consent"]
+            if consent is None:
+                consent_str = "Not set"
+            else:
+                consent_str = "Yes" if consent else "No"
             message_count = user["message_count"]
             
             created_date = user["created_date"]
@@ -602,7 +669,7 @@ class MultiUserChatClient:
             print(f"{i:2d}. {active} {username}")
             print(f"    ID: {user_id}")
             print(f"    Created: {created_str} | Last Chat: {last_chat_str}")
-            print(f"    Messages: {message_count} | Consent: {consent}")
+            print(f"    Messages: {message_count} | Consent: {consent_str}")
             print()
         
         input("Press Enter to continue...")
@@ -621,15 +688,24 @@ class MultiUserChatClient:
             print("="*40)
             print(f"👤 Username: {username}")
             print(f"🆔 User ID: {self.current_user_id}")
-            print(f"🛡️  Memory Consent: {'Yes' if user_data.get('consent') else 'No'}")
+            
+            consent = user_data.get('consent')
+            if consent is None:
+                consent_str = "Not set (will be asked during chat)"
+            else:
+                consent_str = "Yes" if consent else "No"
+            print(f"🛡️  Memory Consent: {consent_str}")
+            
             print(f"📅 Account Created: {user_data.get('created_date', 'Unknown')[:10]}")
             
             message_count = len([h for h in self.chat_history if h.get("user_id") == self.current_user_id])
+            session_count = len(set([h.get("session_id") for h in self.chat_history if h.get("user_id") == self.current_user_id and h.get("session_id")]))
             print(f"💬 Total Messages: {message_count}")
+            print(f"🔗 Total Sessions: {session_count}")
             
             print("\nOptions:")
             print("1. Change Username")
-            print("2. Change Memory Consent")
+            print("2. Reset Memory Consent")
             print("3. View Full Chat History")
             print("4. Delete My Memories")
             print("5. Back to Main Menu")
@@ -645,22 +721,14 @@ class MultiUserChatClient:
                     print(f"✅ Username changed to: {new_username}")
             
             elif choice == '2':
-                current_consent = user_data.get('consent', False)
-                print(f"\nCurrent consent: {'Yes' if current_consent else 'No'}")
-                new_consent = input("Change consent (y/n): ").strip().lower()
-                if new_consent in ['y', 'n']:
-                    consent_bool = new_consent == 'y'
-                    try:
-                        response = self.send_consent(self.current_user_id, consent_bool)
-                        if response and response.get("ok"):
-                            self.current_user_data["consent"] = consent_bool
-                            self.users_data[self.current_user_id] = self.current_user_data
-                            self.save_users_data()
-                            print(f"✅ Consent changed to: {'Yes' if consent_bool else 'No'}")
-                        else:
-                            print("❌ Error updating consent on server")
-                    except Exception as e:
-                        print(f"❌ Error: {e}")
+                print(f"\nThis will reset your consent preference.")
+                print("EmpathicBot will ask for consent again during your next chat.")
+                confirm = input("Reset consent? (y/n): ").strip().lower()
+                if confirm == 'y':
+                    self.current_user_data["consent"] = None
+                    self.users_data[self.current_user_id] = self.current_user_data
+                    self.save_users_data()
+                    print("✅ Consent preference reset. You'll be asked again during chat.")
             
             elif choice == '3':
                 self.view_full_history()
@@ -687,6 +755,7 @@ class MultiUserChatClient:
         
         for i, entry in enumerate(user_history, 1):
             timestamp = entry.get("timestamp", "")
+            session_id = entry.get("session_id", "unknown")
             if timestamp:
                 try:
                     dt = datetime.fromisoformat(timestamp.replace('Z', '+00:00'))
@@ -696,9 +765,9 @@ class MultiUserChatClient:
             else:
                 time_str = "Unknown time"
             
-            print(f"\n[{i}] {time_str}")
+            print(f"\n[{i}] {time_str} (Session: {session_id})")
             print(f"You: {entry.get('user_message', '')}")
-            print(f"Bot: {entry.get('bot_response', '')}")
+            print(f"EmpathicBot: {entry.get('bot_response', '')}")
             
             # Pause every 10 messages
             if i % 10 == 0 and i < len(user_history):
@@ -760,7 +829,7 @@ class MultiUserChatClient:
                 response = requests.get(f"{CHATBOT_URL}/health", timeout=5)
                 server_status = "✅ Healthy" if response.status_code == 200 else "⚠️  Issues detected"
             except:
-                print("❌ Cannot connect to chatbot server!")
+                print("❌ Cannot connect to EmpathicBot server!")
                 print(f"Make sure the server is running on {CHATBOT_URL}")
                 print("Run: python main.py")
                 return
@@ -789,23 +858,19 @@ def main():
             global CHATBOT_URL
             CHATBOT_URL = sys.argv[2].rstrip('/')
         elif sys.argv[1] in ["--help", "-h"]:
-            print("Multi-User Interactive Chat Client for genai-chatbot")
+            print("Interactive Chat Client for EmpathicBot")
             print("\nUsage:")
-            print("  python interactive_chat.py                    # Use default URL")
-            print("  python interactive_chat.py --url http://...   # Use custom URL")
+            print("  python chat.py                    # Use default URL")
+            print("  python chat.py --url http://...   # Use custom URL")
             print("\nFeatures:")
-            print("  - Multiple user support")
-            print("  - User switching")
-            print("  - Persistent chat history per user")
-            print("  - Memory management")
-            print("  - Server health monitoring")
+            print("  - Multiple user support with persistent data")
+            print("  - Chat history and session management")
+            print("  - Memory consent handling")
+            print("  - User-friendly command interface")
+            print("  - Connects to EmpathicBot Flask server")
             return
-    
-    print("🤖 EmpathicBot Multi-User Chat Client")
-    print(f"🔗 Connecting to: {CHATBOT_URL}")
-    print("-" * 50)
-    
-    client = MultiUserChatClient()
+
+    client = EmpathicChatClient()
     client.run()
 
 if __name__ == "__main__":
