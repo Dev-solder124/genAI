@@ -267,6 +267,18 @@ class EmpathicChatClient:
         self.current_user_data = user_data
         self.save_current_user(custom_id)
         
+        # Send the initial profile data (username) to the server
+        try:
+            requests.post(
+                f"{CHATBOT_URL}/consent",
+                json={"user_id": custom_id, "username": username},
+                headers={"Content-Type": "application/json"},
+                timeout=10
+            )
+            print("✅ User profile synced with server.")
+        except Exception as e:
+            print(f"⚠️  Warning: Could not sync new user profile with server: {e}")
+        
         print(f"✅ User '{username}' created successfully!")
         return True
     

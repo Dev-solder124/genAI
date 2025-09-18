@@ -1,6 +1,13 @@
+# Python
 .venv/
+venv/
 __pycache__/
 *.pyc
-service-account.json
-.env
 
+# Sensitive Files
+key.json
+.env
+*.log
+chat_users_data.json
+chat_history.json
+current_user.json
