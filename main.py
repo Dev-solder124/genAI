@@ -350,15 +350,23 @@ def retrieve_similar_memories(user_id, query_text, top_k=3):
 def summarize_conversation(turns_text):
     try:
         logger.debug(f"Summarizing conversation ({len(turns_text)} chars)")
-        prompt = "Summarize the following conversation in 2-3 sentences and list any coping strategies or preferences mentioned:\n\n" + turns_text + "\n\nSummary:"
+        prompt = (
+            "Carefully analyze the following conversation. Your task is to create a concise summary focusing on the user's emotional state, key topics, and any coping strategies discussed.\n"
+            "**Specifically list any successful strategies the user mentioned from their past (e.g., tutoring, specific hobbies, etc.).**\n\n"
+            f"Conversation:\n{turns_text}\n\n"
+            "Summary:"
+        )
+        
+        # This is the missing line that calls the AI
         summary = generate_text(prompt, max_output_tokens=200, temperature=0.2)
+        
         logger.debug(f"Generated summary: {summary[:100]}...")
         return summary
     except Exception as e:
         logger.error(f"Error summarizing conversation: {e}")
         logger.error(traceback.format_exc())
         return "Error generating summary"
-
+    
 # --- session buffer stored in Firestore with debugging
 def append_session_turn(user_id, user_text, assistant_text):
     try:
@@ -440,9 +448,9 @@ def dialogflow_webhook():
         logger.debug(f"Session params: {short_term}")
 
         prompt = (
-            "You are EmpathicBot — supportive, validating, non-judgemental. If crisis language, provide crisis resources.\n\n"
-            f"User profile: {json.dumps(user_profile)}\n"
+            "You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, seamlessly weave the specific details from them into your response to show you remember the user's context.For example, if a memory mentions the user found 'tutoring' helpful, you should reference 'tutoring' directly. Do not use generic placeholders like '[mention coping strategy]' Always be concise and empathetic."
             f"Retrieved memories:\n{retrieved_text}\n\n"
+            f"User profile: {json.dumps(user_profile)}\n"
             f"Session params: {short_term}\n\n"
             f"User: {user_text}\n\n"
             "Assistant (empathetic, concise, reference past coping strategies):"
