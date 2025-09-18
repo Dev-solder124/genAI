@@ -132,7 +132,7 @@ def health_check():
     # Test Vertex AI Text Generation with multiple models
     try:
         
-        test_models = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-1.0-pro"]
+        test_models = ["gemini-1.5-flash"]
         success = False
         working_model = None
         
@@ -244,9 +244,7 @@ def generate_text(prompt, max_output_tokens=300, temperature=0.2):
     """Main text generation function with fallback models"""
     fallback_models = [
         LLM_MODEL,
-        "gemini-1.5-pro", # A good alternative
-        "gemini-1.0-pro",
-        "gemini-pro"
+        "gemini-1.5-flash",
     ]
     
     # Remove duplicates while preserving order
@@ -278,7 +276,10 @@ def get_user_profile(user_id):
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Getting user profile for: {user_id} (sanitized: {sanitized_user_id})")
         
-        doc = db.collection(sanitized_user_id).document("profile").collection("info").document("data").get()
+        
+        doc_ref = db.collection("users").document(sanitized_user_id)
+        doc = doc_ref.get()
+
         if doc.exists:
             profile = doc.to_dict()
             logger.debug(f"Found user profile: {profile}")
@@ -294,10 +295,18 @@ def get_user_profile(user_id):
 def upsert_user_profile(user_id, profile):
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
-        logger.debug(f"Upserting profile for {user_id} (sanitized: {sanitized_user_id}): {profile}")
+        logger.debug(f"Upserting profile for {user_id}: {profile}")
+
+        # CORRECTED LOGIC: Create a nested dictionary for the 'profile' map
+        # This is the correct format for .set() with merge=True
+        update_data = {
+            "profile": profile
+        }
         
-        db.collection(sanitized_user_id).document("profile").collection("info").document("data").set(profile, merge=True)
+        db.collection("users").document(sanitized_user_id).set(update_data, merge=True)
+        
         logger.debug(f"Profile upserted successfully for {user_id}")
+
     except Exception as e:
         logger.error(f"Error upserting user profile: {e}")
         logger.error(traceback.format_exc())
@@ -327,7 +336,8 @@ def save_memory(user_id, summary_text, metadata=None):
             "created_at": created_at
         }
         
-        db.collection(sanitized_user_id).document("memories").collection("data").document(memory_id).set(mem_doc)
+        db.collection("users").document(sanitized_user_id).collection("memories").document(memory_id).set(mem_doc)
+
         logger.debug(f"Memory saved with ID: {memory_id}")
         return True
     except Exception as e:
@@ -342,8 +352,9 @@ def retrieve_similar_memories(user_id, query_text, top_k=3):
         logger.debug(f"Query: {query_text[:100]}...")
         
         q_vec = embed_texts([query_text])[0]
-        docs = db.collection(sanitized_user_id).document("memories").collection("data").stream()
         
+        
+        docs = db.collection("users").document(sanitized_user_id).collection("memories").stream()
         scored = []
         doc_count = 0
         for d in docs:
@@ -372,63 +383,53 @@ def retrieve_similar_memories(user_id, query_text, top_k=3):
         logger.error(traceback.format_exc())
         return []
 
-def summarize_conversation(turns_text):
+def summarize_conversation(user_text, assistant_text):
     try:
-        logger.debug(f"Summarizing conversation ({len(turns_text)} chars)")
+        logger.debug("Summarizing and evaluating the latest exchange.")
+        exchange_text = f"User: {user_text}\nAssistant: {assistant_text}"
+
         prompt = (
-            "Carefully analyze the following conversation. Your task is to create a concise summary focusing on the user's emotional state, key topics, and any coping strategies discussed.\n"
-            "**Specifically list any successful strategies the user mentioned from their past (e.g., tutoring, specific hobbies, etc.).**\n\n"
-            f"Conversation:\n{turns_text}\n\n"
-            "Summary:"
+            "You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will provide a factual summary.\n\n"
+            "**Instructions:**\n"
+            "1.  **Significance Decision:** On the first line, write 'SIGNIFICANT: YES' if the user **introduces a new important topic, person, or entity (like a name or place)**, expresses a strong emotion for the first time, or reveals a specific goal. Write 'SIGNIFICANT: NO' only for simple greetings, affirmations ('ok', 'yes').\n"
+            "2.  **Summary:** On the next line, write 'SUMMARY:' followed by a concise, factual, third-person summary. **You must preserve specific names and entities.**\n\n"
+            f"**Exchange to Analyze:**\n{exchange_text}\n\n"
+            "**Your Analysis:**"
         )
         
-        # This is the missing line that calls the AI
-        summary = generate_text(prompt, max_output_tokens=200, temperature=0.2)
+        # We ask for a slightly longer response to accommodate the structured output
+        analysis_text = generate_text(prompt, max_output_tokens=200, temperature=0.1)
         
-        logger.debug(f"Generated summary: {summary[:100]}...")
-        return summary
+        # --- NEW PARSING LOGIC ---
+        lines = analysis_text.strip().split('\n')
+        is_significant = False
+        summary = "No summary generated."
+
+        # Robustly parse the output
+        if lines:
+            if "yes" in lines[0].lower():
+                is_significant = True
+            
+            # Find the summary line
+            summary_line = next((line for line in lines if "summary:" in line.lower()), None)
+            if summary_line:
+                summary = summary_line.split(":", 1)[1].strip()
+
+        logger.debug(f"Significance: {is_significant}, Summary: {summary[:100]}...")
+        
+        return {
+            "is_significant": is_significant,
+            "summary": summary
+        }
+            
     except Exception as e:
-        logger.error(f"Error summarizing conversation: {e}")
+        logger.error(f"Error summarizing exchange: {e}")
         logger.error(traceback.format_exc())
-        return "Error generating summary"
-    
-# --- Updated session buffer stored in new structure with multiple sessions
-def append_session_turn(user_id, session_id, user_text, assistant_text):
-    try:
-        sanitized_user_id = sanitize_collection_name(user_id)
-        logger.debug(f"Appending session turn for {user_id} (sanitized: {sanitized_user_id}), session: {session_id}")
-        logger.debug(f"User: {user_text[:50]}...")
-        logger.debug(f"Assistant: {assistant_text[:50]}...")
-        
-        ref = db.collection(sanitized_user_id).document("session").collection("data").document(session_id)
-        doc = ref.get()
-        turns = doc.to_dict().get("turns", []) if doc.exists else []
-        
-        logger.debug(f"Current session buffer has {len(turns)} turns")
-        
-        turns.append({
-            "user": user_text, 
-            "assistant": assistant_text, 
-            "ts": datetime.now(timezone.utc).isoformat()
-        })
-        
-        if len(turns) > 60:
-            logger.debug("Trimming buffer to last 60 turns")
-            turns = turns[-60:]
-        
-        ref.set({
-            "user_id": user_id,
-            "session_id": session_id,
-            "turns": turns, 
-            "updated_at": datetime.now(timezone.utc).isoformat()
-        })
-        
-        logger.debug(f"Session buffer updated, now has {len(turns)} turns")
-        return turns
-    except Exception as e:
-        logger.error(f"Error appending session turn: {e}")
-        logger.error(traceback.format_exc())
-        return []
+        return {
+            "is_significant": False,
+            "summary": "Error generating summary"
+        }
+ 
 
 # --- Dialogflow webhook endpoint with enhanced debugging
 @app.route("/dialogflow-webhook", methods=["POST"])
@@ -456,15 +457,19 @@ def dialogflow_webhook():
 
         logger.info(f"User message: '{user_text}'")
 
-        user_profile = get_user_profile(user_id) or {"user_id": user_id, "consent": False}
-        logger.info(f"User consent status: {user_profile.get('consent', False)}")
+        user_profile = get_user_profile(user_id) or {}
+        
+        # CORRECTED LINE: Access the consent flag inside the 'profile' map
+        has_consent = user_profile.get("profile", {}).get("consent", False)
+        
+        logger.info(f"User consent status: {has_consent}")
 
         # if no consent, ask for consent
-        if not user_profile.get("consent", False):
+        if not has_consent:
             reply_text = "I can remember helpful things between sessions to better support you. Would you like me to remember parts of this conversation for next time? (yes/no)"
             logger.info(f"Sending consent request")
             return jsonify({"fulfillment_response": {"messages":[{"text": {"text":[reply_text]}}]}})
-
+        
         # retrieve relevant memories
         logger.info("Retrieving similar memories...")
         retrieved = retrieve_similar_memories(user_id, user_text, top_k=3)
@@ -488,32 +493,27 @@ def dialogflow_webhook():
         reply_text = generate_text(prompt, max_output_tokens=250, temperature=0.7).strip()
         logger.info(f"Generated reply: '{reply_text}'")
 
-        logger.info("Updating session buffer...")
-        turns = append_session_turn(user_id, session_id, user_text, reply_text)
+        # --- UPDATED LOGIC: Summarize, evaluate, and save if significant ---
+        logger.info("Creating and evaluating summary of the current exchange...")
+        analysis_result = summarize_conversation(user_text, reply_text)
         
-        # Check if we need to summarize
-        if len(turns) >= 8:
-            logger.info("Buffer threshold reached, creating summary...")
-            combined_text = "\n".join([f"User: {t['user']}\nAssistant: {t['assistant']}" for t in turns])
-            summary = summarize_conversation(combined_text)
-            
-            if save_memory(user_id, summary, {"topic":"session_summary", "session_id": session_id}):
-                logger.info("Memory saved, trimming buffer...")
-                # keep only last 2 turns after summarizing
-                sanitized_user_id = sanitize_collection_name(user_id)
-                db.collection(sanitized_user_id).document("session").collection("data").document(session_id).set({
-                    "user_id": user_id,
-                    "session_id": session_id,
-                    "turns": turns[-2:], 
-                    "updated_at": datetime.now(timezone.utc).isoformat()
-                })
+        # Only save the memory if the analysis flagged it as significant
+        if analysis_result.get("is_significant"):
+            summary = analysis_result.get("summary")
+            if "error" not in summary.lower():
+                if save_memory(user_id, summary, {"topic": "conversation_exchange", "session_id": session_id}):
+                    logger.info("SIGNIFICANT exchange saved as a new memory.")
+                else:
+                    logger.error("Failed to save significant exchange as memory.")
             else:
-                logger.error("Failed to save memory")
+                logger.warning("Skipping memory save due to summary generation error.")
+        else:
+            logger.info("Exchange was not significant. Skipping memory save.")
 
         response = {"fulfillment_response": {"messages":[{"text": {"text":[reply_text]}}]}}
         logger.info("Request completed successfully")
         return jsonify(response)
-
+    
     except Exception as e:
         logger.error(f"Error in dialogflow_webhook: {e}")
         logger.error(traceback.format_exc())
@@ -521,34 +521,45 @@ def dialogflow_webhook():
         return jsonify(error_response), 500
 
 # --- consent endpoint with debugging
+# In main.py
 @app.route("/consent", methods=["POST"])
 def consent():
     try:
-        logger.info("=== CONSENT REQUEST ===")
+        logger.info("=== CONSENT/PROFILE UPDATE REQUEST ===")
         payload = request.get_json(silent=True) or {}
-        logger.debug(f"Consent payload: {payload}")
+        logger.debug(f"Payload: {payload}")
         
         user_id = payload.get("user_id")
-        consent_flag = bool(payload.get("consent", False))
-        
         if not user_id:
-            logger.warning("Missing user_id in consent request")
+            logger.warning("Missing user_id in request")
             return jsonify({"error":"user_id required"}), 400
-        
-        logger.info(f"Setting consent for {user_id}: {consent_flag}")
-        upsert_user_profile(user_id, {
-            "consent": consent_flag, 
+
+        # Prepare a dictionary to hold all profile data from the request
+        profile_data = {
             "updated_at": datetime.now(timezone.utc).isoformat()
-        })
+        }
+
+        # Check for and add 'consent' if it exists in the payload
+        if 'consent' in payload:
+            profile_data['consent'] = bool(payload['consent'])
+            logger.info(f"Updating consent for {user_id}: {profile_data['consent']}")
+
+        # Check for and add 'username' if it exists in the payload
+        if 'username' in payload:
+            profile_data['username'] = payload['username']
+            logger.info(f"Updating username for {user_id}: {profile_data['username']}")
+
+        # Upsert the collected profile data
+        upsert_user_profile(user_id, profile_data)
         
-        logger.info("Consent updated successfully")
-        return jsonify({"ok": True, "user_id": user_id, "consent": consent_flag})
+        logger.info(f"Profile for {user_id} updated successfully.")
+        return jsonify({"ok": True, "user_id": user_id, "data_updated": profile_data})
     
     except Exception as e:
-        logger.error(f"Error in consent endpoint: {e}")
+        logger.error(f"Error in consent/profile endpoint: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
-
+    
 # --- delete memories with debugging for new structure
 @app.route("/delete_memories", methods=["POST"])
 def delete_memories():
@@ -566,7 +577,7 @@ def delete_memories():
         logger.info(f"Deleting memories for user: {user_id} (sanitized: {sanitized_user_id})")
         
         # Delete all memories in the user's memory subcollection
-        mems = db.collection(sanitized_user_id).document("memories").collection("data").stream()
+        mems = db.collection("users").document(sanitized_user_id).collection("memories").stream()
         
         count = 0
         for m in mems:

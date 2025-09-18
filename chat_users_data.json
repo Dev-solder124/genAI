@@ -3,7 +3,14 @@
     "user_id": "user_1092",
     "username": "devesh",
     "consent": true,
-    "created_date": "2025-09-18T16:19:46.647459",
-    "last_chat_date": "2025-09-18T20:11:18.599522"
+    "created_date": "2025-09-18T22:58:33.258510",
+    "last_chat_date": "2025-09-19T00:01:02.856597"
+  },
+  "user_1172": {
+    "user_id": "user_1172",
+    "username": "keertanaa",
+    "consent": true,
+    "created_date": "2025-09-18T23:12:51.810326",
+    "last_chat_date": "2025-09-18T23:14:38.340650"
   }
 }
