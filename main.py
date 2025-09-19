@@ -22,6 +22,18 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+import firebase_admin
+from firebase_admin import credentials, auth
+
+try:
+    # Use the downloaded service account key
+    cred = credentials.Certificate("service-account-key.json")
+    firebase_admin.initialize_app(cred)
+    logger.info("Firebase Admin SDK initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize Firebase Admin SDK: {e}")
+    logger.error(traceback.format_exc())
+
 # CONFIG: Updated model configuration for Gemini
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT") or "genai-bot-kdf"
 REGION = os.environ.get("REGION", "asia-south1")
@@ -52,6 +64,79 @@ except Exception as e:
     logger.error(traceback.format_exc())
 
 app = Flask(__name__)
+
+#firestore auth function
+from functools import wraps
+
+def token_required(f):
+    """Decorator to protect endpoints with Firebase ID token verification."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            # Expected format: "Bearer <token>"
+            try:
+                token = request.headers['Authorization'].split(' ')[1]
+            except IndexError:
+                return jsonify({"error": "Invalid Authorization header format"}), 401
+
+        if not token:
+            return jsonify({"error": "Authorization token is missing"}), 401
+
+        try:
+            # Verify the token
+            decoded_token = auth.verify_id_token(token)
+            # Add the verified user ID to the request context for the endpoint to use
+            request.user_id = decoded_token['uid']
+            logger.info(f"Token verified successfully for UID: {request.user_id}")
+        except auth.ExpiredIdTokenError:
+            return jsonify({"error": "Token has expired"}), 401
+        except auth.InvalidIdTokenError as e:
+            logger.error(f"Invalid token error: {e}")
+            return jsonify({"error": "Invalid authorization token"}), 401
+        except Exception as e:
+            logger.error(f"An unexpected error occurred during token verification: {e}")
+            return jsonify({"error": "Could not verify token"}), 500
+
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.route("/login", methods=["POST"])
+@token_required
+def login():
+    """
+    Called after a client gets an ID token.
+    Verifies token, finds user profile, creates one if it doesn't exist,
+    and returns the profile.
+    """
+    try:
+        user_id = request.user_id # From @token_required decorator
+        
+        # Check if a profile already exists in Firestore
+        user_profile = get_user_profile(user_id)
+        
+        if not user_profile:
+            logger.info(f"No profile found for UID {user_id}, creating one.")
+            # Get user info from Firebase Auth itself
+            firebase_user = auth.get_user(user_id)
+            
+            # Create a new profile dictionary
+            new_profile = {
+                "username": firebase_user.display_name or firebase_user.email,
+                "email": firebase_user.email,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "consent": None # Will be asked on first chat
+            }
+            upsert_user_profile(user_id, new_profile)
+            user_profile = get_user_profile(user_id) # Re-fetch to get the full doc
+            
+        logger.info(f"Login successful for UID {user_id}")
+        return jsonify(user_profile), 200
+        
+    except Exception as e:
+        logger.error(f"Error in login endpoint: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": "An error occurred during login."}), 500
 
 # Function to sanitize user_id for use as Firestore collection name
 def sanitize_collection_name(user_id):
@@ -433,6 +518,7 @@ def summarize_conversation(user_text, assistant_text):
 
 # --- Dialogflow webhook endpoint with enhanced debugging
 @app.route("/dialogflow-webhook", methods=["POST"])
+@token_required
 def dialogflow_webhook():
     try:
         logger.info("=== NEW WEBHOOK REQUEST ===")
@@ -441,7 +527,7 @@ def dialogflow_webhook():
         
         session = req.get("session", "")
         session_id = session.split("/")[-1] if session else "unknown_session"
-        user_id = req.get("sessionInfo", {}).get("parameters", {}).get("user_id") or session_id
+        user_id = request.user_id  # From the token_required decorator
         
         logger.info(f"Processing request for user_id: {user_id}")
         logger.info(f"Session: {session_id}")
@@ -464,17 +550,19 @@ def dialogflow_webhook():
         
         logger.info(f"User consent status: {has_consent}")
 
-        # if no consent, ask for consent
-        if not has_consent:
-            reply_text = "I can remember helpful things between sessions to better support you. Would you like me to remember parts of this conversation for next time? (yes/no)"
-            logger.info(f"Sending consent request")
-            return jsonify({"fulfillment_response": {"messages":[{"text": {"text":[reply_text]}}]}})
+        # REMOVED: The automatic consent asking logic that was causing the loop
+        # The CLI client now handles consent flow before chatting begins
         
-        # retrieve relevant memories
-        logger.info("Retrieving similar memories...")
-        retrieved = retrieve_similar_memories(user_id, user_text, top_k=3)
-        retrieved_text = "\n".join([f"- {r.get('summary')} (tags={r.get('metadata', {}).get('topic')})" for r in retrieved]) if retrieved else ""
-        logger.info(f"Found {len(retrieved)} relevant memories")
+        # retrieve relevant memories (only if user has consent)
+        retrieved_text = ""
+        if has_consent:
+            logger.info("Retrieving similar memories...")
+            retrieved = retrieve_similar_memories(user_id, user_text, top_k=3)
+            retrieved_text = "\n".join([f"- {r.get('summary')} (tags={r.get('metadata', {}).get('topic')})" for r in retrieved]) if retrieved else ""
+            logger.info(f"Found {len(retrieved)} relevant memories")
+        else:
+            logger.info("User has not consented to memory storage - skipping memory retrieval")
+            retrieved = []
 
         time_context = ""
         if retrieved:
@@ -501,6 +589,7 @@ def dialogflow_webhook():
         short_term = json.dumps(session_params) if session_params else ""
         logger.debug(f"Session params: {short_term}")
 
+        # Updated prompt that doesn't mention consent (it's handled by CLI)
         prompt = (
             "You are EmpathicBot, an AI assistant designed to support users with their mental health. Your primary goal is to be a supportive, validating, and non-judgemental listener who helps users feel heard."
             f"{time_context}\n\n"
@@ -534,22 +623,25 @@ def dialogflow_webhook():
         reply_text = generate_text(prompt, max_output_tokens=250, temperature=0.7).strip()
         logger.info(f"Generated reply: '{reply_text}'")
 
-        # --- UPDATED LOGIC: Summarize, evaluate, and save if significant ---
-        logger.info("Creating and evaluating summary of the current exchange...")
-        analysis_result = summarize_conversation(user_text, reply_text)
-        
-        # Only save the memory if the analysis flagged it as significant
-        if analysis_result.get("is_significant"):
-            summary = analysis_result.get("summary")
-            if "error" not in summary.lower():
-                if save_memory(user_id, summary, {"topic": "conversation_exchange", "session_id": session_id}):
-                    logger.info("SIGNIFICANT exchange saved as a new memory.")
+        # --- UPDATED LOGIC: Only summarize and save if user has consented ---
+        if has_consent:
+            logger.info("Creating and evaluating summary of the current exchange...")
+            analysis_result = summarize_conversation(user_text, reply_text)
+            
+            # Only save the memory if the analysis flagged it as significant
+            if analysis_result.get("is_significant"):
+                summary = analysis_result.get("summary")
+                if "error" not in summary.lower():
+                    if save_memory(user_id, summary, {"topic": "conversation_exchange", "session_id": session_id}):
+                        logger.info("SIGNIFICANT exchange saved as a new memory.")
+                    else:
+                        logger.error("Failed to save significant exchange as memory.")
                 else:
-                    logger.error("Failed to save significant exchange as memory.")
+                    logger.warning("Skipping memory save due to summary generation error.")
             else:
-                logger.warning("Skipping memory save due to summary generation error.")
+                logger.info("Exchange was not significant. Skipping memory save.")
         else:
-            logger.info("Exchange was not significant. Skipping memory save.")
+            logger.info("User has not consented to memory storage - skipping conversation analysis and memory save.")
 
         response = {"fulfillment_response": {"messages":[{"text": {"text":[reply_text]}}]}}
         logger.info("Request completed successfully")
@@ -560,37 +652,31 @@ def dialogflow_webhook():
         logger.error(traceback.format_exc())
         error_response = {"fulfillment_response": {"messages":[{"text": {"text":["I'm having trouble right now. Please try again in a moment."]}}]}}
         return jsonify(error_response), 500
-
 # --- consent endpoint with debugging
-# In main.py
 @app.route("/consent", methods=["POST"])
+@token_required # <-- FIX: Add the security decorator
 def consent():
     try:
         logger.info("=== CONSENT/PROFILE UPDATE REQUEST ===")
+        # --- FIX: Get the verified user_id from the token ---
+        user_id = request.user_id 
+        
         payload = request.get_json(silent=True) or {}
         logger.debug(f"Payload: {payload}")
-        
-        user_id = payload.get("user_id")
-        if not user_id:
-            logger.warning("Missing user_id in request")
-            return jsonify({"error":"user_id required"}), 400
 
-        # Prepare a dictionary to hold all profile data from the request
         profile_data = {
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
 
-        # Check for and add 'consent' if it exists in the payload
         if 'consent' in payload:
             profile_data['consent'] = bool(payload['consent'])
             logger.info(f"Updating consent for {user_id}: {profile_data['consent']}")
 
-        # Check for and add 'username' if it exists in the payload
+        # This part handles the initial profile sync from the client
         if 'username' in payload:
             profile_data['username'] = payload['username']
             logger.info(f"Updating username for {user_id}: {profile_data['username']}")
 
-        # Upsert the collected profile data
         upsert_user_profile(user_id, profile_data)
         
         logger.info(f"Profile for {user_id} updated successfully.")
@@ -600,9 +686,10 @@ def consent():
         logger.error(f"Error in consent/profile endpoint: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
-    
+        
 # --- delete memories with debugging for new structure
 @app.route("/delete_memories", methods=["POST"])
+@token_required
 def delete_memories():
     try:
         logger.info("=== DELETE MEMORIES REQUEST ===")

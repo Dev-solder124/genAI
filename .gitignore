@@ -5,7 +5,13 @@ __pycache__/
 *.pyc
 
 # Sensitive Files
-key.json
+
+
+# key.json
+# service-account-key.json
+#firebase.env
+firebaseCred.txt
+
 .env
 *.log
 chat_users_data.json

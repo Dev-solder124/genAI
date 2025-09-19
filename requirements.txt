@@ -1,6 +1,14 @@
-Flask==2.3.2
-google-cloud-firestore==2.11.0
-google-cloud-aiplatform>=1.26.0
-numpy==1.26.0
-python-dotenv==1.0.0
-requests==2.31.0
+# Core Flask and Google Cloud
+Flask==3.0.3
+google-cloud-firestore==2.16.0
+google-cloud-aiplatform==1.56.0
+vertexai
+
+# Firebase Authentication
+firebase-admin==6.5.0
+Pyrebase4==4.8.0
+
+# Helper Libraries
+numpy==1.26.4
+requests==2.32.3
+python-dotenv==1.0.1
