@@ -89,11 +89,11 @@ Before you begin, ensure you have:
 ### 1. Backend Setup
 
 ```bash
-# Clone/download the project
-cd genai-chatbot
+# Clone/download the project and navigate to it
+cd genAI
 
-# Create Python virtual environment
-python -m venv venv
+# Create Python 3.11 virtual environment
+python3.11 -m venv venv
 
 # Activate virtual environment
 # Windows:
@@ -105,11 +105,11 @@ source venv/bin/activate
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# Set up authentication
+# Set up authentication (place your key.json file in the genAI directory)
 # Windows:
-$env:GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\key.json"
+$env:GOOGLE_APPLICATION_CREDENTIALS=".\key.json"
 # macOS/Linux:
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/key.json"
+export GOOGLE_APPLICATION_CREDENTIALS="./key.json"
 ```
 
 ### 2. Running the System
@@ -141,7 +141,7 @@ Then open your browser to `http://localhost:5173`
 ## File Structure
 
 ```
-genai-chatbot/
+genAI/
 ├── main.py                    # Flask backend server
 ├── chat.py                    # Command-line chat client
 ├── requirements.txt           # Python dependencies
@@ -167,15 +167,27 @@ genai-chatbot/
 
 ## Environment Setup
 
-### Required Environment Variables
+### Authentication Setup
+
+1. **Download your service account key** from Google Cloud Console
+2. **Save the key file** as `key.json` in the `genAI` directory (same folder as `main.py`)
+3. **Set the environment variable** to point to this file:
 
 ```bash
 # Windows PowerShell
-$env:GOOGLE_APPLICATION_CREDENTIALS="C:\path\to\your\key.json"
+$env:GOOGLE_APPLICATION_CREDENTIALS=".\key.json"
+
+# macOS/Linux Bash  
+export GOOGLE_APPLICATION_CREDENTIALS="./key.json"
+```
+
+### Optional Environment Variables
+
+```bash
+# Windows PowerShell
 setx GOOGLE_CLOUD_PROJECT "your-gcp-project-id"
 
 # macOS/Linux Bash
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/your/key.json"
 export GOOGLE_CLOUD_PROJECT="your-gcp-project-id"
 ```
 

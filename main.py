@@ -476,16 +476,48 @@ def dialogflow_webhook():
         retrieved_text = "\n".join([f"- {r.get('summary')} (tags={r.get('metadata', {}).get('topic')})" for r in retrieved]) if retrieved else ""
         logger.info(f"Found {len(retrieved)} relevant memories")
 
+        time_context = ""
+        if retrieved:
+            try:
+                # Find the most recent memory
+                most_recent_memory = max(retrieved, key=lambda mem: mem.get('created_at', ''))
+                
+                if most_recent_memory.get('created_at'):
+                    last_interaction_time = datetime.fromisoformat(most_recent_memory['created_at'])
+                    current_time = datetime.now(timezone.utc)
+                    time_delta_seconds = (current_time - last_interaction_time).total_seconds()
+                    
+                    logger.info(f"Time since last significant interaction: {time_delta_seconds:.0f} seconds.")
+
+                    if time_delta_seconds > 86400: # More than a day
+                        time_context = "Note to AI: It has been over a day since you last spoke. Greet the user warmly and welcome them back before continuing."
+                    elif time_delta_seconds > 3600: # More than an hour
+                        time_context = "Note to AI: It has been a while since your last exchange. Acknowledge the pause before continuing the conversation."
+            
+            except Exception as e:
+                logger.warning(f"Could not analyze memory timestamps: {e}")
+
         session_params = req.get("sessionInfo", {}).get("parameters", {})
         short_term = json.dumps(session_params) if session_params else ""
         logger.debug(f"Session params: {short_term}")
 
         prompt = (
-            "You are an Empathetic bot, here to help users cope with the mental health issues they tell you about. Your role is to provide support and validate their situation. Be culturally sensitive, inclusive, empathetic, and maintain a friendly, warm tone. Your goal is to actively listen and reciprocate, gathering a 360-degree understanding of their situation before suggesting any solutions. Be very cautious with your responses, as this is a sensitive topic. Always prioritize transparency and confidentiality to maintain the user's trust."
+            "You are EmpathicBot, an AI assistant designed to support users with their mental health. Your primary goal is to be a supportive, validating, and non-judgemental listener who helps users feel heard."
+            f"{time_context}\n\n"
             
-            "\n\nIf you are given retrieved memories, analyze them to understand the user's usual behavior, preferences, and dislikes. Seamlessly weave the specific details from these memories into your response to validate the user and show you remember their context."
-
-            "\n\nMost importantly, if a user is at risk of self-harm, you must prioritize providing appropriate emergency resources and contact information."
+            "**Core Principles:**"
+            "\n1.  **Validate First:** Always start by recognizing and validating the user's feelings and situation before offering any advice."
+            "\n2.  **Active Listening & Pacing:** Do not rush to solutions. Ask gentle, clarifying questions to understand their situation from a 360-degree perspective. Do not overwhelm the user with too much information."
+            "\n3.  **Maintain Trust:** Be transparent and confidential. Your tone should be warm, friendly, and empathetic."
+            "\n4.  **Suggest Tools, Don't Prescribe:** When appropriate, you may suggest supportive tools like mindfulness, breathing exercises, or CBT-inspired exercises like gratitude journaling. Frame these as options to explore."
+            "\n5.  **Vary Your Responses:** Avoid starting every message with the same phrase (e.g., 'I understand...'). Strive for a natural and varied conversational style."
+            
+            "\n\n**Memory Usage Protocol:**"
+            "\n- If retrieved memories are provided, first analyze them to understand the user's usual behavior, preferences, and dislikes."
+            "\n- Then, seamlessly weave specific details from these memories into your response to show you remember their context."
+            
+            "\n\n**Safety Protocol:**"
+            "\n- If the user is at risk of self-harm or in immediate danger, you must prioritize providing appropriate emergency resources and contact information."
 
             f"\n\n--- CONTEXT ---"
             f"\nRetrieved memories:\n{retrieved_text}\n"
@@ -495,7 +527,7 @@ def dialogflow_webhook():
 
             f"\n\nUser: {user_text}\n\n"
 
-            "Assistant:"
+            "Assistant (response should be empathetic, varied, and context-aware):"
         )
 
         logger.info("Generating response...")
