@@ -11,6 +11,7 @@ key.json
 chat_users_data.json
 chat_history.json
 current_user.json
+chatbot.log
 
 # Logs
 logs
