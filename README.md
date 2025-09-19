@@ -55,6 +55,8 @@ This chatbot implements a sophisticated long-term memory system that intelligent
 
 - **Intelligent Memory:** Only saves conversations with significant therapeutic value, preventing memory clutter
 - **Semantic Memory Retrieval:** Uses vector embeddings to find relevant past conversations for context
+- **Time-Aware Conversations:** Recognizes time elapsed since last interaction and provides appropriate "welcome back" greetings for natural dialogue flow
+- **Dynamic Response Generation:** Explicitly varies phrasing and avoids repetitive opening lines for more engaging, less robotic conversations
 - **Multiple Interfaces:** Command-line client and React web frontend
 - **Privacy-First:** User consent required, with ability to delete all memories
 - **Gemini Integration:** Uses latest Google Gemini models for empathetic responses
