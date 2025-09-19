@@ -16662,3 +16662,3063 @@ SUMMARY: Devesh returned to the conversation.  The assistant recalled Devesh's p
 2025-09-19 00:01:02,856 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
 2025-09-19 00:01:02,856 - __main__ - INFO - Request completed successfully
 2025-09-19 00:01:02,856 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 00:01:02] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 13:54:40,165 - __main__ - INFO - Starting chatbot with config:
+2025-09-19 13:54:40,166 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-19 13:54:40,166 - __main__ - INFO -    REGION: asia-south1
+2025-09-19 13:54:40,167 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-19 13:54:40,167 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-19 13:54:40,168 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-19 13:54:40,169 - google.auth._default - DEBUG - Checking None for explicit credentials as part of auth process...
+2025-09-19 13:54:40,169 - google.auth._default - DEBUG - Checking Cloud SDK credentials as part of auth process...
+2025-09-19 13:54:40,171 - google.auth._default - DEBUG - Cloud SDK credentials not found on disk; not using them
+2025-09-19 13:54:43,182 - __main__ - ERROR - Failed to initialize Firestore: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+2025-09-19 13:54:43,186 - __main__ - ERROR - Traceback (most recent call last):
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\genAI\main.py", line 48, in <module>
+    db = firestore.Client(project=PROJECT_ID)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\firestore_v1\client.py", line 93, in __init__
+    super(Client, self).__init__(
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\firestore_v1\base_client.py", line 135, in __init__
+    super(BaseClient, self).__init__(
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\client\__init__.py", line 339, in __init__
+    Client.__init__(
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\client\__init__.py", line 196, in __init__
+    credentials, _ = google.auth.default(scopes=scopes)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\auth\_default.py", line 685, in default
+    raise exceptions.DefaultCredentialsError(_CLOUD_SDK_MISSING_CREDENTIALS)
+google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+
+2025-09-19 13:54:43,192 - __main__ - INFO - Starting Flask application...
+2025-09-19 13:54:43,272 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.29.64:8080
+2025-09-19 13:54:43,273 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-19 13:54:43,275 - werkzeug - INFO -  * Restarting with stat
+2025-09-19 13:54:46,865 - __main__ - INFO - Starting chatbot with config:
+2025-09-19 13:54:46,865 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-19 13:54:46,866 - __main__ - INFO -    REGION: asia-south1
+2025-09-19 13:54:46,866 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-19 13:54:46,868 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-19 13:54:46,868 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-19 13:54:46,870 - google.auth._default - DEBUG - Checking None for explicit credentials as part of auth process...
+2025-09-19 13:54:46,871 - google.auth._default - DEBUG - Checking Cloud SDK credentials as part of auth process...
+2025-09-19 13:54:46,871 - google.auth._default - DEBUG - Cloud SDK credentials not found on disk; not using them
+2025-09-19 13:54:49,975 - __main__ - ERROR - Failed to initialize Firestore: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+2025-09-19 13:54:49,978 - __main__ - ERROR - Traceback (most recent call last):
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\genAI\main.py", line 48, in <module>
+    db = firestore.Client(project=PROJECT_ID)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\firestore_v1\client.py", line 93, in __init__
+    super(Client, self).__init__(
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\firestore_v1\base_client.py", line 135, in __init__
+    super(BaseClient, self).__init__(
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\client\__init__.py", line 339, in __init__
+    Client.__init__(
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\client\__init__.py", line 196, in __init__
+    credentials, _ = google.auth.default(scopes=scopes)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\auth\_default.py", line 685, in default
+    raise exceptions.DefaultCredentialsError(_CLOUD_SDK_MISSING_CREDENTIALS)
+google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+
+2025-09-19 13:54:49,982 - __main__ - INFO - Starting Flask application...
+2025-09-19 13:54:50,028 - werkzeug - WARNING -  * Debugger is active!
+2025-09-19 13:54:50,033 - werkzeug - INFO -  * Debugger PIN: 752-459-192
+2025-09-19 13:55:31,002 - __main__ - DEBUG - Sanitized user_id 'health_check_user' to 'health_check_user'
+2025-09-19 13:55:31,003 - __main__ - ERROR - Firestore health check failed: name 'db' is not defined
+2025-09-19 13:55:31,003 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 13:55:31,003 - __main__ - DEBUG - Texts preview: ['health check test']
+2025-09-19 13:55:34,038 - __main__ - ERROR - Error generating embeddings: 
+Unable to authenticate your request.
+Depending on your runtime environment, you can complete authentication by:
+- if in local JupyterLab instance: `!gcloud auth login` 
+- if in Colab:
+    -`from google.colab import auth`
+    -`auth.authenticate_user()`
+- if in service account or other: please follow guidance in https://cloud.google.com/docs/authentication
+2025-09-19 13:55:34,044 - __main__ - ERROR - Traceback (most recent call last):
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\vertexai\_model_garden\_model_garden_models.py", line 290, in from_pretrained
+    return _from_pretrained(interface_class=cls, model_name=model_name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\vertexai\_model_garden\_model_garden_models.py", line 207, in _from_pretrained
+    model_info = _get_model_info(
+                 ^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\vertexai\_model_garden\_model_garden_models.py", line 123, in _get_model_info
+    _publisher_models._PublisherModel(  # pylint: disable=protected-access
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\aiplatform\_publisher_models.py", line 63, in __init__
+    super().__init__(project=project, location=location, credentials=credentials)
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\aiplatform\base.py", line 558, in __init__
+    self.credentials = credentials or initializer.global_config.credentials
+                                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\aiplatform\initializer.py", line 403, in credentials
+    self._set_project_as_env_var_or_google_auth_default()
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\aiplatform\initializer.py", line 119, in _set_project_as_env_var_or_google_auth_default
+    credentials, _ = google.auth.default(scopes=constants.DEFAULT_AUTHED_SCOPES)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\auth\_default.py", line 685, in default
+    raise exceptions.DefaultCredentialsError(_CLOUD_SDK_MISSING_CREDENTIALS)
+google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\genAI\main.py", line 192, in embed_texts
+    model = TextEmbeddingModel.from_pretrained("text-embedding-004")
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\vertexai\_model_garden\_model_garden_models.py", line 292, in from_pretrained
+    raise auth_exceptions.GoogleAuthError(credential_exception_str) from e
+google.auth.exceptions.GoogleAuthError: 
+Unable to authenticate your request.
+Depending on your runtime environment, you can complete authentication by:
+- if in local JupyterLab instance: `!gcloud auth login` 
+- if in Colab:
+    -`from google.colab import auth`
+    -`auth.authenticate_user()`
+- if in service account or other: please follow guidance in https://cloud.google.com/docs/authentication
+
+2025-09-19 13:55:34,045 - __main__ - ERROR - Vertex AI embeddings health check failed: 
+Unable to authenticate your request.
+Depending on your runtime environment, you can complete authentication by:
+- if in local JupyterLab instance: `!gcloud auth login` 
+- if in Colab:
+    -`from google.colab import auth`
+    -`auth.authenticate_user()`
+- if in service account or other: please follow guidance in https://cloud.google.com/docs/authentication
+2025-09-19 13:55:34,047 - __main__ - DEBUG - Testing model: gemini-1.5-flash
+2025-09-19 13:55:34,047 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 13:55:34,047 - __main__ - DEBUG - Prompt preview: Say 'hello' if you can hear me...
+2025-09-19 13:55:37,074 - __main__ - ERROR - Error generating text with gemini-1.5-flash: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+2025-09-19 13:55:37,147 - __main__ - ERROR - Traceback (most recent call last):
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\genAI\main.py", line 226, in generate_text_with_model
+    response = model.generate_content(
+               ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\vertexai\generative_models\_generative_models.py", line 710, in generate_content
+    return self._generate_content(
+           ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\vertexai\generative_models\_generative_models.py", line 833, in _generate_content
+    gapic_response = self._prediction_client.generate_content(request=request)
+                     ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\AppData\Local\Programs\Python\Python311\Lib\functools.py", line 1001, in __get__
+    val = self.func(instance)
+          ^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\vertexai\generative_models\_generative_models.py", line 3419, in _prediction_client
+    return aiplatform_initializer.global_config.create_client(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\aiplatform\initializer.py", line 603, in create_client
+    "credentials": credentials or self.credentials,
+                                  ^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\aiplatform\initializer.py", line 403, in credentials
+    self._set_project_as_env_var_or_google_auth_default()
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\cloud\aiplatform\initializer.py", line 119, in _set_project_as_env_var_or_google_auth_default
+    credentials, _ = google.auth.default(scopes=constants.DEFAULT_AUTHED_SCOPES)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\venv\Lib\site-packages\google\auth\_default.py", line 685, in default
+    raise exceptions.DefaultCredentialsError(_CLOUD_SDK_MISSING_CREDENTIALS)
+google.auth.exceptions.DefaultCredentialsError: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+
+2025-09-19 13:55:37,147 - __main__ - DEBUG - Model gemini-1.5-flash failed in health check: Your default credentials were not found. To set up Application Default Credentials, see https://cloud.google.com/docs/authentication/external/set-up-adc for more information.
+2025-09-19 13:55:37,150 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 13:55:37] "[35m[1mGET /health HTTP/1.1[0m" 503 -
+2025-09-19 14:42:44,485 - __main__ - INFO - Starting chatbot with config:
+2025-09-19 14:42:44,486 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-19 14:42:44,486 - __main__ - INFO -    REGION: asia-south1
+2025-09-19 14:42:44,486 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-19 14:42:44,487 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-19 14:42:44,487 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-19 14:42:44,488 - google.auth._default - DEBUG - Checking C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\genAI\key.json for explicit credentials as part of auth process...
+2025-09-19 14:42:44,501 - __main__ - INFO - Firestore client initialized successfully
+2025-09-19 14:42:44,508 - __main__ - INFO - Starting Flask application...
+2025-09-19 14:42:44,742 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:8080
+ * Running on http://192.168.29.64:8080
+2025-09-19 14:42:44,742 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2025-09-19 14:42:44,744 - werkzeug - INFO -  * Restarting with stat
+2025-09-19 14:42:48,339 - __main__ - INFO - Starting chatbot with config:
+2025-09-19 14:42:48,339 - __main__ - INFO -    PROJECT_ID: genai-bot-kdf
+2025-09-19 14:42:48,342 - __main__ - INFO -    REGION: asia-south1
+2025-09-19 14:42:48,342 - __main__ - INFO -    LLM_MODEL: gemini-1.5-flash
+2025-09-19 14:42:48,343 - __main__ - INFO -    EMBEDDING_MODEL: text-embedding-004
+2025-09-19 14:42:48,343 - __main__ - INFO - Vertex AI initialized successfully
+2025-09-19 14:42:48,344 - google.auth._default - DEBUG - Checking C:\Users\Shaik Hasan\OneDrive\Desktop\code\SIH\genAI\key.json for explicit credentials as part of auth process...
+2025-09-19 14:42:48,356 - __main__ - INFO - Firestore client initialized successfully
+2025-09-19 14:42:48,360 - __main__ - INFO - Starting Flask application...
+2025-09-19 14:42:48,396 - werkzeug - WARNING -  * Debugger is active!
+2025-09-19 14:42:48,400 - werkzeug - INFO -  * Debugger PIN: 425-942-989
+2025-09-19 14:43:06,948 - __main__ - DEBUG - Sanitized user_id 'health_check_user' to 'health_check_user'
+2025-09-19 14:43:07,223 - urllib3.connectionpool - DEBUG - Starting new HTTPS connection (1): oauth2.googleapis.com:443
+2025-09-19 14:43:07,419 - urllib3.connectionpool - DEBUG - https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2025-09-19 14:43:07,879 - __main__ - INFO - Firestore health check passed
+2025-09-19 14:43:07,880 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 14:43:07,880 - __main__ - DEBUG - Texts preview: ['health check test']
+2025-09-19 14:43:09,220 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 14:43:09,221 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 14:43:09,222 - __main__ - INFO - Vertex AI embeddings health check passed
+2025-09-19 14:43:09,222 - __main__ - DEBUG - Testing model: gemini-1.5-flash
+2025-09-19 14:43:09,222 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 14:43:09,223 - __main__ - DEBUG - Prompt preview: Say 'hello' if you can hear me...
+2025-09-19 14:43:10,250 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello\n"
+    }
+  }
+  avg_logprobs: -0.23704084753990173
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758273189
+  nanos: 854001000
+}
+response_id: "pR7NaPGPNJ2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 9
+  candidates_token_count: 2
+  total_token_count: 11
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 9
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 2
+  }
+}
+
+2025-09-19 14:43:10,251 - __main__ - DEBUG - Generated text: Hello
+...
+2025-09-19 14:43:10,251 - __main__ - INFO - Vertex AI generation health check passed with gemini-1.5-flash
+2025-09-19 14:43:10,252 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:43:10] "GET /health HTTP/1.1" 200 -
+2025-09-19 14:47:05,231 - __main__ - DEBUG - Sanitized user_id 'health_check_user' to 'health_check_user'
+2025-09-19 14:47:05,474 - __main__ - INFO - Firestore health check passed
+2025-09-19 14:47:05,475 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 14:47:05,475 - __main__ - DEBUG - Texts preview: ['health check test']
+2025-09-19 14:47:06,751 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 14:47:06,752 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 14:47:06,752 - __main__ - INFO - Vertex AI embeddings health check passed
+2025-09-19 14:47:06,753 - __main__ - DEBUG - Testing model: gemini-1.5-flash
+2025-09-19 14:47:06,753 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 14:47:06,753 - __main__ - DEBUG - Prompt preview: Say 'hello' if you can hear me...
+2025-09-19 14:47:07,694 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello\n"
+    }
+  }
+  avg_logprobs: -0.23704114556312561
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758273427
+  nanos: 375338000
+}
+response_id: "kx_NaKr0Fp2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 9
+  candidates_token_count: 2
+  total_token_count: 11
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 9
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 2
+  }
+}
+
+2025-09-19 14:47:07,695 - __main__ - DEBUG - Generated text: Hello
+...
+2025-09-19 14:47:07,696 - __main__ - INFO - Vertex AI generation health check passed with gemini-1.5-flash
+2025-09-19 14:47:07,697 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:47:07] "GET /health HTTP/1.1" 200 -
+2025-09-19 14:48:54,707 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 14:48:54,707 - __main__ - DEBUG - Payload: {'user_id': 'hasan_11', 'username': 'hasan'}
+2025-09-19 14:48:54,708 - __main__ - INFO - Updating username for hasan_11: hasan
+2025-09-19 14:48:54,708 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 14:48:54,708 - __main__ - DEBUG - Upserting profile for hasan_11: {'updated_at': '2025-09-19T09:18:54.708251+00:00', 'username': 'hasan'}
+2025-09-19 14:48:54,824 - __main__ - DEBUG - Profile upserted successfully for hasan_11
+2025-09-19 14:48:54,824 - __main__ - INFO - Profile for hasan_11 updated successfully.
+2025-09-19 14:48:54,824 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:48:54] "POST /consent HTTP/1.1" 200 -
+2025-09-19 14:49:31,441 - __main__ - DEBUG - Sanitized user_id 'health_check_user' to 'health_check_user'
+2025-09-19 14:49:31,689 - __main__ - INFO - Firestore health check passed
+2025-09-19 14:49:31,689 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 14:49:31,689 - __main__ - DEBUG - Texts preview: ['health check test']
+2025-09-19 14:49:32,733 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 14:49:32,734 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 14:49:32,734 - __main__ - INFO - Vertex AI embeddings health check passed
+2025-09-19 14:49:32,735 - __main__ - DEBUG - Testing model: gemini-1.5-flash
+2025-09-19 14:49:32,735 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 14:49:32,735 - __main__ - DEBUG - Prompt preview: Say 'hello' if you can hear me...
+2025-09-19 14:49:33,608 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello\n"
+    }
+  }
+  avg_logprobs: -0.23704114556312561
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758273573
+  nanos: 267272000
+}
+response_id: "JSDNaIioEKKAlPIPxoWykAs"
+usage_metadata {
+  prompt_token_count: 9
+  candidates_token_count: 2
+  total_token_count: 11
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 9
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 2
+  }
+}
+
+2025-09-19 14:49:33,609 - __main__ - DEBUG - Generated text: Hello
+...
+2025-09-19 14:49:33,610 - __main__ - INFO - Vertex AI generation health check passed with gemini-1.5-flash
+2025-09-19 14:49:33,611 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:49:33] "GET /health HTTP/1.1" 200 -
+2025-09-19 14:49:37,209 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:49:37] "[33mGET / HTTP/1.1[0m" 404 -
+2025-09-19 14:50:11,475 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 14:50:11,476 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758273548_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hi"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 14:50:11,476 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 14:50:11,477 - __main__ - INFO - Session: session_1758273548_hasan_11
+2025-09-19 14:50:11,477 - __main__ - INFO - User message: 'hi'
+2025-09-19 14:50:11,477 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 14:50:11,477 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 14:50:11,577 - __main__ - DEBUG - Found user profile: {'profile': {'updated_at': '2025-09-19T09:18:54.708251+00:00', 'username': 'hasan'}}
+2025-09-19 14:50:11,577 - __main__ - INFO - User consent status: False
+2025-09-19 14:50:11,577 - __main__ - INFO - Sending consent request
+2025-09-19 14:50:11,578 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:50:11] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 14:50:17,670 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 14:50:17,672 - __main__ - DEBUG - Payload: {'user_id': 'hasan_11', 'consent': True}
+2025-09-19 14:50:17,673 - __main__ - INFO - Updating consent for hasan_11: True
+2025-09-19 14:50:17,673 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 14:50:17,673 - __main__ - DEBUG - Upserting profile for hasan_11: {'updated_at': '2025-09-19T09:20:17.673318+00:00', 'consent': True}
+2025-09-19 14:50:17,791 - __main__ - DEBUG - Profile upserted successfully for hasan_11
+2025-09-19 14:50:17,792 - __main__ - INFO - Profile for hasan_11 updated successfully.
+2025-09-19 14:50:17,792 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:50:17] "POST /consent HTTP/1.1" 200 -
+2025-09-19 14:50:28,327 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 14:50:28,327 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758273548_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "im not good"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 14:50:28,328 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 14:50:28,328 - __main__ - INFO - Session: session_1758273548_hasan_11
+2025-09-19 14:50:28,328 - __main__ - INFO - User message: 'im not good'
+2025-09-19 14:50:28,328 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 14:50:28,329 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 14:50:28,503 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T09:20:17.673318+00:00', 'username': 'hasan'}}
+2025-09-19 14:50:28,503 - __main__ - INFO - User consent status: True
+2025-09-19 14:50:28,504 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 14:50:28,504 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 14:50:28,504 - __main__ - DEBUG - Retrieving similar memories for hasan_11 (sanitized: hasan_11)
+2025-09-19 14:50:28,504 - __main__ - DEBUG - Query: im not good...
+2025-09-19 14:50:28,504 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 14:50:28,504 - __main__ - DEBUG - Texts preview: ['im not good']
+2025-09-19 14:50:29,412 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 14:50:29,412 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 14:50:29,554 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 14:50:29,554 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 14:50:29,555 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 14:50:29,555 - __main__ - DEBUG - Session params: {"user_id": "hasan_11"}
+2025-09-19 14:50:29,555 - __main__ - INFO - Generating response...
+2025-09-19 14:50:29,555 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 14:50:29,556 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 14:50:31,699 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I hear you saying you\'re not feeling good.  That sounds really tough.  Remember how helpful you found tutoring last time you felt this way?  Perhaps that could be a good option again, or we could explore some other strategies together.  What feels most manageable right now?\n"
+    }
+  }
+  avg_logprobs: -0.15369832313666909
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758273630
+  nanos: 133210000
+}
+response_id: "XiDNaNqQCN-AlPIPwPGtaA"
+usage_metadata {
+  prompt_token_count: 202
+  candidates_token_count: 59
+  total_token_count: 261
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 202
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 59
+  }
+}
+
+2025-09-19 14:50:31,700 - __main__ - DEBUG - Generated text: I hear you saying you're not feeling good.  That sounds really tough.  Remember how helpful you foun...
+2025-09-19 14:50:31,700 - __main__ - INFO - Generated reply: 'I hear you saying you're not feeling good.  That sounds really tough.  Remember how helpful you found tutoring last time you felt this way?  Perhaps that could be a good option again, or we could explore some other strategies together.  What feels most manageable right now?'
+2025-09-19 14:50:31,701 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 14:50:31,701 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 14:50:31,701 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 14:50:31,701 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 14:50:33,356 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: The user expressed feeling unwell, prompting the assistant to suggest tutoring as a potential solution, referencing a past positive experience with tutoring.  The assistant offered to explore alternative strategies.\n"
+    }
+  }
+  avg_logprobs: -0.048783463101054345
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758273632
+  nanos: 214435000
+}
+response_id: "YCDNaKOLDYm1lgOAu8GYAg"
+usage_metadata {
+  prompt_token_count: 242
+  candidates_token_count: 43
+  total_token_count: 285
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 242
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 43
+  }
+}
+
+2025-09-19 14:50:33,357 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: The user expressed feeling unwell, prompting the assistant to suggest tuto...
+2025-09-19 14:50:33,357 - __main__ - DEBUG - Significance: True, Summary: The user expressed feeling unwell, prompting the assistant to suggest tutoring as a potential soluti...
+2025-09-19 14:50:33,357 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 14:50:33,358 - __main__ - DEBUG - Saving memory for hasan_11 (sanitized: hasan_11)
+2025-09-19 14:50:33,358 - __main__ - DEBUG - Summary: The user expressed feeling unwell, prompting the assistant to suggest tutoring as a potential soluti...
+2025-09-19 14:50:33,358 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'session_1758273548_hasan_11'}
+2025-09-19 14:50:33,358 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 14:50:33,358 - __main__ - DEBUG - Texts preview: ['The user expressed feeling unwell, prompting the a...']
+2025-09-19 14:50:34,210 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 14:50:34,211 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 14:50:34,415 - __main__ - DEBUG - Memory saved with ID: mem_1758273634211
+2025-09-19 14:50:34,415 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 14:50:34,415 - __main__ - INFO - Request completed successfully
+2025-09-19 14:50:34,416 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 14:50:34] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:19:04,386 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:19:04] "[33mGET / HTTP/1.1[0m" 404 -
+2025-09-19 15:19:19,428 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:19:19,430 - __main__ - DEBUG - Raw request: {
+  "session": "projects/genai-bot-kdf/agent/sessions/session_1758273548_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "kp"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 15:19:19,430 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 15:19:19,430 - __main__ - INFO - Session: session_1758273548_hasan_11
+2025-09-19 15:19:19,430 - __main__ - INFO - User message: 'kp'
+2025-09-19 15:19:19,430 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 15:19:19,430 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 15:19:19,705 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T09:20:17.673318+00:00', 'username': 'hasan'}}
+2025-09-19 15:19:19,706 - __main__ - INFO - User consent status: True
+2025-09-19 15:19:19,706 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:19:19,707 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 15:19:19,707 - __main__ - DEBUG - Retrieving similar memories for hasan_11 (sanitized: hasan_11)
+2025-09-19 15:19:19,707 - __main__ - DEBUG - Query: kp...
+2025-09-19 15:19:19,707 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:19:19,708 - __main__ - DEBUG - Texts preview: ['kp']
+2025-09-19 15:19:20,640 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:19:20,641 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:19:20,806 - __main__ - DEBUG - Cosine similarity calculated: 0.2326
+2025-09-19 15:19:20,814 - __main__ - DEBUG - Doc mem_1758273634211: similarity = 0.2326
+2025-09-19 15:19:20,815 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 15:19:20,815 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 15:19:20,815 - __main__ - DEBUG -    #1: The user expressed feeling unwell, prompting the a...
+2025-09-19 15:19:20,826 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 15:19:20,827 - __main__ - DEBUG - Session params: {"user_id": "hasan_11"}
+2025-09-19 15:19:20,840 - __main__ - INFO - Generating response...
+2025-09-19 15:19:20,841 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:19:20,841 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:19:22,775 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I\'m sorry to hear you\'re feeling unwell, Hasan.  Remember how helpful tutoring was for you in the past?  We can explore that again, or look at other options if you\'d prefer.  Let\'s find something that works for you right now.\n"
+    }
+  }
+  avg_logprobs: -0.08443755116955988
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758275361
+  nanos: 458171000
+}
+response_id: "ISfNaLv7G_-FxbsP0s2TgAQ"
+usage_metadata {
+  prompt_token_count: 243
+  candidates_token_count: 58
+  total_token_count: 301
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 243
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 58
+  }
+}
+
+2025-09-19 15:19:22,777 - __main__ - DEBUG - Generated text: I'm sorry to hear you're feeling unwell, Hasan.  Remember how helpful tutoring was for you in the pa...
+2025-09-19 15:19:22,777 - __main__ - INFO - Generated reply: 'I'm sorry to hear you're feeling unwell, Hasan.  Remember how helpful tutoring was for you in the past?  We can explore that again, or look at other options if you'd prefer.  Let's find something that works for you right now.'
+2025-09-19 15:19:22,777 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:19:22,778 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:19:22,778 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:19:22,778 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:19:24,360 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: The assistant, addressing the user as Hasan, offered tutoring as a potential solution to his reported unwellness, suggesting alternative options if preferred.\n"
+    }
+  }
+  avg_logprobs: -0.025744128558370803
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758275363
+  nanos: 326992000
+}
+response_id: "IyfNaND6E92FxbsPya6wuAs"
+usage_metadata {
+  prompt_token_count: 239
+  candidates_token_count: 36
+  total_token_count: 275
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 239
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 36
+  }
+}
+
+2025-09-19 15:19:24,361 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: The assistant, addressing the user as Hasan, offered tutoring as a potenti...
+2025-09-19 15:19:24,361 - __main__ - DEBUG - Significance: True, Summary: The assistant, addressing the user as Hasan, offered tutoring as a potential solution to his reporte...
+2025-09-19 15:19:24,361 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 15:19:24,363 - __main__ - DEBUG - Saving memory for hasan_11 (sanitized: hasan_11)
+2025-09-19 15:19:24,363 - __main__ - DEBUG - Summary: The assistant, addressing the user as Hasan, offered tutoring as a potential solution to his reporte...
+2025-09-19 15:19:24,363 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'session_1758273548_hasan_11'}
+2025-09-19 15:19:24,363 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:19:24,363 - __main__ - DEBUG - Texts preview: ['The assistant, addressing the user as Hasan, offer...']
+2025-09-19 15:19:25,290 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:19:25,290 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:19:25,498 - __main__ - DEBUG - Memory saved with ID: mem_1758275365291
+2025-09-19 15:19:25,498 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 15:19:25,499 - __main__ - INFO - Request completed successfully
+2025-09-19 15:19:25,499 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:19:25] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:33:25,484 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 15:33:25,485 - __main__ - DEBUG - Payload: {'user_id': 'e608af4b-ac14-49ab-9743-c40a31607934', 'consent': True, 'username': 'hasan_11'}
+2025-09-19 15:33:25,486 - __main__ - INFO - Updating consent for e608af4b-ac14-49ab-9743-c40a31607934: True
+2025-09-19 15:33:25,486 - __main__ - INFO - Updating username for e608af4b-ac14-49ab-9743-c40a31607934: hasan_11
+2025-09-19 15:33:25,487 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:33:25,487 - __main__ - DEBUG - Upserting profile for e608af4b-ac14-49ab-9743-c40a31607934: {'updated_at': '2025-09-19T10:03:25.486661+00:00', 'consent': True, 'username': 'hasan_11'}
+2025-09-19 15:33:25,705 - __main__ - DEBUG - Profile upserted successfully for e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:33:25,707 - __main__ - INFO - Profile for e608af4b-ac14-49ab-9743-c40a31607934 updated successfully.
+2025-09-19 15:33:25,708 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:33:25] "POST /consent HTTP/1.1" 200 -
+2025-09-19 15:33:30,705 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:33:30,705 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/d71e1950-7e76-4ee2-a783-384557c5f46b",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hi"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:33:30,706 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:33:30,706 - __main__ - INFO - Session: d71e1950-7e76-4ee2-a783-384557c5f46b
+2025-09-19 15:33:30,707 - __main__ - INFO - User message: 'hi'
+2025-09-19 15:33:30,708 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:33:30,708 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:33:30,797 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:03:25.486661+00:00', 'username': 'hasan_11'}}
+2025-09-19 15:33:30,798 - __main__ - INFO - User consent status: True
+2025-09-19 15:33:30,801 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:33:30,803 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:33:30,803 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:33:30,804 - __main__ - DEBUG - Query: hi...
+2025-09-19 15:33:30,804 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:33:30,805 - __main__ - DEBUG - Texts preview: ['hi']
+2025-09-19 15:33:31,844 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:33:31,845 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:33:31,960 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 15:33:31,960 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 15:33:31,960 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 15:33:31,961 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:33:31,961 - __main__ - INFO - Generating response...
+2025-09-19 15:33:31,961 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:33:31,961 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:33:33,027 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hi Hasan!  It\'s good to hear from you.\n"
+    }
+  }
+  avg_logprobs: -0.036526846034186225
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276212
+  nanos: 569876000
+}
+response_id: "dCrNaJTkIp2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 231
+  candidates_token_count: 14
+  total_token_count: 245
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 231
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 14
+  }
+}
+
+2025-09-19 15:33:33,029 - __main__ - DEBUG - Generated text: Hi Hasan!  It's good to hear from you.
+...
+2025-09-19 15:33:33,030 - __main__ - INFO - Generated reply: 'Hi Hasan!  It's good to hear from you.'
+2025-09-19 15:33:33,030 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:33:33,030 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:33:33,031 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:33:33,031 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:33:34,446 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user, Hasan, initiated a simple greeting, to which the assistant responded with a greeting.\n"
+    }
+  }
+  avg_logprobs: -0.073569536209106445
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276213
+  nanos: 629700000
+}
+response_id: "dSrNaMS3Jp2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 195
+  candidates_token_count: 28
+  total_token_count: 223
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 195
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 28
+  }
+}
+
+2025-09-19 15:33:34,446 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user, Hasan, initiated a simple greeting, to which the assistant respon...
+2025-09-19 15:33:34,448 - __main__ - DEBUG - Significance: False, Summary: The user, Hasan, initiated a simple greeting, to which the assistant responded with a greeting....
+2025-09-19 15:33:34,448 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 15:33:34,449 - __main__ - INFO - Request completed successfully
+2025-09-19 15:33:34,449 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:33:34] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:33:42,533 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:33:42,535 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/636aaf53-aa99-4572-aa23-69c1f9ac208b",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "do you remember me"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:33:42,535 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:33:42,535 - __main__ - INFO - Session: 636aaf53-aa99-4572-aa23-69c1f9ac208b
+2025-09-19 15:33:42,536 - __main__ - INFO - User message: 'do you remember me'
+2025-09-19 15:33:42,536 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:33:42,536 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:33:42,613 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:03:25.486661+00:00', 'username': 'hasan_11'}}
+2025-09-19 15:33:42,613 - __main__ - INFO - User consent status: True
+2025-09-19 15:33:42,614 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:33:42,614 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:33:42,614 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:33:42,615 - __main__ - DEBUG - Query: do you remember me...
+2025-09-19 15:33:42,615 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:33:42,615 - __main__ - DEBUG - Texts preview: ['do you remember me']
+2025-09-19 15:33:43,554 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:33:43,555 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:33:43,636 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 15:33:43,636 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 15:33:43,637 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 15:33:43,637 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:33:43,637 - __main__ - INFO - Generating response...
+2025-09-19 15:33:43,637 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:33:43,638 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:33:44,730 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Yes, Hasan, I remember you.  I have access to our past conversations.\n"
+    }
+  }
+  avg_logprobs: -0.12534333599938285
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276224
+  nanos: 253830000
+}
+response_id: "gCrNaIa_D6Obu8MPnvXkgAQ"
+usage_metadata {
+  prompt_token_count: 234
+  candidates_token_count: 18
+  total_token_count: 252
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 234
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 18
+  }
+}
+
+2025-09-19 15:33:44,731 - __main__ - DEBUG - Generated text: Yes, Hasan, I remember you.  I have access to our past conversations.
+...
+2025-09-19 15:33:44,731 - __main__ - INFO - Generated reply: 'Yes, Hasan, I remember you.  I have access to our past conversations.'
+2025-09-19 15:33:44,731 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:33:44,732 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:33:44,732 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:33:44,732 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:33:46,380 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: The user, Hasan, initiated a conversation by asking the assistant if it remembered him. The assistant confirmed its memory of Hasan and its access to their past interactions.\n"
+    }
+  }
+  avg_logprobs: -0.052986377623023058
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276225
+  nanos: 297868000
+}
+response_id: "gSrNaIyXEp2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 202
+  candidates_token_count: 41
+  total_token_count: 243
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 202
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 41
+  }
+}
+
+2025-09-19 15:33:46,381 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: The user, Hasan, initiated a conversation by asking the assistant if it re...
+2025-09-19 15:33:46,381 - __main__ - DEBUG - Significance: True, Summary: The user, Hasan, initiated a conversation by asking the assistant if it remembered him. The assistan...
+2025-09-19 15:33:46,381 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:33:46,382 - __main__ - DEBUG - Saving memory for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:33:46,382 - __main__ - DEBUG - Summary: The user, Hasan, initiated a conversation by asking the assistant if it remembered him. The assistan...
+2025-09-19 15:33:46,382 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': '636aaf53-aa99-4572-aa23-69c1f9ac208b'}
+2025-09-19 15:33:46,382 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:33:46,383 - __main__ - DEBUG - Texts preview: ['The user, Hasan, initiated a conversation by askin...']
+2025-09-19 15:33:47,284 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:33:47,284 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:33:47,467 - __main__ - DEBUG - Memory saved with ID: mem_1758276227285
+2025-09-19 15:33:47,467 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 15:33:47,468 - __main__ - INFO - Request completed successfully
+2025-09-19 15:33:47,468 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:33:47] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:34:11,306 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:34:11,307 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/c7cca8f2-c515-4e38-9460-01f4a4635521",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "i feel so tired"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:34:11,307 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:34:11,308 - __main__ - INFO - Session: c7cca8f2-c515-4e38-9460-01f4a4635521
+2025-09-19 15:34:11,308 - __main__ - INFO - User message: 'i feel so tired'
+2025-09-19 15:34:11,308 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:34:11,308 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:34:11,374 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:03:25.486661+00:00', 'username': 'hasan_11'}}
+2025-09-19 15:34:11,374 - __main__ - INFO - User consent status: True
+2025-09-19 15:34:11,375 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:34:11,375 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:34:11,375 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:34:11,376 - __main__ - DEBUG - Query: i feel so tired...
+2025-09-19 15:34:11,376 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:34:11,376 - __main__ - DEBUG - Texts preview: ['i feel so tired']
+2025-09-19 15:34:12,307 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:34:12,308 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:34:12,420 - __main__ - DEBUG - Cosine similarity calculated: 0.2214
+2025-09-19 15:34:12,421 - __main__ - DEBUG - Doc mem_1758276227285: similarity = 0.2214
+2025-09-19 15:34:12,421 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 15:34:12,422 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 15:34:12,422 - __main__ - DEBUG -    #1: The user, Hasan, initiated a conversation by askin...
+2025-09-19 15:34:12,422 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 15:34:12,423 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:34:12,423 - __main__ - INFO - Generating response...
+2025-09-19 15:34:12,423 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:34:12,423 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:34:14,037 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hasan, I hear you. Feeling tired is tough.  I remember from our past conversations.  Is there anything you\'d like to talk about that might be contributing to this?\n"
+    }
+  }
+  avg_logprobs: -0.087597991290845376
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276253
+  nanos: 22086000
+}
+response_id: "nSrNaMasAaObu8MPnvXkgAQ"
+usage_metadata {
+  prompt_token_count: 275
+  candidates_token_count: 38
+  total_token_count: 313
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 275
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 38
+  }
+}
+
+2025-09-19 15:34:14,038 - __main__ - DEBUG - Generated text: Hasan, I hear you. Feeling tired is tough.  I remember from our past conversations.  Is there anythi...
+2025-09-19 15:34:14,039 - __main__ - INFO - Generated reply: 'Hasan, I hear you. Feeling tired is tough.  I remember from our past conversations.  Is there anything you'd like to talk about that might be contributing to this?'
+2025-09-19 15:34:14,039 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:34:14,039 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:34:14,040 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:34:14,040 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:34:15,618 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user expressed feeling tired, and the assistant acknowledged this, referencing past conversations.  The assistant offered to discuss potential contributing factors.\n"
+    }
+  }
+  avg_logprobs: -0.0439636366707938
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276254
+  nanos: 599848000
+}
+response_id: "nirNaKjOJKObu8MPnvXkgAQ"
+usage_metadata {
+  prompt_token_count: 222
+  candidates_token_count: 35
+  total_token_count: 257
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 222
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 35
+  }
+}
+
+2025-09-19 15:34:15,619 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user expressed feeling tired, and the assistant acknowledged this, refe...
+2025-09-19 15:34:15,619 - __main__ - DEBUG - Significance: False, Summary: The user expressed feeling tired, and the assistant acknowledged this, referencing past conversation...
+2025-09-19 15:34:15,620 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 15:34:15,620 - __main__ - INFO - Request completed successfully
+2025-09-19 15:34:15,620 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:34:15] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:34:33,579 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 15:34:33,579 - __main__ - DEBUG - Payload: {'user_id': 'e608af4b-ac14-49ab-9743-c40a31607934', 'consent': True, 'username': 'dev'}
+2025-09-19 15:34:33,579 - __main__ - INFO - Updating consent for e608af4b-ac14-49ab-9743-c40a31607934: True
+2025-09-19 15:34:33,580 - __main__ - INFO - Updating username for e608af4b-ac14-49ab-9743-c40a31607934: dev
+2025-09-19 15:34:33,580 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:34:33,580 - __main__ - DEBUG - Upserting profile for e608af4b-ac14-49ab-9743-c40a31607934: {'updated_at': '2025-09-19T10:04:33.579244+00:00', 'consent': True, 'username': 'dev'}
+2025-09-19 15:34:33,648 - __main__ - DEBUG - Profile upserted successfully for e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:34:33,648 - __main__ - INFO - Profile for e608af4b-ac14-49ab-9743-c40a31607934 updated successfully.
+2025-09-19 15:34:33,650 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:34:33] "POST /consent HTTP/1.1" 200 -
+2025-09-19 15:34:37,224 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:34:37,225 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/d651baf7-3ce1-4ba7-a313-ce75ff8fb8a6",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hi"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:34:37,225 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:34:37,226 - __main__ - INFO - Session: d651baf7-3ce1-4ba7-a313-ce75ff8fb8a6
+2025-09-19 15:34:37,226 - __main__ - INFO - User message: 'hi'
+2025-09-19 15:34:37,226 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:34:37,226 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:34:37,284 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:04:33.579244+00:00', 'username': 'dev'}}
+2025-09-19 15:34:37,285 - __main__ - INFO - User consent status: True
+2025-09-19 15:34:37,286 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:34:37,286 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:34:37,286 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:34:37,287 - __main__ - DEBUG - Query: hi...
+2025-09-19 15:34:37,288 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:34:37,288 - __main__ - DEBUG - Texts preview: ['hi']
+2025-09-19 15:34:38,161 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:34:38,161 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:34:38,242 - __main__ - DEBUG - Cosine similarity calculated: 0.3636
+2025-09-19 15:34:38,243 - __main__ - DEBUG - Doc mem_1758276227285: similarity = 0.3636
+2025-09-19 15:34:38,243 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 15:34:38,243 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 15:34:38,244 - __main__ - DEBUG -    #1: The user, Hasan, initiated a conversation by askin...
+2025-09-19 15:34:38,244 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 15:34:38,244 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:34:38,244 - __main__ - INFO - Generating response...
+2025-09-19 15:34:38,246 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:34:38,246 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:34:39,311 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hi Hasan.  It\'s good to hear from you again.\n"
+    }
+  }
+  avg_logprobs: -0.0235142449537913
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276278
+  nanos: 824588000
+}
+response_id: "tirNaIyqMp2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 268
+  candidates_token_count: 15
+  total_token_count: 283
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 268
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 15
+  }
+}
+
+2025-09-19 15:34:39,312 - __main__ - DEBUG - Generated text: Hi Hasan.  It's good to hear from you again.
+...
+2025-09-19 15:34:39,313 - __main__ - INFO - Generated reply: 'Hi Hasan.  It's good to hear from you again.'
+2025-09-19 15:34:39,313 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:34:39,313 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:34:39,314 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:34:39,314 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:34:40,910 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a greeting and acknowledgment of prior interaction.\n"
+    }
+  }
+  avg_logprobs: -0.0677969115121024
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276279
+  nanos: 861835000
+}
+response_id: "tyrNaIvNNJ2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 196
+  candidates_token_count: 35
+  total_token_count: 231
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 196
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 35
+  }
+}
+
+2025-09-19 15:34:40,911 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the ass...
+2025-09-19 15:34:40,911 - __main__ - DEBUG - Significance: False, Summary: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a g...
+2025-09-19 15:34:40,912 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 15:34:40,912 - __main__ - INFO - Request completed successfully
+2025-09-19 15:34:40,913 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:34:40] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:45:34,099 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 15:45:34,099 - __main__ - DEBUG - Payload: {'user_id': 'e608af4b-ac14-49ab-9743-c40a31607934', 'consent': True, 'username': 'hasan'}
+2025-09-19 15:45:34,099 - __main__ - INFO - Updating consent for e608af4b-ac14-49ab-9743-c40a31607934: True
+2025-09-19 15:45:34,099 - __main__ - INFO - Updating username for e608af4b-ac14-49ab-9743-c40a31607934: hasan
+2025-09-19 15:45:34,101 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:45:34,101 - __main__ - DEBUG - Upserting profile for e608af4b-ac14-49ab-9743-c40a31607934: {'updated_at': '2025-09-19T10:15:34.099806+00:00', 'consent': True, 'username': 'hasan'}
+2025-09-19 15:45:34,200 - urllib3.connectionpool - DEBUG - Resetting dropped connection: oauth2.googleapis.com
+2025-09-19 15:45:34,401 - urllib3.connectionpool - DEBUG - https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2025-09-19 15:45:34,631 - __main__ - DEBUG - Profile upserted successfully for e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:45:34,631 - __main__ - INFO - Profile for e608af4b-ac14-49ab-9743-c40a31607934 updated successfully.
+2025-09-19 15:45:34,632 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:45:34] "POST /consent HTTP/1.1" 200 -
+2025-09-19 15:45:38,639 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:45:38,640 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/ea40d90e-ce40-48f3-8fbe-0376040ce50c",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hello"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:45:38,641 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:45:38,641 - __main__ - INFO - Session: ea40d90e-ce40-48f3-8fbe-0376040ce50c
+2025-09-19 15:45:38,642 - __main__ - INFO - User message: 'hello'
+2025-09-19 15:45:38,642 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:45:38,642 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:45:38,713 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:15:34.099806+00:00', 'username': 'hasan'}}
+2025-09-19 15:45:38,714 - __main__ - INFO - User consent status: True
+2025-09-19 15:45:38,714 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:45:38,714 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:45:38,715 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:45:38,715 - __main__ - DEBUG - Query: hello...
+2025-09-19 15:45:38,715 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:45:38,715 - __main__ - DEBUG - Texts preview: ['hello']
+2025-09-19 15:45:39,671 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:45:39,672 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:45:39,789 - __main__ - DEBUG - Cosine similarity calculated: 0.3233
+2025-09-19 15:45:39,789 - __main__ - DEBUG - Doc mem_1758276227285: similarity = 0.3233
+2025-09-19 15:45:39,789 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 15:45:39,790 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 15:45:39,790 - __main__ - DEBUG -    #1: The user, Hasan, initiated a conversation by askin...
+2025-09-19 15:45:39,790 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 15:45:39,792 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:45:39,792 - __main__ - INFO - Generating response...
+2025-09-19 15:45:39,792 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:45:39,793 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:45:41,139 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello Hasan.  It\'s good to hear from you again.\n"
+    }
+  }
+  avg_logprobs: -0.03879820505777995
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276940
+  nanos: 529991000
+}
+response_id: "TC3NaMesIN-AlPIPwPGtaA"
+usage_metadata {
+  prompt_token_count: 269
+  candidates_token_count: 15
+  total_token_count: 284
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 269
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 15
+  }
+}
+
+2025-09-19 15:45:41,140 - __main__ - DEBUG - Generated text: Hello Hasan.  It's good to hear from you again.
+...
+2025-09-19 15:45:41,141 - __main__ - INFO - Generated reply: 'Hello Hasan.  It's good to hear from you again.'
+2025-09-19 15:45:41,142 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:45:41,142 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:45:41,142 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:45:41,143 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:45:42,859 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a greeting and acknowledgment of prior interaction.\n"
+    }
+  }
+  avg_logprobs: -0.063433272497994561
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276941
+  nanos: 862145000
+}
+response_id: "TS3NaMHPNIm1lgOAu8GYAg"
+usage_metadata {
+  prompt_token_count: 196
+  candidates_token_count: 35
+  total_token_count: 231
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 196
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 35
+  }
+}
+
+2025-09-19 15:45:42,860 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the ass...
+2025-09-19 15:45:42,861 - __main__ - DEBUG - Significance: False, Summary: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a g...
+2025-09-19 15:45:42,861 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 15:45:42,862 - __main__ - INFO - Request completed successfully
+2025-09-19 15:45:42,862 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:45:42] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:45:49,899 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 15:45:49,899 - __main__ - DEBUG - Payload: {'user_id': 'e608af4b-ac14-49ab-9743-c40a31607934', 'consent': True, 'username': 'devesh'}
+2025-09-19 15:45:49,899 - __main__ - INFO - Updating consent for e608af4b-ac14-49ab-9743-c40a31607934: True
+2025-09-19 15:45:49,900 - __main__ - INFO - Updating username for e608af4b-ac14-49ab-9743-c40a31607934: devesh
+2025-09-19 15:45:49,900 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:45:49,900 - __main__ - DEBUG - Upserting profile for e608af4b-ac14-49ab-9743-c40a31607934: {'updated_at': '2025-09-19T10:15:49.899154+00:00', 'consent': True, 'username': 'devesh'}
+2025-09-19 15:45:49,974 - __main__ - DEBUG - Profile upserted successfully for e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:45:49,974 - __main__ - INFO - Profile for e608af4b-ac14-49ab-9743-c40a31607934 updated successfully.
+2025-09-19 15:45:49,976 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:45:49] "POST /consent HTTP/1.1" 200 -
+2025-09-19 15:45:54,349 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:45:54,351 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/a95760ad-4476-49e6-8f0f-cfcb6a191474",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hello"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:45:54,351 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:45:54,351 - __main__ - INFO - Session: a95760ad-4476-49e6-8f0f-cfcb6a191474
+2025-09-19 15:45:54,352 - __main__ - INFO - User message: 'hello'
+2025-09-19 15:45:54,352 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:45:54,352 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:45:54,414 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:15:49.899154+00:00', 'username': 'devesh'}}
+2025-09-19 15:45:54,415 - __main__ - INFO - User consent status: True
+2025-09-19 15:45:54,416 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:45:54,416 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:45:54,416 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:45:54,417 - __main__ - DEBUG - Query: hello...
+2025-09-19 15:45:54,417 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:45:54,417 - __main__ - DEBUG - Texts preview: ['hello']
+2025-09-19 15:45:55,576 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:45:55,576 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:45:55,653 - __main__ - DEBUG - Cosine similarity calculated: 0.3233
+2025-09-19 15:45:55,654 - __main__ - DEBUG - Doc mem_1758276227285: similarity = 0.3233
+2025-09-19 15:45:55,654 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 15:45:55,654 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 15:45:55,655 - __main__ - DEBUG -    #1: The user, Hasan, initiated a conversation by askin...
+2025-09-19 15:45:55,655 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 15:45:55,655 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:45:55,655 - __main__ - INFO - Generating response...
+2025-09-19 15:45:55,657 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:45:55,657 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:45:56,819 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello Hasan.  It\'s good to hear from you again.\n"
+    }
+  }
+  avg_logprobs: -0.012462436159451803
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276956
+  nanos: 369457000
+}
+response_id: "XC3NaLHGFt2FxbsPya6wuAs"
+usage_metadata {
+  prompt_token_count: 269
+  candidates_token_count: 15
+  total_token_count: 284
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 269
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 15
+  }
+}
+
+2025-09-19 15:45:56,820 - __main__ - DEBUG - Generated text: Hello Hasan.  It's good to hear from you again.
+...
+2025-09-19 15:45:56,821 - __main__ - INFO - Generated reply: 'Hello Hasan.  It's good to hear from you again.'
+2025-09-19 15:45:56,821 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:45:56,821 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:45:56,822 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:45:56,822 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:45:58,548 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a greeting and acknowledgment of prior interaction.\n"
+    }
+  }
+  avg_logprobs: -0.0632875987461635
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758276957
+  nanos: 513110000
+}
+response_id: "XS3NaNaoH9-ExbsPi6-I8Aw"
+usage_metadata {
+  prompt_token_count: 196
+  candidates_token_count: 35
+  total_token_count: 231
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 196
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 35
+  }
+}
+
+2025-09-19 15:45:58,549 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the ass...
+2025-09-19 15:45:58,551 - __main__ - DEBUG - Significance: False, Summary: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a g...
+2025-09-19 15:45:58,551 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 15:45:58,551 - __main__ - INFO - Request completed successfully
+2025-09-19 15:45:58,551 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:45:58] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:50:56,458 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 15:50:56,459 - __main__ - DEBUG - Payload: {'user_id': 'e608af4b-ac14-49ab-9743-c40a31607934', 'consent': True, 'username': 'hasan'}
+2025-09-19 15:50:56,459 - __main__ - INFO - Updating consent for e608af4b-ac14-49ab-9743-c40a31607934: True
+2025-09-19 15:50:56,459 - __main__ - INFO - Updating username for e608af4b-ac14-49ab-9743-c40a31607934: hasan
+2025-09-19 15:50:56,460 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:50:56,460 - __main__ - DEBUG - Upserting profile for e608af4b-ac14-49ab-9743-c40a31607934: {'updated_at': '2025-09-19T10:20:56.459874+00:00', 'consent': True, 'username': 'hasan'}
+2025-09-19 15:50:56,861 - __main__ - DEBUG - Profile upserted successfully for e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:50:56,862 - __main__ - INFO - Profile for e608af4b-ac14-49ab-9743-c40a31607934 updated successfully.
+2025-09-19 15:50:56,862 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:50:56] "POST /consent HTTP/1.1" 200 -
+2025-09-19 15:51:03,527 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:51:03,528 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/51d8d536-5458-4377-8242-92d44272a4a3",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hi"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:51:03,528 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:51:03,528 - __main__ - INFO - Session: 51d8d536-5458-4377-8242-92d44272a4a3
+2025-09-19 15:51:03,529 - __main__ - INFO - User message: 'hi'
+2025-09-19 15:51:03,529 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:51:03,529 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:51:03,699 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:20:56.459874+00:00', 'username': 'hasan'}}
+2025-09-19 15:51:03,699 - __main__ - INFO - User consent status: True
+2025-09-19 15:51:03,699 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:51:03,700 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:51:03,700 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:51:03,700 - __main__ - DEBUG - Query: hi...
+2025-09-19 15:51:03,700 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:51:03,701 - __main__ - DEBUG - Texts preview: ['hi']
+2025-09-19 15:51:04,655 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:51:04,656 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:51:04,778 - __main__ - DEBUG - Cosine similarity calculated: 0.3636
+2025-09-19 15:51:04,778 - __main__ - DEBUG - Doc mem_1758276227285: similarity = 0.3636
+2025-09-19 15:51:04,778 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 15:51:04,779 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 15:51:04,779 - __main__ - DEBUG -    #1: The user, Hasan, initiated a conversation by askin...
+2025-09-19 15:51:04,779 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 15:51:04,780 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:51:04,780 - __main__ - INFO - Generating response...
+2025-09-19 15:51:04,780 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:51:04,780 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:51:05,824 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hi Hasan!  It\'s good to hear from you again.\n"
+    }
+  }
+  avg_logprobs: -0.032719109455744425
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758277265
+  nanos: 404238000
+}
+response_id: "kS7NaI7WGKKAlPIPxoWykAs"
+usage_metadata {
+  prompt_token_count: 269
+  candidates_token_count: 15
+  total_token_count: 284
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 269
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 15
+  }
+}
+
+2025-09-19 15:51:05,825 - __main__ - DEBUG - Generated text: Hi Hasan!  It's good to hear from you again.
+...
+2025-09-19 15:51:05,826 - __main__ - INFO - Generated reply: 'Hi Hasan!  It's good to hear from you again.'
+2025-09-19 15:51:05,826 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:51:05,827 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:51:05,827 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:51:05,827 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:51:07,241 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a personalized greeting.\n"
+    }
+  }
+  avg_logprobs: -0.051257368057004864
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758277266
+  nanos: 490077000
+}
+response_id: "ki7NaN30Hd-AlPIPwPGtaA"
+usage_metadata {
+  prompt_token_count: 196
+  candidates_token_count: 31
+  total_token_count: 227
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 196
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 31
+  }
+}
+
+2025-09-19 15:51:07,242 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user, Hasan, initiated a conversation with a greeting, to which the ass...
+2025-09-19 15:51:07,243 - __main__ - DEBUG - Significance: False, Summary: The user, Hasan, initiated a conversation with a greeting, to which the assistant responded with a p...
+2025-09-19 15:51:07,243 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 15:51:07,243 - __main__ - INFO - Request completed successfully
+2025-09-19 15:51:07,244 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:51:07] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 15:54:17,043 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 15:54:17,043 - __main__ - DEBUG - Payload: {'user_id': 'e608af4b-ac14-49ab-9743-c40a31607934', 'consent': True, 'username': 'deves'}
+2025-09-19 15:54:17,044 - __main__ - INFO - Updating consent for e608af4b-ac14-49ab-9743-c40a31607934: True
+2025-09-19 15:54:17,044 - __main__ - INFO - Updating username for e608af4b-ac14-49ab-9743-c40a31607934: deves
+2025-09-19 15:54:17,044 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:54:17,044 - __main__ - DEBUG - Upserting profile for e608af4b-ac14-49ab-9743-c40a31607934: {'updated_at': '2025-09-19T10:24:17.044084+00:00', 'consent': True, 'username': 'deves'}
+2025-09-19 15:54:17,297 - __main__ - DEBUG - Profile upserted successfully for e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:54:17,297 - __main__ - INFO - Profile for e608af4b-ac14-49ab-9743-c40a31607934 updated successfully.
+2025-09-19 15:54:17,298 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:54:17] "POST /consent HTTP/1.1" 200 -
+2025-09-19 15:54:33,063 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 15:54:33,066 - __main__ - DEBUG - Raw request: {
+  "session": "projects/demo/agent/sessions/b02fb550-31bc-482f-b9f9-b6d2e9ca8cc7",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hellooooooooooo do u remeber me??"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "e608af4b-ac14-49ab-9743-c40a31607934"
+    }
+  }
+}
+2025-09-19 15:54:33,066 - __main__ - INFO - Processing request for user_id: e608af4b-ac14-49ab-9743-c40a31607934
+2025-09-19 15:54:33,066 - __main__ - INFO - Session: b02fb550-31bc-482f-b9f9-b6d2e9ca8cc7
+2025-09-19 15:54:33,066 - __main__ - INFO - User message: 'hellooooooooooo do u remeber me??'
+2025-09-19 15:54:33,067 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:54:33,067 - __main__ - DEBUG - Getting user profile for: e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:54:33,190 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:24:17.044084+00:00', 'username': 'deves'}}
+2025-09-19 15:54:33,190 - __main__ - INFO - User consent status: True
+2025-09-19 15:54:33,190 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 15:54:33,190 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:54:33,190 - __main__ - DEBUG - Retrieving similar memories for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:54:33,190 - __main__ - DEBUG - Query: hellooooooooooo do u remeber me??...
+2025-09-19 15:54:33,190 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:54:33,191 - __main__ - DEBUG - Texts preview: ['hellooooooooooo do u remeber me??']
+2025-09-19 15:54:34,081 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:54:34,082 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:54:34,224 - __main__ - DEBUG - Cosine similarity calculated: 0.4255
+2025-09-19 15:54:34,224 - __main__ - DEBUG - Doc mem_1758276227285: similarity = 0.4255
+2025-09-19 15:54:34,225 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 15:54:34,225 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 15:54:34,225 - __main__ - DEBUG -    #1: The user, Hasan, initiated a conversation by askin...
+2025-09-19 15:54:34,225 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 15:54:34,226 - __main__ - DEBUG - Session params: {"user_id": "e608af4b-ac14-49ab-9743-c40a31607934"}
+2025-09-19 15:54:34,226 - __main__ - INFO - Generating response...
+2025-09-19 15:54:34,226 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:54:34,226 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 15:54:35,325 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hello Hasan!  Yes, I remember you.  It\'s good to see you again.\n"
+    }
+  }
+  avg_logprobs: -0.20381918407621838
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758277474
+  nanos: 835922000
+}
+response_id: "Yi_NaNKCM6KAlPIPxoWykAs"
+usage_metadata {
+  prompt_token_count: 277
+  candidates_token_count: 21
+  total_token_count: 298
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 277
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 21
+  }
+}
+
+2025-09-19 15:54:35,326 - __main__ - DEBUG - Generated text: Hello Hasan!  Yes, I remember you.  It's good to see you again.
+...
+2025-09-19 15:54:35,326 - __main__ - INFO - Generated reply: 'Hello Hasan!  Yes, I remember you.  It's good to see you again.'
+2025-09-19 15:54:35,326 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 15:54:35,327 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 15:54:35,327 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 15:54:35,327 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 15:54:36,689 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: The user, Hasan, greeted the assistant, prompting the assistant to acknowledge remembering him.\n"
+    }
+  }
+  avg_logprobs: -0.075746696728926435
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758277475
+  nanos: 932015000
+}
+response_id: "Yy_NaK_xON-AlPIPwPGtaA"
+usage_metadata {
+  prompt_token_count: 210
+  candidates_token_count: 26
+  total_token_count: 236
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 210
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 26
+  }
+}
+
+2025-09-19 15:54:36,690 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: The user, Hasan, greeted the assistant, prompting the assistant to acknowl...
+2025-09-19 15:54:36,690 - __main__ - DEBUG - Significance: True, Summary: The user, Hasan, greeted the assistant, prompting the assistant to acknowledge remembering him....
+2025-09-19 15:54:36,690 - __main__ - DEBUG - Sanitized user_id 'e608af4b-ac14-49ab-9743-c40a31607934' to 'e608af4b-ac14-49ab-9743-c40a31607934'
+2025-09-19 15:54:36,690 - __main__ - DEBUG - Saving memory for e608af4b-ac14-49ab-9743-c40a31607934 (sanitized: e608af4b-ac14-49ab-9743-c40a31607934)
+2025-09-19 15:54:36,691 - __main__ - DEBUG - Summary: The user, Hasan, greeted the assistant, prompting the assistant to acknowledge remembering him....
+2025-09-19 15:54:36,691 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'b02fb550-31bc-482f-b9f9-b6d2e9ca8cc7'}
+2025-09-19 15:54:36,691 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 15:54:36,691 - __main__ - DEBUG - Texts preview: ['The user, Hasan, greeted the assistant, prompting ...']
+2025-09-19 15:54:37,571 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 15:54:37,571 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 15:54:37,795 - __main__ - DEBUG - Memory saved with ID: mem_1758277477572
+2025-09-19 15:54:37,795 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 15:54:37,795 - __main__ - INFO - Request completed successfully
+2025-09-19 15:54:37,795 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 15:54:37] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:12:53,034 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 16:12:53,036 - __main__ - DEBUG - Payload: {'user_id': 'hasan_11', 'consent': True, 'username': 'hasan'}
+2025-09-19 16:12:53,037 - __main__ - INFO - Updating consent for hasan_11: True
+2025-09-19 16:12:53,037 - __main__ - INFO - Updating username for hasan_11: hasan
+2025-09-19 16:12:53,038 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:12:53,038 - __main__ - DEBUG - Upserting profile for hasan_11: {'updated_at': '2025-09-19T10:42:53.037898+00:00', 'consent': True, 'username': 'hasan'}
+2025-09-19 16:12:53,293 - __main__ - DEBUG - Profile upserted successfully for hasan_11
+2025-09-19 16:12:53,293 - __main__ - INFO - Profile for hasan_11 updated successfully.
+2025-09-19 16:12:53,294 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:12:53] "POST /consent HTTP/1.1" 200 -
+2025-09-19 16:13:00,568 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:13:00,569 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758278573303_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hiii"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 16:13:00,571 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 16:13:00,572 - __main__ - INFO - Session: session_1758278573303_hasan_11
+2025-09-19 16:13:00,572 - __main__ - INFO - User message: 'hiii'
+2025-09-19 16:13:00,572 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:13:00,573 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 16:13:00,644 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:42:53.037898+00:00', 'username': 'hasan'}}
+2025-09-19 16:13:00,645 - __main__ - INFO - User consent status: True
+2025-09-19 16:13:00,645 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:13:00,647 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:13:00,647 - __main__ - DEBUG - Retrieving similar memories for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:13:00,648 - __main__ - DEBUG - Query: hiii...
+2025-09-19 16:13:00,648 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:13:00,649 - __main__ - DEBUG - Texts preview: ['hiii']
+2025-09-19 16:13:01,472 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:13:01,473 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:13:01,571 - __main__ - DEBUG - Cosine similarity calculated: 0.3254
+2025-09-19 16:13:01,571 - __main__ - DEBUG - Doc mem_1758273634211: similarity = 0.3254
+2025-09-19 16:13:01,578 - __main__ - DEBUG - Cosine similarity calculated: 0.3450
+2025-09-19 16:13:01,578 - __main__ - DEBUG - Doc mem_1758275365291: similarity = 0.3450
+2025-09-19 16:13:01,580 - __main__ - DEBUG - Found 2 total memories, 2 with valid embeddings
+2025-09-19 16:13:01,581 - __main__ - DEBUG - Returning top 2 similar memories
+2025-09-19 16:13:01,581 - __main__ - DEBUG -    #1: The assistant, addressing the user as Hasan, offer...
+2025-09-19 16:13:01,582 - __main__ - DEBUG -    #2: The user expressed feeling unwell, prompting the a...
+2025-09-19 16:13:01,583 - __main__ - INFO - Found 2 relevant memories
+2025-09-19 16:13:01,583 - __main__ - DEBUG - Session params: {"user_id": "hasan_11"}
+2025-09-19 16:13:01,583 - __main__ - INFO - Generating response...
+2025-09-19 16:13:01,584 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:13:01,584 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:13:03,173 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hi Hasan!  I remember you mentioned feeling unwell before. We talked about tutoring as a possibility, since it helped you in the past.  Is there anything else I can help you with today, or would you like to explore other options?\n"
+    }
+  }
+  avg_logprobs: -0.10228730201721191
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278582
+  nanos: 189204000
+}
+response_id: "tjPNaJTGC9-AlPIPwPGtaA"
+usage_metadata {
+  prompt_token_count: 280
+  candidates_token_count: 50
+  total_token_count: 330
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 280
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 50
+  }
+}
+
+2025-09-19 16:13:03,174 - __main__ - DEBUG - Generated text: Hi Hasan!  I remember you mentioned feeling unwell before. We talked about tutoring as a possibility...
+2025-09-19 16:13:03,174 - __main__ - INFO - Generated reply: 'Hi Hasan!  I remember you mentioned feeling unwell before. We talked about tutoring as a possibility, since it helped you in the past.  Is there anything else I can help you with today, or would you like to explore other options?'
+2025-09-19 16:13:03,174 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:13:03,175 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:13:03,175 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:13:03,176 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:13:04,942 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: The assistant, addressing the user as Hasan, recalled a previous conversation about Hasan feeling unwell and their discussion of tutoring as a potential solution.  The assistant offered further assistance or exploration of alternative options.\n"
+    }
+  }
+  avg_logprobs: -0.039176290233929954
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278583
+  nanos: 821571000
+}
+response_id: "tzPNaMOSMqKAlPIPxoWykAs"
+usage_metadata {
+  prompt_token_count: 232
+  candidates_token_count: 48
+  total_token_count: 280
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 232
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 48
+  }
+}
+
+2025-09-19 16:13:04,943 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: The assistant, addressing the user as Hasan, recalled a previous conversat...
+2025-09-19 16:13:04,943 - __main__ - DEBUG - Significance: True, Summary: The assistant, addressing the user as Hasan, recalled a previous conversation about Hasan feeling un...
+2025-09-19 16:13:04,944 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:13:04,944 - __main__ - DEBUG - Saving memory for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:13:04,945 - __main__ - DEBUG - Summary: The assistant, addressing the user as Hasan, recalled a previous conversation about Hasan feeling un...
+2025-09-19 16:13:04,945 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'session_1758278573303_hasan_11'}
+2025-09-19 16:13:04,945 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:13:04,945 - __main__ - DEBUG - Texts preview: ['The assistant, addressing the user as Hasan, recal...']
+2025-09-19 16:13:05,753 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:13:05,753 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:13:05,925 - __main__ - DEBUG - Memory saved with ID: mem_1758278585754
+2025-09-19 16:13:05,925 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 16:13:05,925 - __main__ - INFO - Request completed successfully
+2025-09-19 16:13:05,927 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:13:05] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:13:53,685 - __main__ - INFO - === DELETE MEMORIES REQUEST ===
+2025-09-19 16:13:53,686 - __main__ - DEBUG - Delete payload: {'user_id': 'hasan_11'}
+2025-09-19 16:13:53,687 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:13:53,687 - __main__ - INFO - Deleting memories for user: hasan_11 (sanitized: hasan_11)
+2025-09-19 16:13:53,922 - __main__ - DEBUG - Deleted memory mem_1758273634211
+2025-09-19 16:13:54,051 - __main__ - DEBUG - Deleted memory mem_1758275365291
+2025-09-19 16:13:54,162 - __main__ - DEBUG - Deleted memory mem_1758278585754
+2025-09-19 16:13:54,162 - __main__ - INFO - Deleted 3 memories for hasan_11
+2025-09-19 16:13:54,162 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:13:54] "POST /delete_memories HTTP/1.1" 200 -
+2025-09-19 16:15:21,109 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 16:15:21,110 - __main__ - DEBUG - Payload: {'user_id': 'fourninety_490', 'consent': True, 'username': 'fourninety'}
+2025-09-19 16:15:21,110 - __main__ - INFO - Updating consent for fourninety_490: True
+2025-09-19 16:15:21,110 - __main__ - INFO - Updating username for fourninety_490: fourninety
+2025-09-19 16:15:21,112 - __main__ - DEBUG - Sanitized user_id 'fourninety_490' to 'fourninety_490'
+2025-09-19 16:15:21,112 - __main__ - DEBUG - Upserting profile for fourninety_490: {'updated_at': '2025-09-19T10:45:21.110928+00:00', 'consent': True, 'username': 'fourninety'}
+2025-09-19 16:15:21,191 - __main__ - DEBUG - Profile upserted successfully for fourninety_490
+2025-09-19 16:15:21,192 - __main__ - INFO - Profile for fourninety_490 updated successfully.
+2025-09-19 16:15:21,193 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:15:21] "POST /consent HTTP/1.1" 200 -
+2025-09-19 16:15:25,991 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:15:25,994 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758278721202_fourninety_490",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "hi"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "fourninety_490"
+    }
+  }
+}
+2025-09-19 16:15:25,996 - __main__ - INFO - Processing request for user_id: fourninety_490
+2025-09-19 16:15:25,996 - __main__ - INFO - Session: session_1758278721202_fourninety_490
+2025-09-19 16:15:25,996 - __main__ - INFO - User message: 'hi'
+2025-09-19 16:15:25,997 - __main__ - DEBUG - Sanitized user_id 'fourninety_490' to 'fourninety_490'
+2025-09-19 16:15:25,997 - __main__ - DEBUG - Getting user profile for: fourninety_490 (sanitized: fourninety_490)
+2025-09-19 16:15:26,064 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:45:21.110928+00:00', 'username': 'fourninety'}}
+2025-09-19 16:15:26,064 - __main__ - INFO - User consent status: True
+2025-09-19 16:15:26,065 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:15:26,065 - __main__ - DEBUG - Sanitized user_id 'fourninety_490' to 'fourninety_490'
+2025-09-19 16:15:26,065 - __main__ - DEBUG - Retrieving similar memories for fourninety_490 (sanitized: fourninety_490)
+2025-09-19 16:15:26,066 - __main__ - DEBUG - Query: hi...
+2025-09-19 16:15:26,066 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:15:26,066 - __main__ - DEBUG - Texts preview: ['hi']
+2025-09-19 16:15:26,964 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:15:26,966 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:15:27,045 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:15:27,046 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:15:27,046 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:15:27,046 - __main__ - DEBUG - Session params: {"user_id": "fourninety_490"}
+2025-09-19 16:15:27,047 - __main__ - INFO - Generating response...
+2025-09-19 16:15:27,047 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:15:27,047 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:15:27,975 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hi there!  It\'s good to hear from you.\n"
+    }
+  }
+  avg_logprobs: -0.0943582568849836
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278727
+  nanos: 683045000
+}
+response_id: "RzTNaKXYKd-AlPIPwPGtaA"
+usage_metadata {
+  prompt_token_count: 203
+  candidates_token_count: 14
+  total_token_count: 217
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 203
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 14
+  }
+}
+
+2025-09-19 16:15:27,976 - __main__ - DEBUG - Generated text: Hi there!  It's good to hear from you.
+...
+2025-09-19 16:15:27,976 - __main__ - INFO - Generated reply: 'Hi there!  It's good to hear from you.'
+2025-09-19 16:15:27,977 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:15:27,977 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:15:27,977 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:15:27,977 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:15:29,208 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user initiated a simple greeting, to which the assistant responded with a standard greeting.\n"
+    }
+  }
+  avg_logprobs: -0.055457307742192194
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278728
+  nanos: 600032000
+}
+response_id: "SDTNaODPJN-AlPIPwPGtaA"
+usage_metadata {
+  prompt_token_count: 195
+  candidates_token_count: 26
+  total_token_count: 221
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 195
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 26
+  }
+}
+
+2025-09-19 16:15:29,209 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user initiated a simple greeting, to which the assistant responded with...
+2025-09-19 16:15:29,209 - __main__ - DEBUG - Significance: False, Summary: The user initiated a simple greeting, to which the assistant responded with a standard greeting....
+2025-09-19 16:15:29,210 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 16:15:29,210 - __main__ - INFO - Request completed successfully
+2025-09-19 16:15:29,211 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:15:29] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:15:36,122 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:15:36,124 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758278721202_fourninety_490",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "you know me"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "fourninety_490"
+    }
+  }
+}
+2025-09-19 16:15:36,124 - __main__ - INFO - Processing request for user_id: fourninety_490
+2025-09-19 16:15:36,124 - __main__ - INFO - Session: session_1758278721202_fourninety_490
+2025-09-19 16:15:36,125 - __main__ - INFO - User message: 'you know me'
+2025-09-19 16:15:36,125 - __main__ - DEBUG - Sanitized user_id 'fourninety_490' to 'fourninety_490'
+2025-09-19 16:15:36,125 - __main__ - DEBUG - Getting user profile for: fourninety_490 (sanitized: fourninety_490)
+2025-09-19 16:15:36,182 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:45:21.110928+00:00', 'username': 'fourninety'}}
+2025-09-19 16:15:36,183 - __main__ - INFO - User consent status: True
+2025-09-19 16:15:36,183 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:15:36,184 - __main__ - DEBUG - Sanitized user_id 'fourninety_490' to 'fourninety_490'
+2025-09-19 16:15:36,184 - __main__ - DEBUG - Retrieving similar memories for fourninety_490 (sanitized: fourninety_490)
+2025-09-19 16:15:36,184 - __main__ - DEBUG - Query: you know me...
+2025-09-19 16:15:36,184 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:15:36,185 - __main__ - DEBUG - Texts preview: ['you know me']
+2025-09-19 16:15:36,971 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:15:36,972 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:15:37,041 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:15:37,041 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:15:37,041 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:15:37,042 - __main__ - DEBUG - Session params: {"user_id": "fourninety_490"}
+2025-09-19 16:15:37,042 - __main__ - INFO - Generating response...
+2025-09-19 16:15:37,042 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:15:37,042 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:15:38,338 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Yes, I remember you, fourninety.  I recall you finding tutoring helpful in the past.  How can I support you today?\n"
+    }
+  }
+  avg_logprobs: -0.047964429855346678
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278737
+  nanos: 671892000
+}
+response_id: "UTTNaJSBKYm1lgOAu8GYAg"
+usage_metadata {
+  prompt_token_count: 205
+  candidates_token_count: 30
+  total_token_count: 235
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 205
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 30
+  }
+}
+
+2025-09-19 16:15:38,340 - __main__ - DEBUG - Generated text: Yes, I remember you, fourninety.  I recall you finding tutoring helpful in the past.  How can I supp...
+2025-09-19 16:15:38,341 - __main__ - INFO - Generated reply: 'Yes, I remember you, fourninety.  I recall you finding tutoring helpful in the past.  How can I support you today?'
+2025-09-19 16:15:38,341 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:15:38,341 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:15:38,341 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:15:38,342 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:15:39,922 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The assistant acknowledged the user, fourninety, and their past use of tutoring services.  The assistant then inquired about the user\'s current needs.\n"
+    }
+  }
+  avg_logprobs: -0.025511389970779418
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278738
+  nanos: 954700000
+}
+response_id: "UjTNaMyiOqKAlPIPxoWykAs"
+usage_metadata {
+  prompt_token_count: 213
+  candidates_token_count: 40
+  total_token_count: 253
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 213
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 40
+  }
+}
+
+2025-09-19 16:15:39,923 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The assistant acknowledged the user, fourninety, and their past use of tuto...
+2025-09-19 16:15:39,923 - __main__ - DEBUG - Significance: False, Summary: The assistant acknowledged the user, fourninety, and their past use of tutoring services.  The assis...
+2025-09-19 16:15:39,924 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 16:15:39,924 - __main__ - INFO - Request completed successfully
+2025-09-19 16:15:39,924 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:15:39] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:16:02,858 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:16:02,859 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758278721202_fourninety_490",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "what do you remember about me tho"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "fourninety_490"
+    }
+  }
+}
+2025-09-19 16:16:02,859 - __main__ - INFO - Processing request for user_id: fourninety_490
+2025-09-19 16:16:02,861 - __main__ - INFO - Session: session_1758278721202_fourninety_490
+2025-09-19 16:16:02,861 - __main__ - INFO - User message: 'what do you remember about me tho'
+2025-09-19 16:16:02,861 - __main__ - DEBUG - Sanitized user_id 'fourninety_490' to 'fourninety_490'
+2025-09-19 16:16:02,861 - __main__ - DEBUG - Getting user profile for: fourninety_490 (sanitized: fourninety_490)
+2025-09-19 16:16:02,913 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:45:21.110928+00:00', 'username': 'fourninety'}}
+2025-09-19 16:16:02,913 - __main__ - INFO - User consent status: True
+2025-09-19 16:16:02,913 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:16:02,913 - __main__ - DEBUG - Sanitized user_id 'fourninety_490' to 'fourninety_490'
+2025-09-19 16:16:02,914 - __main__ - DEBUG - Retrieving similar memories for fourninety_490 (sanitized: fourninety_490)
+2025-09-19 16:16:02,914 - __main__ - DEBUG - Query: what do you remember about me tho...
+2025-09-19 16:16:02,914 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:16:02,914 - __main__ - DEBUG - Texts preview: ['what do you remember about me tho']
+2025-09-19 16:16:03,717 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:16:03,717 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:16:03,774 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:16:03,775 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:16:03,775 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:16:03,776 - __main__ - DEBUG - Session params: {"user_id": "fourninety_490"}
+2025-09-19 16:16:03,776 - __main__ - INFO - Generating response...
+2025-09-19 16:16:03,776 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:16:03,776 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:16:05,528 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I remember you, fourninety.  While I don\'t have personal memories like a human, I do recall our past conversations.  I know you\'ve found tutoring helpful in the past. Is there anything specific you\'d like to talk about today?\n"
+    }
+  }
+  avg_logprobs: -0.085226336392489346
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278764
+  nanos: 426920000
+}
+response_id: "bDTNaKiHGqObu8MPnvXkgAQ"
+usage_metadata {
+  prompt_token_count: 209
+  candidates_token_count: 55
+  total_token_count: 264
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 209
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 55
+  }
+}
+
+2025-09-19 16:16:05,529 - __main__ - DEBUG - Generated text: I remember you, fourninety.  While I don't have personal memories like a human, I do recall our past...
+2025-09-19 16:16:05,530 - __main__ - INFO - Generated reply: 'I remember you, fourninety.  While I don't have personal memories like a human, I do recall our past conversations.  I know you've found tutoring helpful in the past. Is there anything specific you'd like to talk about today?'
+2025-09-19 16:16:05,530 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:16:05,531 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:16:05,531 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:16:05,531 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:16:07,383 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\n\nSUMMARY: The user, fourninety, inquired about the assistant\'s memory of them. The assistant confirmed it recalled past interactions, noting the user\'s previous positive experience with tutoring and offered to discuss specific topics.\n"
+    }
+  }
+  avg_logprobs: -0.07520394231758866
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758278766
+  nanos: 144763000
+}
+response_id: "bjTNaPvqCOOHu8MP1e66eQ"
+usage_metadata {
+  prompt_token_count: 242
+  candidates_token_count: 51
+  total_token_count: 293
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 242
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 51
+  }
+}
+
+2025-09-19 16:16:07,384 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+
+SUMMARY: The user, fourninety, inquired about the assistant's memory of them. The a...
+2025-09-19 16:16:07,384 - __main__ - DEBUG - Significance: False, Summary: The user, fourninety, inquired about the assistant's memory of them. The assistant confirmed it reca...
+2025-09-19 16:16:07,385 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 16:16:07,385 - __main__ - INFO - Request completed successfully
+2025-09-19 16:16:07,386 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:16:07] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:27:11,277 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 16:27:11,277 - __main__ - DEBUG - Payload: {'user_id': 'devesh', 'consent': True, 'username': 'devesh'}
+2025-09-19 16:27:11,278 - __main__ - INFO - Updating consent for devesh: True
+2025-09-19 16:27:11,278 - __main__ - INFO - Updating username for devesh: devesh
+2025-09-19 16:27:11,278 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:27:11,278 - __main__ - DEBUG - Upserting profile for devesh: {'updated_at': '2025-09-19T10:57:11.278191+00:00', 'consent': True, 'username': 'devesh'}
+2025-09-19 16:27:11,462 - __main__ - DEBUG - Profile upserted successfully for devesh
+2025-09-19 16:27:11,463 - __main__ - INFO - Profile for devesh updated successfully.
+2025-09-19 16:27:11,463 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:27:11] "POST /consent HTTP/1.1" 200 -
+2025-09-19 16:27:27,644 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:27:27,645 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758279431470_devesh",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "do you remeber about the girl i said"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "devesh"
+    }
+  }
+}
+2025-09-19 16:27:27,645 - __main__ - INFO - Processing request for user_id: devesh
+2025-09-19 16:27:27,645 - __main__ - INFO - Session: session_1758279431470_devesh
+2025-09-19 16:27:27,646 - __main__ - INFO - User message: 'do you remeber about the girl i said'
+2025-09-19 16:27:27,646 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:27:27,646 - __main__ - DEBUG - Getting user profile for: devesh (sanitized: devesh)
+2025-09-19 16:27:27,721 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:57:11.278191+00:00', 'username': 'devesh'}}
+2025-09-19 16:27:27,721 - __main__ - INFO - User consent status: True
+2025-09-19 16:27:27,722 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:27:27,722 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:27:27,722 - __main__ - DEBUG - Retrieving similar memories for devesh (sanitized: devesh)
+2025-09-19 16:27:27,722 - __main__ - DEBUG - Query: do you remeber about the girl i said...
+2025-09-19 16:27:27,722 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:27:27,723 - __main__ - DEBUG - Texts preview: ['do you remeber about the girl i said']
+2025-09-19 16:27:28,949 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:27:28,950 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:27:29,017 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:27:29,017 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:27:29,017 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:27:29,018 - __main__ - DEBUG - Session params: {"user_id": "devesh"}
+2025-09-19 16:27:29,018 - __main__ - INFO - Generating response...
+2025-09-19 16:27:29,018 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:27:29,018 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:27:30,396 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I remember you mentioning a girl.  Is there something you\'d like to talk about concerning her?\n"
+    }
+  }
+  avg_logprobs: -0.10423398017883301
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758279449
+  nanos: 823374000
+}
+response_id: "GTfNaM6gMoOQvrEPy5T_0AU"
+usage_metadata {
+  prompt_token_count: 205
+  candidates_token_count: 22
+  total_token_count: 227
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 205
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 22
+  }
+}
+
+2025-09-19 16:27:30,397 - __main__ - DEBUG - Generated text: I remember you mentioning a girl.  Is there something you'd like to talk about concerning her?
+...
+2025-09-19 16:27:30,398 - __main__ - INFO - Generated reply: 'I remember you mentioning a girl.  Is there something you'd like to talk about concerning her?'
+2025-09-19 16:27:30,398 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:27:30,398 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:27:30,399 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:27:30,399 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:27:32,108 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user inquired about a previously mentioned girl, and the assistant acknowledged the mention and prompted the user to elaborate.  No new information was introduced.\n"
+    }
+  }
+  avg_logprobs: -0.057104386781391347
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758279451
+  nanos: 207860000
+}
+response_id: "GzfNaPTXDPeQvrEPx43X4QE"
+usage_metadata {
+  prompt_token_count: 211
+  candidates_token_count: 38
+  total_token_count: 249
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 211
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 38
+  }
+}
+
+2025-09-19 16:27:32,109 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user inquired about a previously mentioned girl, and the assistant ackn...
+2025-09-19 16:27:32,109 - __main__ - DEBUG - Significance: False, Summary: The user inquired about a previously mentioned girl, and the assistant acknowledged the mention and ...
+2025-09-19 16:27:32,110 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 16:27:32,110 - __main__ - INFO - Request completed successfully
+2025-09-19 16:27:32,110 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:27:32] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:27:40,651 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:27:40,653 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758279431470_devesh",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "can you tell her name"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "devesh"
+    }
+  }
+}
+2025-09-19 16:27:40,653 - __main__ - INFO - Processing request for user_id: devesh
+2025-09-19 16:27:40,653 - __main__ - INFO - Session: session_1758279431470_devesh
+2025-09-19 16:27:40,653 - __main__ - INFO - User message: 'can you tell her name'
+2025-09-19 16:27:40,654 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:27:40,654 - __main__ - DEBUG - Getting user profile for: devesh (sanitized: devesh)
+2025-09-19 16:27:40,715 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:57:11.278191+00:00', 'username': 'devesh'}}
+2025-09-19 16:27:40,716 - __main__ - INFO - User consent status: True
+2025-09-19 16:27:40,717 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:27:40,717 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:27:40,717 - __main__ - DEBUG - Retrieving similar memories for devesh (sanitized: devesh)
+2025-09-19 16:27:40,718 - __main__ - DEBUG - Query: can you tell her name...
+2025-09-19 16:27:40,718 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:27:40,718 - __main__ - DEBUG - Texts preview: ['can you tell her name']
+2025-09-19 16:27:41,842 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:27:41,843 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:27:41,908 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:27:41,908 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:27:41,909 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:27:41,909 - __main__ - DEBUG - Session params: {"user_id": "devesh"}
+2025-09-19 16:27:41,909 - __main__ - INFO - Generating response...
+2025-09-19 16:27:41,909 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:27:41,909 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:27:43,276 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I understand you\'d like to know her name.  I\'m here to listen and support you.  Is there anything else you\'d like to talk about?\n"
+    }
+  }
+  avg_logprobs: -0.064762214819590255
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758279462
+  nanos: 662030000
+}
+response_id: "JjfNaI60KKObu8MPnvXkgAQ"
+usage_metadata {
+  prompt_token_count: 201
+  candidates_token_count: 36
+  total_token_count: 237
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 201
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 36
+  }
+}
+
+2025-09-19 16:27:43,277 - __main__ - DEBUG - Generated text: I understand you'd like to know her name.  I'm here to listen and support you.  Is there anything el...
+2025-09-19 16:27:43,278 - __main__ - INFO - Generated reply: 'I understand you'd like to know her name.  I'm here to listen and support you.  Is there anything else you'd like to talk about?'
+2025-09-19 16:27:43,278 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:27:43,278 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:27:43,278 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:27:43,278 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:27:45,302 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user asked the assistant for a name (\"her name\"), and the assistant responded with an empathetic statement and an open-ended question about other topics.  No specific name or other significant information was revealed.\n"
+    }
+  }
+  avg_logprobs: -0.082518835067749027
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758279464
+  nanos: 86093000
+}
+response_id: "KDfNaM2gBZ2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 221
+  candidates_token_count: 50
+  total_token_count: 271
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 221
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 50
+  }
+}
+
+2025-09-19 16:27:45,304 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user asked the assistant for a name ("her name"), and the assistant res...
+2025-09-19 16:27:45,304 - __main__ - DEBUG - Significance: False, Summary: The user asked the assistant for a name ("her name"), and the assistant responded with an empathetic...
+2025-09-19 16:27:45,305 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 16:27:45,305 - __main__ - INFO - Request completed successfully
+2025-09-19 16:27:45,306 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:27:45] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:28:48,821 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:28:48,823 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758279431470_devesh",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "did i tell you if i was sleepy"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "devesh"
+    }
+  }
+}
+2025-09-19 16:28:48,823 - __main__ - INFO - Processing request for user_id: devesh
+2025-09-19 16:28:48,823 - __main__ - INFO - Session: session_1758279431470_devesh
+2025-09-19 16:28:48,824 - __main__ - INFO - User message: 'did i tell you if i was sleepy'
+2025-09-19 16:28:48,824 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:28:48,824 - __main__ - DEBUG - Getting user profile for: devesh (sanitized: devesh)
+2025-09-19 16:28:48,882 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:57:11.278191+00:00', 'username': 'devesh'}}
+2025-09-19 16:28:48,882 - __main__ - INFO - User consent status: True
+2025-09-19 16:28:48,882 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:28:48,882 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:28:48,883 - __main__ - DEBUG - Retrieving similar memories for devesh (sanitized: devesh)
+2025-09-19 16:28:48,883 - __main__ - DEBUG - Query: did i tell you if i was sleepy...
+2025-09-19 16:28:48,883 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:28:48,883 - __main__ - DEBUG - Texts preview: ['did i tell you if i was sleepy']
+2025-09-19 16:28:50,086 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:28:50,086 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:28:50,148 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:28:50,148 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:28:50,148 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:28:50,149 - __main__ - DEBUG - Session params: {"user_id": "devesh"}
+2025-09-19 16:28:50,149 - __main__ - INFO - Generating response...
+2025-09-19 16:28:50,149 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:28:50,149 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:28:51,880 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I understand you\'re wondering if you mentioned feeling sleepy.  I don\'t recall that specific conversation, but I\'m here to listen if you\'d like to talk about it.\n"
+    }
+  }
+  avg_logprobs: -0.1021730899810791
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758279530
+  nanos: 943585000
+}
+response_id: "ajfNaOHLOYOQvrEPy5T_0AU"
+usage_metadata {
+  prompt_token_count: 204
+  candidates_token_count: 40
+  total_token_count: 244
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 204
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 40
+  }
+}
+
+2025-09-19 16:28:51,881 - __main__ - DEBUG - Generated text: I understand you're wondering if you mentioned feeling sleepy.  I don't recall that specific convers...
+2025-09-19 16:28:51,881 - __main__ - INFO - Generated reply: 'I understand you're wondering if you mentioned feeling sleepy.  I don't recall that specific conversation, but I'm here to listen if you'd like to talk about it.'
+2025-09-19 16:28:51,882 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:28:51,882 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:28:51,882 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:28:51,882 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:28:53,746 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user inquired whether they had previously mentioned feeling sleepy, to which the assistant responded that it did not recall the conversation but was available to listen if the user wished to discuss it.\n"
+    }
+  }
+  avg_logprobs: -0.0413044982486301
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758279532
+  nanos: 671459000
+}
+response_id: "bDfNaOP9KJeQvrEPip-RkAY"
+usage_metadata {
+  prompt_token_count: 228
+  candidates_token_count: 45
+  total_token_count: 273
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 228
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 45
+  }
+}
+
+2025-09-19 16:28:53,747 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user inquired whether they had previously mentioned feeling sleepy, to ...
+2025-09-19 16:28:53,747 - __main__ - DEBUG - Significance: False, Summary: The user inquired whether they had previously mentioned feeling sleepy, to which the assistant respo...
+2025-09-19 16:28:53,748 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 16:28:53,748 - __main__ - INFO - Request completed successfully
+2025-09-19 16:28:53,748 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:28:53] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:55:25,080 - __main__ - INFO - === CONSENT/PROFILE UPDATE REQUEST ===
+2025-09-19 16:55:25,082 - __main__ - DEBUG - Payload: {'user_id': 'hasan_11', 'consent': True, 'username': 'hasan'}
+2025-09-19 16:55:25,082 - __main__ - INFO - Updating consent for hasan_11: True
+2025-09-19 16:55:25,083 - __main__ - INFO - Updating username for hasan_11: hasan
+2025-09-19 16:55:25,083 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:55:25,083 - __main__ - DEBUG - Upserting profile for hasan_11: {'updated_at': '2025-09-19T11:25:25.082224+00:00', 'consent': True, 'username': 'hasan'}
+2025-09-19 16:55:25,209 - urllib3.connectionpool - DEBUG - Resetting dropped connection: oauth2.googleapis.com
+2025-09-19 16:55:25,397 - urllib3.connectionpool - DEBUG - https://oauth2.googleapis.com:443 "POST /token HTTP/1.1" 200 None
+2025-09-19 16:55:25,481 - __main__ - DEBUG - Profile upserted successfully for hasan_11
+2025-09-19 16:55:25,483 - __main__ - INFO - Profile for hasan_11 updated successfully.
+2025-09-19 16:55:25,483 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:55:25] "POST /consent HTTP/1.1" 200 -
+2025-09-19 16:55:43,086 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:55:43,089 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758281125491_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "heyyy how are youu"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 16:55:43,089 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 16:55:43,090 - __main__ - INFO - Session: session_1758281125491_hasan_11
+2025-09-19 16:55:43,090 - __main__ - INFO - User message: 'heyyy how are youu'
+2025-09-19 16:55:43,091 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:55:43,091 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 16:55:43,158 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T11:25:25.082224+00:00', 'username': 'hasan'}}
+2025-09-19 16:55:43,159 - __main__ - INFO - User consent status: True
+2025-09-19 16:55:43,159 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:55:43,160 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:55:43,160 - __main__ - DEBUG - Retrieving similar memories for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:55:43,160 - __main__ - DEBUG - Query: heyyy how are youu...
+2025-09-19 16:55:43,160 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:55:43,162 - __main__ - DEBUG - Texts preview: ['heyyy how are youu']
+2025-09-19 16:55:44,372 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:55:44,372 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:55:44,425 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:55:44,426 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:55:44,426 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:55:44,426 - __main__ - DEBUG - Session params: {"user_id": "hasan_11"}
+2025-09-19 16:55:44,426 - __main__ - INFO - Generating response...
+2025-09-19 16:55:44,428 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:55:44,428 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:55:45,647 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hey there!  I\'m doing well, thank you for asking. How are you feeling today?\n"
+    }
+  }
+  avg_logprobs: -0.077644044702703308
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281145
+  nanos: 308906000
+}
+response_id: "uT3NaKrtEqKAlPIPxoWykAs"
+usage_metadata {
+  prompt_token_count: 205
+  candidates_token_count: 22
+  total_token_count: 227
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 205
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 22
+  }
+}
+
+2025-09-19 16:55:45,648 - __main__ - DEBUG - Generated text: Hey there!  I'm doing well, thank you for asking. How are you feeling today?
+...
+2025-09-19 16:55:45,649 - __main__ - INFO - Generated reply: 'Hey there!  I'm doing well, thank you for asking. How are you feeling today?'
+2025-09-19 16:55:45,649 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:55:45,649 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:55:45,649 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:55:45,649 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:55:47,229 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: NO\nSUMMARY: The user greeted the assistant with an informal \"heyyy,\" and the assistant responded with a polite greeting and inquiry about the user\'s well-being.\n"
+    }
+  }
+  avg_logprobs: -0.015734365582466124
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281146
+  nanos: 382096000
+}
+response_id: "uj3NaJCpF4m1lgOAu8GYAg"
+usage_metadata {
+  prompt_token_count: 208
+  candidates_token_count: 40
+  total_token_count: 248
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 208
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 40
+  }
+}
+
+2025-09-19 16:55:47,230 - __main__ - DEBUG - Generated text: SIGNIFICANT: NO
+SUMMARY: The user greeted the assistant with an informal "heyyy," and the assistant ...
+2025-09-19 16:55:47,230 - __main__ - DEBUG - Significance: False, Summary: The user greeted the assistant with an informal "heyyy," and the assistant responded with a polite g...
+2025-09-19 16:55:47,230 - __main__ - INFO - Exchange was not significant. Skipping memory save.
+2025-09-19 16:55:47,232 - __main__ - INFO - Request completed successfully
+2025-09-19 16:55:47,232 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:55:47] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:56:30,150 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:56:30,152 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758281125491_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "theres this girl called potential we had a situationship and guess what she has a bfff"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 16:56:30,152 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 16:56:30,153 - __main__ - INFO - Session: session_1758281125491_hasan_11
+2025-09-19 16:56:30,153 - __main__ - INFO - User message: 'theres this girl called potential we had a situationship and guess what she has a bfff'
+2025-09-19 16:56:30,153 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:56:30,153 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 16:56:30,221 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T11:25:25.082224+00:00', 'username': 'hasan'}}
+2025-09-19 16:56:30,222 - __main__ - INFO - User consent status: True
+2025-09-19 16:56:30,222 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:56:30,222 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:56:30,222 - __main__ - DEBUG - Retrieving similar memories for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:56:30,222 - __main__ - DEBUG - Query: theres this girl called potential we had a situationship and guess what she has a bfff...
+2025-09-19 16:56:30,222 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:56:30,223 - __main__ - DEBUG - Texts preview: ['theres this girl called potential we had a situati...']
+2025-09-19 16:56:31,472 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:56:31,472 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:56:31,547 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:56:31,547 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:56:31,547 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:56:31,547 - __main__ - DEBUG - Session params: {"user_id": "hasan_11"}
+2025-09-19 16:56:31,548 - __main__ - INFO - Generating response...
+2025-09-19 16:56:31,548 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:56:31,548 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:56:33,737 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I\'m sorry to hear that, Hasan.  It sounds really tough finding out about her BFF, especially after what you went through with the situationship.  Remember how helpful you found tutoring when you were dealing with similar feelings before?  Maybe focusing on something you enjoy, like that, could help you now too.\n"
+    }
+  }
+  avg_logprobs: -0.24580088528719815
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281192
+  nanos: 402832000
+}
+response_id: "6D3NaJDLGP-Y9b4PxOOHsAc"
+usage_metadata {
+  prompt_token_count: 217
+  candidates_token_count: 66
+  total_token_count: 283
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 217
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 66
+  }
+}
+
+2025-09-19 16:56:33,737 - __main__ - DEBUG - Generated text: I'm sorry to hear that, Hasan.  It sounds really tough finding out about her BFF, especially after w...
+2025-09-19 16:56:33,738 - __main__ - INFO - Generated reply: 'I'm sorry to hear that, Hasan.  It sounds really tough finding out about her BFF, especially after what you went through with the situationship.  Remember how helpful you found tutoring when you were dealing with similar feelings before?  Maybe focusing on something you enjoy, like that, could help you now too.'
+2025-09-19 16:56:33,738 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:56:33,738 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:56:33,738 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:56:33,740 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:56:35,569 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\n\nSUMMARY: Hasan disclosed a past \"situationship\" with a girl named Potential and expressed distress upon learning she has a best friend (BFF).  The assistant suggested he focus on enjoyable activities, referencing past use of tutoring to cope with similar emotional situations.\n"
+    }
+  }
+  avg_logprobs: -0.088799821919408342
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281194
+  nanos: 571985000
+}
+response_id: "6j3NaNH0IpKbxgGx1o9Y"
+usage_metadata {
+  prompt_token_count: 264
+  candidates_token_count: 58
+  total_token_count: 322
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 264
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 58
+  }
+}
+
+2025-09-19 16:56:35,570 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+
+SUMMARY: Hasan disclosed a past "situationship" with a girl named Potential and ex...
+2025-09-19 16:56:35,571 - __main__ - DEBUG - Significance: True, Summary: Hasan disclosed a past "situationship" with a girl named Potential and expressed distress upon learn...
+2025-09-19 16:56:35,571 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:56:35,571 - __main__ - DEBUG - Saving memory for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:56:35,572 - __main__ - DEBUG - Summary: Hasan disclosed a past "situationship" with a girl named Potential and expressed distress upon learn...
+2025-09-19 16:56:35,572 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'session_1758281125491_hasan_11'}
+2025-09-19 16:56:35,572 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:56:35,572 - __main__ - DEBUG - Texts preview: ['Hasan disclosed a past "situationship" with a girl...']
+2025-09-19 16:56:36,696 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:56:36,696 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:56:36,901 - __main__ - DEBUG - Memory saved with ID: mem_1758281196697
+2025-09-19 16:56:36,901 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 16:56:36,902 - __main__ - INFO - Request completed successfully
+2025-09-19 16:56:36,902 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:56:36] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:57:03,699 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:57:03,700 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758281125491_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "yeah im sad about tat"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 16:57:03,701 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 16:57:03,701 - __main__ - INFO - Session: session_1758281125491_hasan_11
+2025-09-19 16:57:03,701 - __main__ - INFO - User message: 'yeah im sad about tat'
+2025-09-19 16:57:03,702 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:57:03,702 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 16:57:03,768 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T11:25:25.082224+00:00', 'username': 'hasan'}}
+2025-09-19 16:57:03,769 - __main__ - INFO - User consent status: True
+2025-09-19 16:57:03,769 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:57:03,769 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:57:03,769 - __main__ - DEBUG - Retrieving similar memories for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:57:03,771 - __main__ - DEBUG - Query: yeah im sad about tat...
+2025-09-19 16:57:03,771 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:57:03,771 - __main__ - DEBUG - Texts preview: ['yeah im sad about tat']
+2025-09-19 16:57:04,984 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:57:04,984 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:57:05,045 - __main__ - DEBUG - Cosine similarity calculated: 0.3754
+2025-09-19 16:57:05,046 - __main__ - DEBUG - Doc mem_1758281196697: similarity = 0.3754
+2025-09-19 16:57:05,046 - __main__ - DEBUG - Found 1 total memories, 1 with valid embeddings
+2025-09-19 16:57:05,046 - __main__ - DEBUG - Returning top 1 similar memories
+2025-09-19 16:57:05,046 - __main__ - DEBUG -    #1: Hasan disclosed a past "situationship" with a girl...
+2025-09-19 16:57:05,047 - __main__ - INFO - Found 1 relevant memories
+2025-09-19 16:57:05,047 - __main__ - DEBUG - Session params: {"user_id": "hasan_11"}
+2025-09-19 16:57:05,047 - __main__ - INFO - Generating response...
+2025-09-19 16:57:05,047 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:57:05,049 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:57:06,825 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I hear you, Hasan.  It\'s understandable you\'re feeling sad about the situation with Potential and her best friend. Remember how helpful tutoring was when you were dealing with similar feelings before?  Maybe focusing on something enjoyable, like that, could help you feel better right now.\n"
+    }
+  }
+  avg_logprobs: -0.12778441380646269
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281225
+  nanos: 873364000
+}
+response_id: "CT7NaJSnNaObu8MPnvXkgAQ"
+usage_metadata {
+  prompt_token_count: 262
+  candidates_token_count: 59
+  total_token_count: 321
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 262
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 59
+  }
+}
+
+2025-09-19 16:57:06,826 - __main__ - DEBUG - Generated text: I hear you, Hasan.  It's understandable you're feeling sad about the situation with Potential and he...
+2025-09-19 16:57:06,826 - __main__ - INFO - Generated reply: 'I hear you, Hasan.  It's understandable you're feeling sad about the situation with Potential and her best friend. Remember how helpful tutoring was when you were dealing with similar feelings before?  Maybe focusing on something enjoyable, like that, could help you feel better right now.'
+2025-09-19 16:57:06,827 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:57:06,827 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:57:06,827 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:57:06,827 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:57:08,813 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: Hasan expressed sadness to the assistant regarding a situation involving \"Potential\" and her best friend. The assistant acknowledged Hasan\'s sadness and suggested focusing on enjoyable activities, referencing past positive experiences with tutoring to cope with similar emotions.\n"
+    }
+  }
+  avg_logprobs: -0.059757093213639166
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281227
+  nanos: 691174000
+}
+response_id: "Cz7NaOaXKuOHu8MP1e66eQ"
+usage_metadata {
+  prompt_token_count: 244
+  candidates_token_count: 53
+  total_token_count: 297
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 244
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 53
+  }
+}
+
+2025-09-19 16:57:08,814 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: Hasan expressed sadness to the assistant regarding a situation involving "...
+2025-09-19 16:57:08,814 - __main__ - DEBUG - Significance: True, Summary: Hasan expressed sadness to the assistant regarding a situation involving "Potential" and her best fr...
+2025-09-19 16:57:08,814 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:57:08,815 - __main__ - DEBUG - Saving memory for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:57:08,815 - __main__ - DEBUG - Summary: Hasan expressed sadness to the assistant regarding a situation involving "Potential" and her best fr...
+2025-09-19 16:57:08,815 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'session_1758281125491_hasan_11'}
+2025-09-19 16:57:08,815 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:57:08,816 - __main__ - DEBUG - Texts preview: ['Hasan expressed sadness to the assistant regarding...']
+2025-09-19 16:57:10,649 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:57:10,649 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:57:10,835 - __main__ - DEBUG - Memory saved with ID: mem_1758281230650
+2025-09-19 16:57:10,836 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 16:57:10,836 - __main__ - INFO - Request completed successfully
+2025-09-19 16:57:10,837 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:57:10] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:57:24,115 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:57:24,116 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758281125491_hasan_11",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "btw its bf not bff"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "hasan_11"
+    }
+  }
+}
+2025-09-19 16:57:24,117 - __main__ - INFO - Processing request for user_id: hasan_11
+2025-09-19 16:57:24,117 - __main__ - INFO - Session: session_1758281125491_hasan_11
+2025-09-19 16:57:24,117 - __main__ - INFO - User message: 'btw its bf not bff'
+2025-09-19 16:57:24,118 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:57:24,118 - __main__ - DEBUG - Getting user profile for: hasan_11 (sanitized: hasan_11)
+2025-09-19 16:57:24,222 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T11:25:25.082224+00:00', 'username': 'hasan'}}
+2025-09-19 16:57:24,223 - __main__ - INFO - User consent status: True
+2025-09-19 16:57:24,223 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:57:24,223 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:57:24,223 - __main__ - DEBUG - Retrieving similar memories for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:57:24,223 - __main__ - DEBUG - Query: btw its bf not bff...
+2025-09-19 16:57:24,223 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:57:24,224 - __main__ - DEBUG - Texts preview: ['btw its bf not bff']
+2025-09-19 16:57:25,409 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:57:25,410 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:57:25,469 - __main__ - DEBUG - Cosine similarity calculated: 0.4389
+2025-09-19 16:57:25,469 - __main__ - DEBUG - Doc mem_1758281196697: similarity = 0.4389
+2025-09-19 16:57:25,472 - __main__ - DEBUG - Cosine similarity calculated: 0.3272
+2025-09-19 16:57:25,473 - __main__ - DEBUG - Doc mem_1758281230650: similarity = 0.3272
+2025-09-19 16:57:25,473 - __main__ - DEBUG - Found 2 total memories, 2 with valid embeddings
+2025-09-19 16:57:25,473 - __main__ - DEBUG - Returning top 2 similar memories
+2025-09-19 16:57:25,473 - __main__ - DEBUG -    #1: Hasan disclosed a past "situationship" with a girl...
+2025-09-19 16:57:25,475 - __main__ - DEBUG -    #2: Hasan expressed sadness to the assistant regarding...
+2025-09-19 16:57:25,475 - __main__ - INFO - Found 2 relevant memories
+2025-09-19 16:57:25,475 - __main__ - DEBUG - Session params: {"user_id": "hasan_11"}
+2025-09-19 16:57:25,475 - __main__ - INFO - Generating response...
+2025-09-19 16:57:25,475 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:57:25,476 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:57:27,559 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "I understand.  It sounds frustrating to learn more about Potential\'s relationship with her boyfriend. Remember how helpful you found tutoring in the past when dealing with similar feelings? Focusing on something you enjoy, like that, might help you feel better now.\n"
+    }
+  }
+  avg_logprobs: -0.19010044546688304
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281246
+  nanos: 316681000
+}
+response_id: "Hj7NaImqE5KbxgGx1o9Y"
+usage_metadata {
+  prompt_token_count: 316
+  candidates_token_count: 51
+  total_token_count: 367
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 316
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 51
+  }
+}
+
+2025-09-19 16:57:27,559 - __main__ - DEBUG - Generated text: I understand.  It sounds frustrating to learn more about Potential's relationship with her boyfriend...
+2025-09-19 16:57:27,560 - __main__ - INFO - Generated reply: 'I understand.  It sounds frustrating to learn more about Potential's relationship with her boyfriend. Remember how helpful you found tutoring in the past when dealing with similar feelings? Focusing on something you enjoy, like that, might help you feel better now.'
+2025-09-19 16:57:27,560 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:57:27,561 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:57:27,561 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:57:27,561 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:57:29,602 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: The user corrected the assistant\'s use of \"bff\" to \"bf,\" indicating a discussion about the user\'s boyfriend, referred to as \"Potential\'s boyfriend.\"  The assistant suggested focusing on enjoyable activities, such as tutoring, to cope with negative feelings related to this relationship.\n"
+    }
+  }
+  avg_logprobs: -0.07784668367300461
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281248
+  nanos: 424750000
+}
+response_id: "ID7NaK72GZ2du8MPysuvMA"
+usage_metadata {
+  prompt_token_count: 237
+  candidates_token_count: 67
+  total_token_count: 304
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 237
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 67
+  }
+}
+
+2025-09-19 16:57:29,603 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: The user corrected the assistant's use of "bff" to "bf," indicating a disc...
+2025-09-19 16:57:29,603 - __main__ - DEBUG - Significance: True, Summary: The user corrected the assistant's use of "bff" to "bf," indicating a discussion about the user's bo...
+2025-09-19 16:57:29,604 - __main__ - DEBUG - Sanitized user_id 'hasan_11' to 'hasan_11'
+2025-09-19 16:57:29,604 - __main__ - DEBUG - Saving memory for hasan_11 (sanitized: hasan_11)
+2025-09-19 16:57:29,604 - __main__ - DEBUG - Summary: The user corrected the assistant's use of "bff" to "bf," indicating a discussion about the user's bo...
+2025-09-19 16:57:29,604 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'session_1758281125491_hasan_11'}
+2025-09-19 16:57:29,604 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:57:29,606 - __main__ - DEBUG - Texts preview: ['The user corrected the assistant\'s use of "bff" to...']
+2025-09-19 16:57:30,767 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:57:30,768 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:57:30,926 - __main__ - DEBUG - Memory saved with ID: mem_1758281250768
+2025-09-19 16:57:30,927 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 16:57:30,927 - __main__ - INFO - Request completed successfully
+2025-09-19 16:57:30,928 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:57:30] "POST /dialogflow-webhook HTTP/1.1" 200 -
+2025-09-19 16:59:33,247 - __main__ - INFO - === NEW WEBHOOK REQUEST ===
+2025-09-19 16:59:33,247 - __main__ - DEBUG - Raw request: {
+  "session": "session_1758281368432_devesh",
+  "messages": [
+    {
+      "text": {
+        "text": [
+          "heyyy"
+        ]
+      }
+    }
+  ],
+  "sessionInfo": {
+    "parameters": {
+      "user_id": "devesh"
+    }
+  }
+}
+2025-09-19 16:59:33,249 - __main__ - INFO - Processing request for user_id: devesh
+2025-09-19 16:59:33,249 - __main__ - INFO - Session: session_1758281368432_devesh
+2025-09-19 16:59:33,249 - __main__ - INFO - User message: 'heyyy'
+2025-09-19 16:59:33,250 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:59:33,250 - __main__ - DEBUG - Getting user profile for: devesh (sanitized: devesh)
+2025-09-19 16:59:33,315 - __main__ - DEBUG - Found user profile: {'profile': {'consent': True, 'updated_at': '2025-09-19T10:57:11.278191+00:00', 'username': 'devesh'}}
+2025-09-19 16:59:33,316 - __main__ - INFO - User consent status: True
+2025-09-19 16:59:33,316 - __main__ - INFO - Retrieving similar memories...
+2025-09-19 16:59:33,316 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:59:33,317 - __main__ - DEBUG - Retrieving similar memories for devesh (sanitized: devesh)
+2025-09-19 16:59:33,317 - __main__ - DEBUG - Query: heyyy...
+2025-09-19 16:59:33,317 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:59:33,317 - __main__ - DEBUG - Texts preview: ['heyyy']
+2025-09-19 16:59:34,560 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:59:34,560 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:59:34,629 - __main__ - DEBUG - Found 0 total memories, 0 with valid embeddings
+2025-09-19 16:59:34,629 - __main__ - DEBUG - Returning top 0 similar memories
+2025-09-19 16:59:34,629 - __main__ - INFO - Found 0 relevant memories
+2025-09-19 16:59:34,630 - __main__ - DEBUG - Session params: {"user_id": "devesh"}
+2025-09-19 16:59:34,630 - __main__ - INFO - Generating response...
+2025-09-19 16:59:34,630 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:59:34,630 - __main__ - DEBUG - Prompt preview: You are EmpathicBot — a supportive, validating, and non-judgemental AI assistant. Your primary goal is to listen and help the user feel heard. Crucially, if you are provided with retrieved memories, s...
+2025-09-19 16:59:35,875 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "Hey there, Devesh!  How are you doing today?\n"
+    }
+  }
+  avg_logprobs: -0.011818440897124154
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281375
+  nanos: 461124000
+}
+response_id: "nz7NaMSSHP-Y9b4PxOOHsAc"
+usage_metadata {
+  prompt_token_count: 198
+  candidates_token_count: 14
+  total_token_count: 212
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 198
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 14
+  }
+}
+
+2025-09-19 16:59:35,876 - __main__ - DEBUG - Generated text: Hey there, Devesh!  How are you doing today?
+...
+2025-09-19 16:59:35,877 - __main__ - INFO - Generated reply: 'Hey there, Devesh!  How are you doing today?'
+2025-09-19 16:59:35,877 - __main__ - INFO - Creating and evaluating summary of the current exchange...
+2025-09-19 16:59:35,878 - __main__ - DEBUG - Summarizing and evaluating the latest exchange.
+2025-09-19 16:59:35,878 - __main__ - DEBUG - Generating text with model: gemini-1.5-flash using the GenerativeModel SDK
+2025-09-19 16:59:35,878 - __main__ - DEBUG - Prompt preview: You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will pro...
+2025-09-19 16:59:37,155 - __main__ - DEBUG - Raw response from gemini-1.5-flash: candidates {
+  content {
+    role: "model"
+    parts {
+      text: "SIGNIFICANT: YES\nSUMMARY: The user, identified as Devesh, initiated a conversation with the assistant.\n"
+    }
+  }
+  avg_logprobs: -0.024171856542428333
+  finish_reason: STOP
+}
+model_version: "gemini-1.5-flash-002"
+create_time {
+  seconds: 1758281376
+  nanos: 694544000
+}
+response_id: "oD7NaJCyKqnXmgbu4IroBw"
+usage_metadata {
+  prompt_token_count: 196
+  candidates_token_count: 24
+  total_token_count: 220
+  prompt_tokens_details {
+    modality: TEXT
+    token_count: 196
+  }
+  candidates_tokens_details {
+    modality: TEXT
+    token_count: 24
+  }
+}
+
+2025-09-19 16:59:37,156 - __main__ - DEBUG - Generated text: SIGNIFICANT: YES
+SUMMARY: The user, identified as Devesh, initiated a conversation with the assistan...
+2025-09-19 16:59:37,156 - __main__ - DEBUG - Significance: True, Summary: The user, identified as Devesh, initiated a conversation with the assistant....
+2025-09-19 16:59:37,157 - __main__ - DEBUG - Sanitized user_id 'devesh' to 'devesh'
+2025-09-19 16:59:37,157 - __main__ - DEBUG - Saving memory for devesh (sanitized: devesh)
+2025-09-19 16:59:37,157 - __main__ - DEBUG - Summary: The user, identified as Devesh, initiated a conversation with the assistant....
+2025-09-19 16:59:37,157 - __main__ - DEBUG - Metadata: {'topic': 'conversation_exchange', 'session_id': 'session_1758281368432_devesh'}
+2025-09-19 16:59:37,158 - __main__ - DEBUG - Embedding 1 texts
+2025-09-19 16:59:37,158 - __main__ - DEBUG - Texts preview: ['The user, identified as Devesh, initiated a conver...']
+2025-09-19 16:59:38,298 - __main__ - DEBUG - Successfully generated 1 embeddings
+2025-09-19 16:59:38,299 - __main__ - DEBUG - Embedding dimensions: [768]
+2025-09-19 16:59:38,488 - __main__ - DEBUG - Memory saved with ID: mem_1758281378299
+2025-09-19 16:59:38,489 - __main__ - INFO - SIGNIFICANT exchange saved as a new memory.
+2025-09-19 16:59:38,489 - __main__ - INFO - Request completed successfully
+2025-09-19 16:59:38,490 - werkzeug - INFO - 127.0.0.1 - - [19/Sep/2025 16:59:38] "POST /dialogflow-webhook HTTP/1.1" 200 -

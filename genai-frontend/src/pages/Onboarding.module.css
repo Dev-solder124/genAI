@@ -1,0 +1,5 @@
+.wrap { max-width: 520px; margin: 0 auto; display: grid; gap: 14px; }
+.title { margin: 0; }
+.row { display: grid; gap: 6px; }
+.consentLine { display: flex; gap: 8px; align-items: center; color: var(--fg-muted); }
+.error { color: #ef4444; }

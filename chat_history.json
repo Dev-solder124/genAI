@@ -131,5 +131,26 @@
     "session_id": "session_1758220253_user_1092",
     "user_message": "im backk",
     "bot_response": "Welcome back, Devesh.  I remember you were feeling uncertain about your next steps. Reaching out to 470 felt like a good idea last time we talked, and it sounds like connecting with them might bring some clarity, given how much they mean to you."
+  },
+  {
+    "timestamp": "2025-09-19T14:50:11.580184",
+    "user_id": "hasan_11",
+    "session_id": "session_1758273548_hasan_11",
+    "user_message": "hi",
+    "bot_response": "I can remember helpful things between sessions to better support you. Would you like me to remember parts of this conversation for next time? (yes/no)"
+  },
+  {
+    "timestamp": "2025-09-19T14:50:34.417534",
+    "user_id": "hasan_11",
+    "session_id": "session_1758273548_hasan_11",
+    "user_message": "im not good",
+    "bot_response": "I hear you saying you're not feeling good.  That sounds really tough.  Remember how helpful you found tutoring last time you felt this way?  Perhaps that could be a good option again, or we could explore some other strategies together.  What feels most manageable right now?"
+  },
+  {
+    "timestamp": "2025-09-19T15:19:25.501845",
+    "user_id": "hasan_11",
+    "session_id": "session_1758273548_hasan_11",
+    "user_message": "kp",
+    "bot_response": "I'm sorry to hear you're feeling unwell, Hasan.  Remember how helpful tutoring was for you in the past?  We can explore that again, or look at other options if you'd prefer.  Let's find something that works for you right now."
   }
 ]
