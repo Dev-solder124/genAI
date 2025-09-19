@@ -209,3 +209,63 @@ This project was brought to its final, working state through a fun and collabora
 ## License
 
 MIT License — Please ensure you are compliant with all privacy regulations when handling user data.
+
+
+# Frontend integration with backend(Flask API)
+
+genai-frontend/
+├─ vite.config.js
+├─ index.html
+├─ package.json
+└─ src/
+   ├─ main.jsx
+   ├─ App.jsx
+   ├─ index.css                #theme & layout (brand left, centered title)
+   ├─ lib/
+   │  ├─ api.js               # fetch helpers for /consent, /dialogflow-webhook, /delete_memories
+   │  └─ storage.js           # localStorage for users, current user, chat history (capped to 1000)
+   └─ pages/
+      ├─ Onboarding.jsx       # create user, consent; POST /api/consent; navigate to /chat
+      ├─ Onboarding.module.css
+      ├─ Users.jsx            # list/select/delete users; delete calls /api/delete_memories
+      ├─ Settings.jsx         # change username, reset consent (server re-asks next chat)
+      ├─ Chat.jsx             # send messages via /api/dialogflow-webhook; dark chat UI
+      └─ Chat.module.css
+
+
+## Frontend (React + Vite)
+The frontend is a Vite + React single-page app that talks to the Flask backend over HTTP using the browser Fetch API, sending and receiving JSON for all chat operations. It includes an onboarding flow to create a user and record consent, then routes to a dark-themed chat screen with “EmpathicAI” branded in the header and distinct left/right message bubbles for bot and user.
+
+## How it communicates
+The app calls these backend endpoints via fetch:
+
+POST /api/consent to register a user and store consent.
+
+POST /api/dialogflow-webhook to send messages and receive bot replies from fulfillment_response.
+
+POST /api/delete_memories to clear server-side memories for a user.
+
+During development, a dev proxy forwards /api/* from the Vite server to the Flask server on http://127.0.0.1:8080, avoiding CORS and keeping client code simple.
+
+## Requirements (frontend)
+Node.js (LTS recommended) and npm.
+
+A running backend on http://127.0.0.1:8080 with a healthy /health endpoint.
+
+The frontend source under genai-frontend with the Vite project files and pages (Onboarding, Chat, Users, Settings).
+
+Setup and run (frontend)
+From genai-frontend:
+
+Install dependencies:
+
+npm install
+
+Start the dev server:
+
+npm run dev
+
+Open the local URL printed in the terminal (for example, http://127.0.0.1:5173).
+
+Keep the Flask backend running on 127.0.0.1:8080 so the dev proxy can forward /api calls.
+

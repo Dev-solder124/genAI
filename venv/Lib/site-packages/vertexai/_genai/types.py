@@ -3805,6 +3805,9 @@ class CreateAgentEngineConfig(_common.BaseModel):
         default=None,
         description="""The encryption spec to be used for the Agent Engine.""",
     )
+    labels: Optional[dict[str, str]] = Field(
+        default=None, description="""The labels to be used for the Agent Engine."""
+    )
 
 
 class CreateAgentEngineConfigDict(TypedDict, total=False):
@@ -3859,6 +3862,9 @@ class CreateAgentEngineConfigDict(TypedDict, total=False):
     encryption_spec: Optional[genai_types.EncryptionSpecDict]
     """The encryption spec to be used for the Agent Engine."""
 
+    labels: Optional[dict[str, str]]
+    """The labels to be used for the Agent Engine."""
+
 
 CreateAgentEngineConfigOrDict = Union[
     CreateAgentEngineConfig, CreateAgentEngineConfigDict
@@ -3906,6 +3912,9 @@ class ReasoningEngine(_common.BaseModel):
         default=None,
         description="""Required. The display name of the ReasoningEngine.""",
     )
+    labels: Optional[dict[str, str]] = Field(
+        default=None, description="""Labels for the ReasoningEngine."""
+    )
     etag: Optional[str] = Field(
         default=None,
         description="""Optional. Used to perform consistent read-modify-write updates. If not set, a blind "overwrite" update happens.""",
@@ -3940,6 +3949,9 @@ class ReasoningEngineDict(TypedDict, total=False):
 
     display_name: Optional[str]
     """Required. The display name of the ReasoningEngine."""
+
+    labels: Optional[dict[str, str]]
+    """Labels for the ReasoningEngine."""
 
     etag: Optional[str]
     """Optional. Used to perform consistent read-modify-write updates. If not set, a blind "overwrite" update happens."""
@@ -4407,6 +4419,9 @@ class UpdateAgentEngineConfig(_common.BaseModel):
         default=None,
         description="""The encryption spec to be used for the Agent Engine.""",
     )
+    labels: Optional[dict[str, str]] = Field(
+        default=None, description="""The labels to be used for the Agent Engine."""
+    )
     update_mask: Optional[str] = Field(
         default=None,
         description="""The update mask to apply. For the `FieldMask` definition, see
@@ -4465,6 +4480,9 @@ class UpdateAgentEngineConfigDict(TypedDict, total=False):
 
     encryption_spec: Optional[genai_types.EncryptionSpecDict]
     """The encryption spec to be used for the Agent Engine."""
+
+    labels: Optional[dict[str, str]]
+    """The labels to be used for the Agent Engine."""
 
     update_mask: Optional[str]
     """The update mask to apply. For the `FieldMask` definition, see
@@ -8638,6 +8656,168 @@ ListDatasetVersionsResponseOrDict = Union[
 ]
 
 
+class DeletePromptConfig(_common.BaseModel):
+    """Config for deleting a prompt."""
+
+    http_options: Optional[genai_types.HttpOptions] = Field(
+        default=None, description="""Used to override HTTP request options."""
+    )
+    timeout: Optional[int] = Field(
+        default=90,
+        description="""Timeout for the delete prompt operation in seconds. Defaults to 90.""",
+    )
+
+
+class DeletePromptConfigDict(TypedDict, total=False):
+    """Config for deleting a prompt."""
+
+    http_options: Optional[genai_types.HttpOptionsDict]
+    """Used to override HTTP request options."""
+
+    timeout: Optional[int]
+    """Timeout for the delete prompt operation in seconds. Defaults to 90."""
+
+
+DeletePromptConfigOrDict = Union[DeletePromptConfig, DeletePromptConfigDict]
+
+
+class _DeleteDatasetRequestParameters(_common.BaseModel):
+    """Parameters for deleting a prompt dataset."""
+
+    prompt_id: Optional[str] = Field(
+        default=None, description="""ID of the prompt dataset to be deleted."""
+    )
+    config: Optional[DeletePromptConfig] = Field(default=None, description="""""")
+
+
+class _DeleteDatasetRequestParametersDict(TypedDict, total=False):
+    """Parameters for deleting a prompt dataset."""
+
+    prompt_id: Optional[str]
+    """ID of the prompt dataset to be deleted."""
+
+    config: Optional[DeletePromptConfigDict]
+    """"""
+
+
+_DeleteDatasetRequestParametersOrDict = Union[
+    _DeleteDatasetRequestParameters, _DeleteDatasetRequestParametersDict
+]
+
+
+class DeletePromptOperation(_common.BaseModel):
+    """Operation for deleting prompts."""
+
+    name: Optional[str] = Field(
+        default=None,
+        description="""The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.""",
+    )
+    metadata: Optional[dict[str, Any]] = Field(
+        default=None,
+        description="""Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata.  Any method that returns a long-running operation should document the metadata type, if any.""",
+    )
+    done: Optional[bool] = Field(
+        default=None,
+        description="""If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.""",
+    )
+    error: Optional[dict[str, Any]] = Field(
+        default=None,
+        description="""The error result of the operation in case of failure or cancellation.""",
+    )
+
+
+class DeletePromptOperationDict(TypedDict, total=False):
+    """Operation for deleting prompts."""
+
+    name: Optional[str]
+    """The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`."""
+
+    metadata: Optional[dict[str, Any]]
+    """Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata.  Any method that returns a long-running operation should document the metadata type, if any."""
+
+    done: Optional[bool]
+    """If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available."""
+
+    error: Optional[dict[str, Any]]
+    """The error result of the operation in case of failure or cancellation."""
+
+
+DeletePromptOperationOrDict = Union[DeletePromptOperation, DeletePromptOperationDict]
+
+
+class _DeletePromptVersionRequestParameters(_common.BaseModel):
+    """Parameters for deleting a prompt version."""
+
+    prompt_id: Optional[str] = Field(
+        default=None, description="""ID of the prompt to be deleted."""
+    )
+    version_id: Optional[str] = Field(
+        default=None,
+        description="""ID of the prompt version to be deleted within the provided prompt_id.""",
+    )
+    config: Optional[DeletePromptConfig] = Field(default=None, description="""""")
+
+
+class _DeletePromptVersionRequestParametersDict(TypedDict, total=False):
+    """Parameters for deleting a prompt version."""
+
+    prompt_id: Optional[str]
+    """ID of the prompt to be deleted."""
+
+    version_id: Optional[str]
+    """ID of the prompt version to be deleted within the provided prompt_id."""
+
+    config: Optional[DeletePromptConfigDict]
+    """"""
+
+
+_DeletePromptVersionRequestParametersOrDict = Union[
+    _DeletePromptVersionRequestParameters, _DeletePromptVersionRequestParametersDict
+]
+
+
+class DeletePromptVersionOperation(_common.BaseModel):
+    """Operation for deleting prompt versions."""
+
+    name: Optional[str] = Field(
+        default=None,
+        description="""The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`.""",
+    )
+    metadata: Optional[dict[str, Any]] = Field(
+        default=None,
+        description="""Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata.  Any method that returns a long-running operation should document the metadata type, if any.""",
+    )
+    done: Optional[bool] = Field(
+        default=None,
+        description="""If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available.""",
+    )
+    error: Optional[dict[str, Any]] = Field(
+        default=None,
+        description="""The error result of the operation in case of failure or cancellation.""",
+    )
+
+
+class DeletePromptVersionOperationDict(TypedDict, total=False):
+    """Operation for deleting prompt versions."""
+
+    name: Optional[str]
+    """The server-assigned name, which is only unique within the same service that originally returns it. If you use the default HTTP mapping, the `name` should be a resource name ending with `operations/{unique_id}`."""
+
+    metadata: Optional[dict[str, Any]]
+    """Service-specific metadata associated with the operation. It typically contains progress information and common metadata such as create time. Some services might not provide such metadata.  Any method that returns a long-running operation should document the metadata type, if any."""
+
+    done: Optional[bool]
+    """If the value is `false`, it means the operation is still in progress. If `true`, the operation is completed, and either `error` or `response` is available."""
+
+    error: Optional[dict[str, Any]]
+    """The error result of the operation in case of failure or cancellation."""
+
+
+DeletePromptVersionOperationOrDict = Union[
+    DeletePromptVersionOperation, DeletePromptVersionOperationDict
+]
+
+
 class PromptOptimizerVAPOConfig(_common.BaseModel):
     """VAPO Prompt Optimizer Config."""
 
@@ -8715,7 +8895,7 @@ class ApplicableGuidelineDict(TypedDict, total=False):
 ApplicableGuidelineOrDict = Union[ApplicableGuideline, ApplicableGuidelineDict]
 
 
-class OptimizeResponse(_common.BaseModel):
+class ParsedResponse(_common.BaseModel):
     """Response for the optimize_prompt method."""
 
     optimization_type: Optional[str] = Field(default=None, description="""""")
@@ -8726,7 +8906,7 @@ class OptimizeResponse(_common.BaseModel):
     suggested_prompt: Optional[str] = Field(default=None, description="""""")
 
 
-class OptimizeResponseDict(TypedDict, total=False):
+class ParsedResponseDict(TypedDict, total=False):
     """Response for the optimize_prompt method."""
 
     optimization_type: Optional[str]
@@ -8739,6 +8919,26 @@ class OptimizeResponseDict(TypedDict, total=False):
     """"""
 
     suggested_prompt: Optional[str]
+    """"""
+
+
+ParsedResponseOrDict = Union[ParsedResponse, ParsedResponseDict]
+
+
+class OptimizeResponse(_common.BaseModel):
+    """Response for the optimize_prompt method."""
+
+    raw_text_response: Optional[str] = Field(default=None, description="""""")
+    parsed_response: Optional[ParsedResponse] = Field(default=None, description="""""")
+
+
+class OptimizeResponseDict(TypedDict, total=False):
+    """Response for the optimize_prompt method."""
+
+    raw_text_response: Optional[str]
+    """"""
+
+    parsed_response: Optional[ParsedResponseDict]
     """"""
 
 
@@ -10144,6 +10344,9 @@ class AgentEngineConfig(_common.BaseModel):
         default=None,
         description="""The encryption spec to be used for the Agent Engine.""",
     )
+    labels: Optional[dict[str, str]] = Field(
+        default=None, description="""The labels to be used for the Agent Engine."""
+    )
     agent_server_mode: Optional[AgentServerMode] = Field(
         default=None, description="""The agent server mode to use for deployment."""
     )
@@ -10226,6 +10429,9 @@ class AgentEngineConfigDict(TypedDict, total=False):
 
     encryption_spec: Optional[genai_types.EncryptionSpecDict]
     """The encryption spec to be used for the Agent Engine."""
+
+    labels: Optional[dict[str, str]]
+    """The labels to be used for the Agent Engine."""
 
     agent_server_mode: Optional[AgentServerMode]
     """The agent server mode to use for deployment."""

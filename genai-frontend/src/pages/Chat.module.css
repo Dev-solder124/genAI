@@ -1,0 +1,22 @@
+.shell { display: grid; gap: 10px; }
+.topBar { display: flex; justify-content: space-between; align-items: center; }
+.list {
+  height: 520px; overflow: auto;
+  border: 1px solid var(--border); border-radius: 12px; padding: 12px;
+  background: var(--card);
+}
+.row { display: flex; margin: 8px 0; }
+.left { justify-content: flex-start; }
+.right { justify-content: flex-end; }
+.bubble {
+  max-width: 70%;
+  padding: 10px 12px;
+  border-radius: 12px;
+  word-wrap: break-word;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+  border: 1px solid var(--border);
+}
+.bot { background: var(--bot-bubble); color: var(--bot-text); border-color: #111827; }
+.user { background: var(--user-bubble); color: var(--user-text); border-color: #1d4ed8; }
+.inputRow { display: flex; gap: 8px; }
