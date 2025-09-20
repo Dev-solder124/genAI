@@ -1,44 +1,51 @@
-import { BrowserRouter, Routes, Route, useLocation, Link, useNavigate } from 'react-router-dom'
-import Onboarding from './pages/Onboarding.jsx'
-import Chat from './pages/Chat.jsx'
-import Users from './pages/Users.jsx'
-import Settings from './pages/Settings.jsx'
-
-function Header() {
-  const { pathname } = useLocation()
-  const center = pathname.startsWith('/chat') ? 'Chat'
-    : pathname.startsWith('/users') ? 'Users'
-    : pathname.startsWith('/settings') ? 'Settings'
-    : 'Welcome'
-  const nav = useNavigate()
-  return (
-    <header className="header card">
-      <div className="brand" onClick={() => nav('/')} style={{ cursor: 'pointer' }}>EmpathicAI</div>
-      <div className="header-center">{center}</div>
-      <nav className="header-right" style={{ display: 'flex', gap: 12 }}>
-        <Link className="link" to="/chat">Chat</Link>
-        <Link className="link" to="/users">Users</Link>
-        <Link className="link" to="/settings">Settings</Link>
-      </nav>
-    </header>
-  )
-}
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { AuthProvider } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Layout from './components/Layout';
+import Login from './pages/Login';
+import Chat from './pages/Chat';
+import Settings from './pages/Settings';
+import Onboarding from './pages/Onboarding'; // Will be removed later
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <div className="container">
-        <Header />
+    <AuthProvider>
+      <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Onboarding />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/users" element={<Users />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/chat" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Chat />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/settings" 
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Settings />
+                </Layout>
+              </ProtectedRoute>
+            } 
+          />
+          {/* Redirect root to chat if authenticated, otherwise to login */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Layout>
+                  <Chat />
+                </Layout>
+              </ProtectedRoute>
+            }
+          />
         </Routes>
-      </div>
-    </BrowserRouter>
-  )
+      </BrowserRouter>
+    </AuthProvider>
+  );
 }
-
-
-

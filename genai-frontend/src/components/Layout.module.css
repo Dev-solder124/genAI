@@ -1,0 +1,57 @@
+.layout {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    height: 60px;
+}
+
+.brand {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #333;
+}
+
+.nav {
+    display: flex;
+    gap: 20px;
+}
+
+.navLink {
+    text-decoration: none;
+    color: #555;
+    font-size: 1em;
+    transition: color 0.3s;
+}
+
+.navLink:hover {
+    color: #000;
+}
+
+.signOutButton {
+    background: none;
+    border: 1px solid #ccc;
+    padding: 8px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.signOutButton:hover {
+    background-color: #f0f0f0;
+}
+
+.main {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    background-color: #f7f9fc;
+}
