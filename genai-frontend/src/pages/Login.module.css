@@ -27,8 +27,8 @@
 }
 
 .googleButton {
-    background-color: var(--accent);
-    color: white;
+    background-color: var(--primary-orange);
+    color: var(--white);
     border: none;
     padding: 12px 20px;
     border-radius: 4px;
@@ -40,23 +40,24 @@
 }
 
 .googleButton:hover {
-    background-color: var(--fg);
+    background-color: var(--primary-orange-dark);
 }
 
 .guestButton {
     background-color: transparent;
-    color: var(--fg);
-    border: 1px solid var(--border);
+    color: var(--text-primary);
+    border: 1px solid var(--primary-orange);
     padding: 12px 20px;
     border-radius: 4px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: all 0.3s;
     width: 100%;
 }
 
 .guestButton:hover {
-    background-color: var(--accent-weak);
+    background-color: var(--light-gray);
+    border-color: var(--primary-orange-dark);
 }
 
 .error {
