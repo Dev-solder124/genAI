@@ -1,17 +1,41 @@
 :root {
-  --fg: #C75D2C;
-  --fg-muted: #D96F32;
-  --bg: #FFFFFF;
-  --card: #F3E9DC;
-  --card-fg: #4F2709;
-  --border: #D96F32;
-  --accent: #D96F32;
-  --accent-weak: rgba(217, 111, 50, 0.1);
+  /* Primary Brand */
+  --primary-orange: #FF6B35;
+  --primary-orange-dark: #E55A2B;
+  --primary-orange-light: #FF7F50;
+  
+  /* Secondary */
+  --secondary-blue: #6BB6FF;
+  --secondary-blue-dark: #4A90E2;
+  --secondary-blue-light: #E3F2FD;
+  
+  /* Accents */
+  --accent-yellow: #FFD54F;
+  --accent-yellow-warm: #FFC107;
+  --accent-green: #66BB6A;
+  --accent-green-light: #E8F5E8;
+  
+  /* Neutrals */
+  --white: #FFFFFF;
+  --off-white: #FAFAFA;
+  --light-gray: #F5F5F5;
+  --text-primary: #333333;
+  --text-secondary: #757575;
 
-  --bot-bubble: #F8B259;
-  --user-bubble: #D96F32;
-  --user-text: #FFFFFF;
-  --bot-text: #4F2709;
+  /* Maintaining compatibility with existing color usage */
+  --fg: var(--primary-orange-dark);
+  --fg-muted: var(--primary-orange);
+  --bg: var(--white);
+  --card: var(--light-gray);
+  --card-fg: var(--text-primary);
+  --border: var(--primary-orange);
+  --accent: var(--primary-orange);
+  --accent-weak: rgba(255, 107, 53, 0.1);
+
+  --bot-bubble: var(--secondary-blue-light);
+  --user-bubble: var(--primary-orange);
+  --user-text: var(--white);
+  --bot-text: var(--text-primary);
 }
 
 * { box-sizing: border-box; }
