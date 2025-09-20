@@ -146,6 +146,30 @@ def token_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+def format_time_delta(timestamp_str):
+    """Converts an ISO format timestamp string to a relative time string."""
+    if not timestamp_str:
+        return ""
+    try:
+        event_time = datetime.fromisoformat(timestamp_str)
+        current_time = datetime.now(timezone.utc)
+        delta = current_time - event_time
+
+        seconds = delta.total_seconds()
+        if seconds < 120:
+            return "(just now)"
+        elif seconds < 3600:  # less than 1 hour
+            return f"({int(seconds / 60)} minutes ago)"
+        elif seconds < 86400:  # less than 1 day
+            return f"({int(seconds / 3600)} hours ago)"
+        elif seconds < 2592000:  # less than 30 days
+            return f"({int(seconds / 86400)} days ago)"
+        else:
+            return f"({int(seconds / 2592000)} months ago)"
+    except (ValueError, TypeError):
+        # Return empty string if the timestamp is malformed
+        return ""
+
 @app.route("/login", methods=["POST"])
 @token_required
 def login():
@@ -617,17 +641,28 @@ def summarize_conversation(user_text, assistant_text):
 def dialogflow_webhook():
     try:
         logger.info("=== NEW WEBHOOK REQUEST ===")
+
         req = request.get_json(silent=True) or {}
         logger.debug(f"Raw request: {json.dumps(req, indent=2)}")
-        
+
         session = req.get("session", "")
         session_id = session.split("/")[-1] if session else "unknown_session"
-        user_id = request.user_id  # From the token_required decorator
-        
-        logger.info(f"Processing request for user_id: {user_id}")
-        logger.info(f"Session: {session_id}")
+        user_id = request.user_id
 
-        # parse user message
+        logger.info(f"Processing request for user_id: {user_id}")
+
+        # STEP 1: Get the profile FIRST to access the timestamp from the LAST interaction.
+        user_profile = get_user_profile(user_id) or {}
+
+        # STEP 2: Now, update the profile with a new 'updated_at' timestamp
+        # for the NEXT request to use. This marks the current interaction time.
+        try:
+            upsert_user_profile(user_id, {"updated_at": datetime.now(timezone.utc).isoformat()})
+            logger.info(f"Updated 'updated_at' timestamp for user {user_id}")
+        except Exception as e:
+            logger.error(f"Failed to update 'updated_at' for user {user_id}: {e}")
+
+        # Parse user message from the request
         user_text = ""
         for m in req.get("messages", []):
             if m.get("text"):
@@ -637,48 +672,44 @@ def dialogflow_webhook():
             user_text = req.get("text", "") or "Hello"
 
         logger.info(f"User message: '{user_text}'")
-
-        user_profile = get_user_profile(user_id) or {}
         
-        # CORRECTED LINE: Access the consent flag inside the 'profile' map
         has_consent = user_profile.get("profile", {}).get("consent", False)
-        
         logger.info(f"User consent status: {has_consent}")
 
-        # REMOVED: The automatic consent asking logic that was causing the loop
-        # The CLI client now handles consent flow before chatting begins
-        
-        # retrieve relevant memories (only if user has consent)
+        # Retrieve relevant memories and format them with individual time context
         retrieved_text = ""
         if has_consent:
             logger.info("Retrieving similar memories...")
             retrieved = retrieve_similar_memories(user_id, user_text, top_k=3)
-            retrieved_text = "\n".join([f"- {r.get('summary')} (tags={r.get('metadata', {}).get('topic')})" for r in retrieved]) if retrieved else ""
-            logger.info(f"Found {len(retrieved)} relevant memories")
-        else:
-            logger.info("User has not consented to memory storage - skipping memory retrieval")
-            retrieved = []
-
-        time_context = ""
-        if retrieved:
-            try:
-                # Find the most recent memory
-                most_recent_memory = max(retrieved, key=lambda mem: mem.get('created_at', ''))
-                
-                if most_recent_memory.get('created_at'):
-                    last_interaction_time = datetime.fromisoformat(most_recent_memory['created_at'])
-                    current_time = datetime.now(timezone.utc)
-                    time_delta_seconds = (current_time - last_interaction_time).total_seconds()
-                    
-                    logger.info(f"Time since last significant interaction: {time_delta_seconds:.0f} seconds.")
-
-                    if time_delta_seconds > 86400: # More than a day
-                        time_context = "Note to AI: It has been over a day since you last spoke. Greet the user warmly and welcome them back before continuing."
-                    elif time_delta_seconds > 3600: # More than an hour
-                        time_context = "Note to AI: It has been a while since your last exchange. Acknowledge the pause before continuing the conversation."
             
-            except Exception as e:
-                logger.warning(f"Could not analyze memory timestamps: {e}")
+            if retrieved:
+                memory_lines = []
+                for r in retrieved:
+                    summary = r.get('summary', 'No summary available.')
+                    time_ago = format_time_delta(r.get('created_at')) 
+                    memory_lines.append(f"- {summary} {time_ago}")
+                retrieved_text = "\n".join(memory_lines)
+                logger.info(f"Found {len(retrieved)} relevant memories with time context.")
+            else:
+                retrieved_text = "No relevant memories found."
+        else:
+            retrieved_text = "Memory retrieval is disabled for this user."
+
+        # Generate the main conversational greeting based on the user's last interaction time
+        time_context = ""
+        try:
+            last_seen_str = user_profile.get("profile", {}).get("updated_at")
+            if last_seen_str:
+                last_interaction_time = datetime.fromisoformat(last_seen_str)
+                time_delta_seconds = (datetime.now(timezone.utc) - last_interaction_time).total_seconds()
+                
+                # Only add a time context note if it's been more than 15 minutes
+                if time_delta_seconds > 900:
+                    time_ago_str = format_time_delta(last_seen_str).strip('()')
+                    time_context = f"Note to AI: The user's last interaction was about {time_ago_str}. Acknowledge this pause before continuing the conversation."
+                    logger.info(f"Generated time context: {time_context}")
+        except Exception as e:
+            logger.warning(f"Could not analyze user profile timestamp for time_context: {e}")
 
         session_params = req.get("sessionInfo", {}).get("parameters", {})
         short_term = json.dumps(session_params) if session_params else ""

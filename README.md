@@ -2,7 +2,7 @@
 
 **Status:** Fully functional / deployment-ready
 
-A mental health chatbot with intelligent memory powered by Google Cloud Vertex AI and Firestore. Features secure Firebase OAuth authentication, guest sessions, and both command-line interface and modern web frontend.
+A mental health chatbot with intelligent memory powered by Google Cloud Vertex AI and Firestore. Features secure Firebase OAuth authentication, guest sessions, dynamic time-aware conversations, and both command-line interface and modern web frontend.
 
 ---
 
@@ -23,7 +23,7 @@ users (collection)
     │   ├── email (string)      - User's email from authentication
     │   ├── consent (boolean)   - True if user allows long-term memory storage
     │   ├── created_at (string) - ISO 8601 timestamp of account creation
-    │   └── updated_at (string) - ISO 8601 timestamp of last profile update
+    │   └── updated_at (string) - ISO 8601 timestamp of last interaction (for time-aware greetings)
     │
     └── memories (sub-collection) - Contains all significant memories for this user
         |
@@ -32,7 +32,7 @@ users (collection)
             ├── summary (string)    - AI-generated summary of the conversation
             ├── embedding (array)   - Vector embedding of summary for semantic search
             ├── metadata (map)      - Extra context, e.g., {"topic": "...", "session_id": "..."}
-            └── created_at (string) - ISO 8601 timestamp when memory was created
+            └── created_at (string) - ISO 8601 timestamp when memory was created (for granular time context)
 ```
 
 ### Authentication Schema
@@ -47,12 +47,13 @@ users (collection)
 - **summary**: Human-readable text of the conversation
 - **embedding**: Numerical representation used to find similar memories
 - **metadata**: Additional context like topic classification and session ID
+- **created_at**: Precise timestamp used for temporal context in conversations
 
 ---
 
 ## Project Overview
 
-This chatbot implements a sophisticated long-term memory system that intelligently decides what to remember from conversations. Unlike traditional chatbots that either forget everything or save everything, this system curates meaningful memories to provide personalized, continuous mental health support.
+This chatbot implements a sophisticated long-term memory system that intelligently decides what to remember from conversations. Unlike traditional chatbots that either forget everything or save everything, this system curates meaningful memories to provide personalized, continuous mental health support with advanced temporal awareness.
 
 ### Key Features
 
@@ -60,7 +61,9 @@ This chatbot implements a sophisticated long-term memory system that intelligent
 - **Privacy-First Design:** Explicit user consent required before storing any conversations
 - **Intelligent Memory:** Only saves conversations with significant therapeutic value, preventing memory clutter
 - **Semantic Memory Retrieval:** Uses vector embeddings to find relevant past conversations for context
-- **Time-Aware Conversations:** Recognizes time elapsed since last interaction and provides appropriate "welcome back" greetings for natural dialogue flow
+- **Dynamic Time-Aware Greetings:** Automatically adapts opening messages based on actual time elapsed since last interaction, not just memory creation
+- **Granular Memory Timestamps:** Each retrieved memory includes precise temporal context (e.g., "2 days ago", "5 minutes ago") for more nuanced AI responses
+- **Temporal Conversation Flow:** Recognizes time patterns and provides contextually appropriate responses based on interaction history
 - **Dynamic Response Generation:** Explicitly varies phrasing and avoids repetitive opening lines for more engaging, less robotic conversations
 - **Multiple Authentication Options:** Google OAuth or anonymous guest sessions
 - **Multiple Interfaces:** Secure command-line client and React web frontend
@@ -71,9 +74,27 @@ This chatbot implements a sophisticated long-term memory system that intelligent
 
 - **Authentication:** Firebase Auth with ID token verification
 - **Backend:** Flask server with Vertex AI integration and token-based security
-- **Database:** Google Cloud Firestore for user profiles and memories  
+- **Database:** Google Cloud Firestore for user profiles and memories with temporal tracking
 - **AI Models:** Gemini 1.5 Flash for conversations, text-embedding-004 for memory vectors
 - **Frontend:** React + Vite web interface (optional)
+
+### Advanced Temporal Features
+
+#### 1. Dynamic Time-Aware Greetings
+- **Problem Solved:** Eliminates awkward greetings when users return after short breaks
+- **Implementation:** 
+  - `profile.updated_at` timestamp tracks every interaction, not just significant memories
+  - Read-then-write sequence on each API call ensures accurate time delta calculation
+  - Dynamic `time_context` generated for LLM based on actual elapsed time
+- **Benefit:** Natural conversation flow with appropriate greetings regardless of interaction frequency
+
+#### 2. Granular Memory Timestamps  
+- **Problem Solved:** AI previously couldn't distinguish between recent and old memories
+- **Implementation:**
+  - Each memory's `created_at` timestamp processed by `format_time_delta()` helper
+  - Human-readable relative time strings appended to memory summaries
+  - Time-enriched memories provide temporal context to LLM
+- **Benefit:** More nuanced, empathetic responses that acknowledge the recency of user's feelings and events
 
 ---
 
@@ -257,11 +278,20 @@ pyrebase4==4.6.0
 All endpoints require valid Firebase ID token authentication (except `/health`):
 
 - `POST /login` - Verify token and create/retrieve user profile
-- `POST /dialogflow-webhook` - Main chat endpoint (token required)
+- `POST /dialogflow-webhook` - Main chat endpoint with temporal context processing (token required)
 - `POST /consent` - User consent management (token required)
 - `POST /delete_memories` - Delete user memories (token required)
 - `GET /health` - Service health check (no auth required)
 - `GET /debug/models` - Available AI models (no auth required)
+
+### Temporal Processing in `/dialogflow-webhook`
+
+The main chat endpoint now implements a sophisticated temporal processing system:
+
+1. **Pre-conversation timestamp read:** Fetches user's last interaction time from `profile.updated_at`
+2. **Time delta calculation:** Computes elapsed time since last interaction for dynamic greeting generation
+3. **Memory temporal enrichment:** Appends relative timestamps to retrieved memories (e.g., "2 days ago")
+4. **Post-conversation timestamp update:** Updates `profile.updated_at` to current time for next interaction
 
 ---
 
@@ -276,7 +306,7 @@ All endpoints require valid Firebase ID token authentication (except `/health`):
    - **Google Sign-in:** Follow prompts to authenticate via web browser
    - **Guest Session:** Continue anonymously without persistent memory
 5. **Set privacy preferences** (consent for memory storage)
-6. **Start chatting** - the bot will remember significant conversations if consented
+6. **Start chatting** - the bot will remember significant conversations if consented and provide time-aware responses
 
 #### Authentication Flow:
 1. CLI prompts for Google sign-in or guest session
@@ -284,6 +314,11 @@ All endpoints require valid Firebase ID token authentication (except `/health`):
 3. Copy the provided ID token back to CLI
 4. Backend verifies token and creates/retrieves user profile
 5. Privacy consent flow begins before chatting
+
+#### Time-Aware Conversation Features:
+- **Dynamic Greetings:** Bot automatically adjusts opening messages based on actual time since last chat
+- **Temporal Memory Context:** Previous conversations include precise timing information for more relevant responses
+- **Natural Flow:** No awkward time references when returning after short breaks
 
 ### Web Interface
 
@@ -293,13 +328,14 @@ All endpoints require valid Firebase ID token authentication (except `/health`):
 4. Open `http://localhost:5173` in your browser
 5. Sign in with Google or continue as guest
 6. Complete privacy consent and start chatting
+7. Experience dynamic time-aware conversations with contextual memory recall
 
 ### Frontend-Backend Communication
 
 The web frontend communicates with Flask backend via:
 - Vite dev proxy forwards `/api/*` to `http://127.0.0.1:8080`
 - Firebase ID tokens for authentication on all API calls
-- JSON API calls for all chat operations
+- JSON API calls for all chat operations including temporal processing
 - Real-time message exchange through HTTP requests
 
 ---
@@ -309,13 +345,13 @@ The web frontend communicates with Flask backend via:
 ### Google OAuth Integration
 - Secure sign-in through Firebase Authentication
 - Automatic user profile creation from OAuth data
-- Persistent sessions across CLI and web interfaces
-- Full access to memory storage and retrieval
+- Persistent sessions across CLI and web interfaces with temporal tracking
+- Full access to memory storage and retrieval with timestamp precision
 
 ### Guest Sessions
 - Anonymous authentication for privacy-conscious users
 - No persistent memory storage (session-only)
-- Same chat capabilities without long-term storage
+- Same chat capabilities without long-term storage including time-aware responses
 - Easy upgrade to full account if desired
 
 ### Security Features
@@ -323,17 +359,18 @@ The web frontend communicates with Flask backend via:
 - User data isolated by authenticated user ID
 - Automatic token expiry and refresh handling
 - Rate limiting and input validation
+- Temporal data integrity with read-then-write operations
 
 ---
 
 ## Deployment
 
 ### Local Development
-Both CLI and web interfaces work locally with the Flask development server and proper authentication setup.
+Both CLI and web interfaces work locally with the Flask development server and proper authentication setup, including full temporal processing capabilities.
 
 ### Production (Cloud Run)
 ```bash
-# Build and deploy backend with authentication
+# Build and deploy backend with authentication and temporal features
 gcloud builds submit --tag gcr.io/your-project-id/genai-chatbot
 gcloud run deploy genai-chatbot \
   --image gcr.io/your-project-id/genai-chatbot \
@@ -366,20 +403,24 @@ npm run build
 - Health check fails: Verify Vertex AI API is enabled and credentials are set
 - Model errors: Use version-less model names (e.g., `gemini-1.5-flash`)
 - Firestore errors: Ensure database is in Native mode and service account has proper permissions
+- Temporal processing errors: Check Firestore read/write permissions and timestamp formatting
 
 **Frontend Issues:**
 - API calls fail: Ensure backend is running on port 8080 with proper CORS setup
 - Build errors: Check Node.js version and run `npm install`
 - Authentication errors: Verify firebase.env configuration
+- Time display issues: Ensure consistent timestamp formatting between frontend and backend
 
 **Common Warnings:**
 - "ALTS creds ignored": Safe to ignore during local development
 - Firebase SDK warnings: Usually safe to ignore in development
+- Timestamp format warnings: Ensure ISO 8601 format compliance
 
 **CLI-Specific Issues:**
 - "firebase.env not found": Create the file with your Firebase project configuration
 - "pyrebase4 errors": Ensure all Firebase settings are correctly configured
 - Token paste issues: Copy the entire token from the web browser carefully
+- Time-aware greeting issues: Verify profile.updated_at field exists and is properly formatted
 
 ---
 
@@ -390,6 +431,7 @@ npm run build
 - **Conversations are summarized**, not stored verbatim for privacy
 - **Users can delete all their data** at any time via API
 - **Anonymous guest sessions** available for maximum privacy
+- **Temporal data protection**: Interaction timestamps stored securely with user consent
 
 ### Security Measures
 - **Firebase ID token verification** on all protected endpoints
@@ -397,15 +439,45 @@ npm run build
 - **Service account minimal permissions** - only required GCP roles
 - **Input validation and sanitization** on all user inputs
 - **Rate limiting** to prevent abuse
+- **Temporal integrity protection**: Read-then-write operations prevent race conditions
 
 ### Compliance Considerations
-- GDPR-compliant data deletion capabilities
-- User consent tracking and management
-- Audit trails for data access and modifications
-- Minimal data retention policies
+- GDPR-compliant data deletion capabilities including temporal data
+- User consent tracking and management for all stored information
+- Audit trails for data access and modifications including timestamp updates
+- Minimal data retention policies with transparent temporal tracking
+
+---
+
+## Technical Implementation Details
+
+### Temporal Processing Architecture
+
+The system implements sophisticated timestamp management across two key areas:
+
+#### Dynamic Time-Aware Greetings
+- **Storage**: `profile.updated_at` field in user's root Firestore document
+- **Process**: Read-then-write sequence on each API call
+  1. Read previous `updated_at` timestamp
+  2. Calculate time delta for greeting context
+  3. Write new current timestamp for next interaction
+- **Helper Function**: `format_time_delta()` converts timestamps to human-readable strings
+
+#### Granular Memory Timestamps
+- **Storage**: `created_at` field in each memory document  
+- **Process**: Memory retrieval includes temporal enrichment
+  1. Fetch relevant memories via semantic search
+  2. Process each memory's `created_at` timestamp
+  3. Append relative time context to memory summaries
+- **LLM Integration**: Time-enriched memories provide temporal context for response generation
+
+### Performance Considerations
+- Minimal overhead: Single additional read per conversation for time context
+- Efficient timestamp processing with cached helper functions
+- Optimized Firestore queries with temporal indexing
 
 ---
 
 ## License
 
-MIT License - Ensure compliance with privacy regulations when handling user data. This application handles personal conversations and requires appropriate privacy safeguards in production environments.
+MIT License - Ensure compliance with privacy regulations when handling user data. This application handles personal conversations with temporal tracking and requires appropriate privacy safeguards in production environments.g
