@@ -1,5 +1,6 @@
 # Core Flask and Google Cloud
 Flask==3.0.3
+Flask-CORS==4.0.0
 google-cloud-firestore==2.16.0
 google-cloud-aiplatform==1.56.0
 vertexai

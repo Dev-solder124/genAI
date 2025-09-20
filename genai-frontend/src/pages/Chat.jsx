@@ -3,42 +3,60 @@ import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api'; // Assuming you have an API library
 import styles from './Chat.module.css';
 
-// Mock API for now - replace with your actual API calls
-const mockApi = {
-    getUserProfile: async (token) => ({
-        profile: { consent: null, username: 'New User' } 
-    }),
-    setConsent: async (token, consent) => {
-        console.log('Setting consent to', consent);
-        return true;
-    },
-    sendMessage: async (token, message) => {
-        console.log('Sending message:', message);
-        return `Echo: ${message}`;
-    }
-};
+// Initialize session ID for the chat
+const SESSION_ID = `session_${Date.now()}`;
 
 export default function Chat() {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [userProfile, setUserProfile] = useState(null);
     const [consentNeeded, setConsentNeeded] = useState(false);
     const messagesEndRef = useRef(null);
 
+    // Show loading state while auth is initializing
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    // Redirect or show message if not authenticated
+    if (!user) {
+        return <div>Please log in to access the chat.</div>;
+    }
+
     useEffect(() => {
         const fetchUserProfile = async () => {
-            if (user) {
-                const token = await user.getIdToken();
-                // Replace with your actual API call
-                const profile = await mockApi.getUserProfile(token);
-                setUserProfile(profile);
-                if (profile.profile.consent === null) {
+            if (!user) {
+                console.log('No user logged in');
+                return;
+            }
+
+            try {
+                console.log('Fetching profile for user:', user.uid);
+                const response = await api.consent({
+                    user_id: user.uid,
+                    consent: null,
+                    username: user.displayName || 'New User'
+                });
+                console.log('Profile response:', response);
+                
+                setUserProfile(response);
+                if (response.profile?.consent === null) {
                     setConsentNeeded(true);
                 }
+            } catch (error) {
+                console.error('Error fetching user profile:', error);
+                // Show error message to user
+                setMessages(prev => [...prev, { 
+                    role: 'bot', 
+                    text: "Sorry, I'm having trouble connecting to the server. Please try again later." 
+                }]);
             }
         };
-        fetchUserProfile();
+
+        if (user) {
+            fetchUserProfile();
+        }
     }, [user]);
 
     useEffect(() => {
@@ -52,19 +70,45 @@ export default function Chat() {
         setMessages(prev => [...prev, newMessage]);
         setInput('');
 
-        const token = await user.getIdToken();
-        // Replace with your actual API call
-        const botResponse = await mockApi.sendMessage(token, input);
-        
-        setMessages(prev => [...prev, { role: 'bot', text: botResponse }]);
+        try {
+            const response = await api.sendMessage({
+                user_id: user.uid,
+                session: SESSION_ID,
+                message: input
+            });
+            
+            const botResponse = response.fulfillment_response?.messages?.[0]?.text?.text?.[0] || 
+                              "I'm having trouble understanding. Could you try again?";
+            
+            setMessages(prev => [...prev, { role: 'bot', text: botResponse }]);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            setMessages(prev => [...prev, { 
+                role: 'bot', 
+                text: "Sorry, I couldn't process your message. Please try again." 
+            }]);
+        }
     };
 
     const handleConsent = async (consent) => {
-        const token = await user.getIdToken();
-        // Replace with your actual API call
-        await mockApi.setConsent(token, consent);
-        setConsentNeeded(false);
-        setMessages([{ role: 'bot', text: "Thanks for setting your preferences. How can I help you today?" }]);
+        try {
+            await api.consent({
+                user_id: user.uid,
+                consent: consent,
+                username: user.displayName || 'User'
+            });
+            setConsentNeeded(false);
+            setMessages([{ 
+                role: 'bot', 
+                text: "Thanks for setting your preferences. How can I help you today?" 
+            }]);
+        } catch (error) {
+            console.error('Error setting consent:', error);
+            setMessages([{ 
+                role: 'bot', 
+                text: "Sorry, I couldn't save your preferences. Please try again later." 
+            }]);
+        }
     };
 
     if (consentNeeded) {
