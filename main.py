@@ -48,22 +48,67 @@ logger.info(f"   REGION: {REGION}")
 logger.info(f"   LLM_MODEL: {LLM_MODEL}")
 logger.info(f"   EMBEDDING_MODEL: {EMBEDDING_MODEL}")
 
-# init Vertex AI (uses Application Default Credentials)
+# --- PASTE THIS NEW CODE IN ITS PLACE ---
+
 try:
-    aiplatform.init(project=PROJECT_ID, location=REGION)
+    # Load credentials once for all Google Cloud services
+    from google.oauth2 import service_account
+    credentials = service_account.Credentials.from_service_account_file("service-account-key.json")
+    
+    # Initialize Vertex AI with the loaded credentials
+    aiplatform.init(project=PROJECT_ID, location=REGION, credentials=credentials)
     logger.info("Vertex AI initialized successfully")
-except Exception as e:
-    logger.error(f"Failed to initialize Vertex AI: {e}")
-    logger.error(traceback.format_exc())
-
-try:
-    db = firestore.Client(project=PROJECT_ID)
+    
+    # Initialize Firestore client with the same credentials
+    db = firestore.Client(project=PROJECT_ID, credentials=credentials)
     logger.info("Firestore client initialized successfully")
-except Exception as e:
-    logger.error(f"Failed to initialize Firestore: {e}")
-    logger.error(traceback.format_exc())
 
+except Exception as e:
+    logger.critical(f"FATAL: Failed to initialize Google Cloud services: {e}")
+    logger.critical(traceback.format_exc())
+    # Consider exiting if core services fail to initialize
+    # import sys
+    # sys.exit(1)
+
+    
 app = Flask(__name__)
+
+# Add this debug endpoint to your main.py (temporary for debugging)
+@app.route("/debug/token", methods=["POST"])
+def debug_token():
+    """Debug endpoint to test token verification without creating profiles"""
+    try:
+        token = None
+        if 'Authorization' in request.headers:
+            try:
+                token = request.headers['Authorization'].split(' ')[1]
+            except IndexError:
+                return jsonify({"error": "Invalid Authorization header format"}), 400
+
+        if not token:
+            return jsonify({"error": "No token provided"}), 400
+
+        # Try to verify the token
+        decoded_token = auth.verify_id_token(token)
+        
+        return jsonify({
+            "success": True,
+            "uid": decoded_token['uid'],
+            "token_info": {
+                "iss": decoded_token.get('iss'),
+                "aud": decoded_token.get('aud'),
+                "auth_time": decoded_token.get('auth_time'),
+                "provider": decoded_token.get('firebase', {}).get('sign_in_provider')
+            }
+        }), 200
+        
+    except Exception as e:
+        logger.error(f"Debug token verification failed: {e}")
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "error_type": type(e).__name__
+        }), 400
 
 #firestore auth function
 from functools import wraps
@@ -111,33 +156,83 @@ def login():
     """
     try:
         user_id = request.user_id # From @token_required decorator
+        logger.info(f"Processing login for user_id: {user_id}")
         
         # Check if a profile already exists in Firestore
         user_profile = get_user_profile(user_id)
         
-        if not user_profile:
-            logger.info(f"No profile found for UID {user_id}, creating one.")
-            # Get user info from Firebase Auth itself
+        if user_profile:
+            logger.info(f"Found existing profile for {user_id}")
+            return jsonify(user_profile), 200
+        
+        logger.info(f"No profile found for UID {user_id}, creating one.")
+        
+        # Try to get user info from Firebase Auth
+        try:
             firebase_user = auth.get_user(user_id)
+            logger.info(f"Retrieved Firebase user info for {user_id}")
             
-            # Create a new profile dictionary
+            # Check if this is an anonymous user
+            is_anonymous = len(firebase_user.provider_data) == 0
+            logger.info(f"User {user_id} is anonymous: {is_anonymous}")
+            
+            if is_anonymous:
+                new_profile = {
+                    "username": "Guest User",
+                    "email": None,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "consent": None,
+                    "is_anonymous": True
+                }
+            else:
+                new_profile = {
+                    "username": firebase_user.display_name or firebase_user.email or "User",
+                    "email": firebase_user.email,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "consent": None,
+                    "is_anonymous": False
+                }
+            
+        except auth.UserNotFoundError:
+            logger.warning(f"User {user_id} not found in Firebase Auth, creating anonymous profile")
             new_profile = {
-                "username": firebase_user.display_name or firebase_user.email,
-                "email": firebase_user.email,
+                "username": "Guest User",
+                "email": None,
                 "created_at": datetime.now(timezone.utc).isoformat(),
-                "consent": None # Will be asked on first chat
+                "consent": None,
+                "is_anonymous": True
             }
-            upsert_user_profile(user_id, new_profile)
-            user_profile = get_user_profile(user_id) # Re-fetch to get the full doc
+        except Exception as auth_error:
+            logger.error(f"Error getting Firebase user info for {user_id}: {auth_error}")
+            logger.error(traceback.format_exc())
+            new_profile = {
+                "username": "Guest User",
+                "email": None,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "consent": None,
+                "is_anonymous": True
+            }
+        
+        logger.info(f"Creating profile for {user_id}: {new_profile}")
+        
+        # Save the profile
+        upsert_user_profile(user_id, new_profile)
+        logger.info(f"Profile saved for {user_id}")
+        
+        # Re-fetch to get the full document structure
+        user_profile = get_user_profile(user_id)
+        if not user_profile:
+            logger.error(f"Failed to retrieve saved profile for {user_id}")
+            return jsonify({"error": "Failed to create user profile"}), 500
             
         logger.info(f"Login successful for UID {user_id}")
         return jsonify(user_profile), 200
         
     except Exception as e:
-        logger.error(f"Error in login endpoint: {e}")
+        logger.error(f"Unexpected error in login endpoint: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": "An error occurred during login."}), 500
-
+        
 # Function to sanitize user_id for use as Firestore collection name
 def sanitize_collection_name(user_id):
     """Sanitize user_id to be valid Firestore collection name"""

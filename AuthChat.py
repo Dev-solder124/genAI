@@ -80,21 +80,52 @@ class AuthChatClient:
         print("👤 Signing in as a Guest...")
         print("="*50)
         try:
-            # Pyrebase anonymous sign in gets a token we can use
-            guest_user = self.auth.sign_in_anonymously()
-            self.user_token = guest_user['idToken']
+            # Use Firebase REST API directly for anonymous auth since pyrebase4 doesn't support it properly
+            import requests
             
-            # Now, log in to our backend to get/create a profile
-            headers = {"Authorization": f"Bearer {self.user_token}"}
-            response = requests.post(f"{CHATBOT_URL}/login", headers=headers, timeout=10)
+            # Firebase REST API endpoint for anonymous sign-in
+            firebase_api_key = FIREBASE_CONFIG["apiKey"]
+            auth_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={firebase_api_key}"
+            
+            # Request anonymous token
+            auth_data = {
+                "returnSecureToken": True
+            }
+            
+            auth_response = requests.post(auth_url, json=auth_data, timeout=10)
+            
+            if auth_response.status_code == 200:
+                auth_result = auth_response.json()
+                self.user_token = auth_result['idToken']
+                
+                # First, test token verification
+                headers = {"Authorization": f"Bearer {self.user_token}"}
+                debug_response = requests.post(f"{CHATBOT_URL}/debug/token", headers=headers, timeout=10)
+                
+                if debug_response.status_code == 200:
+                    debug_info = debug_response.json()
+                    print(f"✅ Token verification successful. UID: {debug_info.get('uid', 'unknown')}")
+                    
+                    # Now, log in to our backend to get/create a profile
+                    response = requests.post(f"{CHATBOT_URL}/login", headers=headers, timeout=10)
 
-            if response.status_code == 200:
-                 self.user_profile = response.json()
-                 print("✅ Successfully started a guest session.")
-                 return True
+                    if response.status_code == 200:
+                         self.user_profile = response.json()
+                         print("✅ Successfully started a guest session.")
+                         print("Note: Guest sessions don't persist between app restarts.")
+                         return True
+                    else:
+                        print(f"❌ Guest session failed on backend: {response.text}")
+                        return False
+                else:
+                    debug_info = debug_response.json()
+                    print(f"❌ Token verification failed: {debug_info.get('error', 'Unknown error')}")
+                    print(f"Error type: {debug_info.get('error_type', 'Unknown')}")
+                    return False
             else:
-                print(f"❌ Guest session failed on backend: {response.text}")
+                print(f"❌ Failed to get anonymous token: {auth_response.text}")
                 return False
+                
         except Exception as e:
             print(f"❌ Could not start a guest session: {e}")
             return False
