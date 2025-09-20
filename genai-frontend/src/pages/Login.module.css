@@ -1,0 +1,65 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.loginBox {
+    background: var(--card);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 350px;
+}
+
+.title {
+    font-size: 2.5em;
+    color: var(--card-fg);
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.1em;
+    color: var(--fg-muted);
+    margin-bottom: 30px;
+}
+
+.googleButton {
+    background-color: var(--accent);
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+    margin-bottom: 15px;
+}
+
+.googleButton:hover {
+    background-color: var(--fg);
+}
+
+.guestButton {
+    background-color: transparent;
+    color: var(--fg);
+    border: 1px solid var(--border);
+    padding: 12px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    width: 100%;
+}
+
+.guestButton:hover {
+    background-color: var(--accent-weak);
+}
+
+.error {
+    color: red;
+    margin-bottom: 15px;
+}
