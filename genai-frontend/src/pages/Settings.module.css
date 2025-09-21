@@ -1,0 +1,30 @@
+.settingsContainer {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--card);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.setting {
+    margin-bottom: 20px;
+}
+
+.setting p {
+    margin-bottom: 10px;
+}
+
+.setting button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: var(--primary-orange);
+    color: var(--white);
+    transition: background-color 0.3s;
+}
+
+.setting button:hover {
+    background-color: var(--primary-orange-dark);
+}

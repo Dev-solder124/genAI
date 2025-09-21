@@ -4,11 +4,12 @@ import logging
 import traceback
 import numpy as np
 import re
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, make_response
 from google.cloud import firestore
 from google.cloud import aiplatform
 from datetime import datetime, timezone
 import vertexai
+import functools
 from vertexai.generative_models import GenerativeModel, GenerationConfig
 
 # Enhanced logging configuration
@@ -72,6 +73,20 @@ except Exception as e:
 
     
 app = Flask(__name__)
+
+def add_cors_headers(response):
+    response.headers['Access-Control-Allow-Origin'] = '*'
+    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
+    return response
+
+app.after_request(add_cors_headers)
+
+@app.route('/', methods=['OPTIONS'])
+def handle_options():
+    response = make_response()
+    add_cors_headers(response)
+    return response
 
 # Add this debug endpoint to your main.py (temporary for debugging)
 @app.route("/debug/token", methods=["POST"])

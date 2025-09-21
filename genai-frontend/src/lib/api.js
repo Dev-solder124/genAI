@@ -1,8 +1,18 @@
 const BASE = (import.meta.env.VITE_API_BASE || '/api').replace(/\/$/, '')
+import { getAuth } from 'firebase/auth'
 
 async function http(path, opts = {}) {
+  const auth = getAuth()
+  const user = auth.currentUser
+  if (!user) throw new Error('Not authenticated')
+  
+  const token = await user.getIdToken()
   const res = await fetch(`${BASE}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...(opts.headers || {}) },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      ...(opts.headers || {})
+    },
     ...opts,
   })
   if (!res.ok) {

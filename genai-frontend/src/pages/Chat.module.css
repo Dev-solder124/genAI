@@ -1,22 +1,90 @@
-.shell { display: grid; gap: 10px; }
-.topBar { display: flex; justify-content: space-between; align-items: center; }
-.list {
-  height: 520px; overflow: auto;
-  border: 1px solid var(--border); border-radius: 12px; padding: 12px;
-  background: var(--card);
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: var(--card);
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
-.row { display: flex; margin: 8px 0; }
-.left { justify-content: flex-start; }
-.right { justify-content: flex-end; }
-.bubble {
-  max-width: 70%;
-  padding: 10px 12px;
-  border-radius: 12px;
-  word-wrap: break-word;
-  overflow-wrap: anywhere;
-  line-height: 1.35;
-  border: 1px solid var(--border);
+
+.messageList {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
 }
-.bot { background: var(--bot-bubble); color: var(--bot-text); border-color: #111827; }
-.user { background: var(--user-bubble); color: var(--user-text); border-color: #1d4ed8; }
-.inputRow { display: flex; gap: 8px; }
+
+.message {
+    padding: 10px 15px;
+    border-radius: 18px;
+    margin-bottom: 10px;
+    max-width: 80%;
+    line-height: 1.5;
+}
+
+.user {
+    background-color: var(--user-bubble);
+    color: var(--user-text);
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.bot {
+    background-color: var(--bot-bubble);
+    color: var(--bot-text);
+    align-self: flex-start;
+}
+
+.inputArea {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid var(--border);
+}
+
+.inputArea input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    margin-right: 10px;
+    background-color: var(--bg);
+    color: var(--card-fg);
+}
+
+.inputArea button {
+    padding: 10px 20px;
+    border: none;
+    background-color: var(--primary-orange);
+    color: var(--white);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.inputArea button:hover {
+    background-color: var(--primary-orange-dark);
+}
+
+.consentContainer {
+    padding: 40px;
+    text-align: center;
+}
+
+.consentButtons {
+    margin-top: 20px;
+}
+
+.consentButtons button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    background-color: var(--primary-orange);
+    color: var(--white);
+    border: none;
+    border-radius: 20px;
+    transition: background-color 0.3s;
+}
+
+.consentButtons button:hover {
+    background-color: var(--primary-orange-dark);
+}
