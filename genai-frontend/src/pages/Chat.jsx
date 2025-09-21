@@ -13,9 +13,25 @@ export default function Chat() {
     const [userProfile, setUserProfile] = useState(null);
     const [consentNeeded, setConsentNeeded] = useState(false);
     const messagesEndRef = useRef(null);
+    const textareaRef = useRef(null);
     const [error, setError] = useState(null);
     const [sending, setSending] = useState(false);
     const [retryCount, setRetryCount] = useState(0);
+
+    const adjustTextareaHeight = (element) => {
+        if (!element) return;
+        
+        // Reset height to auto to get the correct scrollHeight
+        element.style.height = 'auto';
+        
+        // Calculate the new height based on content, respecting min and max heights
+        const scrollHeight = element.scrollHeight;
+        const minHeight = 40; // Match the min-height in CSS
+        const maxHeight = 150; // Match the max-height in CSS
+        
+        const newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight));
+        element.style.height = newHeight + 'px';
+    };
 
     // Show loading state while auth is initializing
     if (loading) {
@@ -76,6 +92,14 @@ export default function Chat() {
         const newMessage = { role: 'user', text: trimmedInput };
         setMessages(prev => [...prev, newMessage]);
         setInput('');
+        
+        // Reset textarea height after clearing input
+        if (textareaRef.current) {
+            setTimeout(() => {
+                textareaRef.current.style.height = 'auto';
+                textareaRef.current.style.height = '40px'; // Reset to min-height
+            }, 0);
+        }
 
         let attempts = 0;
         const maxAttempts = 3;
@@ -129,6 +153,20 @@ export default function Chat() {
             setError(error.message);
         } finally {
             setSending(false);
+        }
+    };
+
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setInput(value);
+        // Adjust height immediately as user types
+        adjustTextareaHeight(e.target);
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            if (!sending) handleSend();
         }
     };
 
@@ -186,13 +224,15 @@ export default function Chat() {
                 <div ref={messagesEndRef} />
             </div>
             <div className={styles.inputArea}>
-                <input
-                    type="text"
+                <textarea
+                    ref={textareaRef}
+                    className={styles.messageInput}
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && !sending && handleSend()}
+                    onChange={handleInputChange}
+                    onKeyDown={handleKeyDown}
                     placeholder="Type your message..."
                     disabled={sending}
+                    rows={1}
                     aria-label="Message input"
                 />
                 <button 
