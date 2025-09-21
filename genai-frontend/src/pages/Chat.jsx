@@ -13,6 +13,9 @@ export default function Chat() {
     const [userProfile, setUserProfile] = useState(null);
     const [consentNeeded, setConsentNeeded] = useState(false);
     const messagesEndRef = useRef(null);
+    const [error, setError] = useState(null);
+    const [sending, setSending] = useState(false);
+    const [retryCount, setRetryCount] = useState(0);
 
     // Show loading state while auth is initializing
     if (loading) {
@@ -32,17 +35,18 @@ export default function Chat() {
             }
 
             try {
-                console.log('Fetching profile for user:', user.uid);
-                const response = await api.consent({
-                    user_id: user.uid,
-                    consent: null,
-                    username: user.displayName || 'New User'
-                });
-                console.log('Profile response:', response);
+                console.log('Chat: Fetching profile for user:', user.uid);
+                // FIXED: Use login endpoint to read profile without updating
+                const response = await api.login();
+                console.log('Chat: Profile response:', response);
                 
                 setUserProfile(response);
                 if (response.profile?.consent === null) {
+                    console.log('Chat: Consent is null, showing consent screen');
                     setConsentNeeded(true);
+                } else {
+                    console.log('Chat: Consent already set to:', response.profile?.consent);
+                    setConsentNeeded(false);
                 }
             } catch (error) {
                 console.error('Error fetching user profile:', error);
@@ -64,50 +68,96 @@ export default function Chat() {
     }, [messages]);
 
     const handleSend = async () => {
-        if (input.trim() === '') return;
+        const trimmedInput = input.trim();
+        if (trimmedInput === '' || sending) return;
 
-        const newMessage = { role: 'user', text: input };
+        setError(null);
+        setSending(true);
+        const newMessage = { role: 'user', text: trimmedInput };
         setMessages(prev => [...prev, newMessage]);
         setInput('');
 
+        let attempts = 0;
+        const maxAttempts = 3;
+        const backoffDelay = 1000; // Start with 1 second delay
+
+        const attemptSend = async () => {
+            try {
+                const response = await api.sendMessage({
+                    user_id: user.uid,
+                    session: SESSION_ID,
+                    message: trimmedInput
+                });
+                
+                const botResponse = response.fulfillment_response?.messages?.[0]?.text?.text?.[0];
+                if (!botResponse) {
+                    throw new Error('Invalid response format from server');
+                }
+                
+                setMessages(prev => [...prev, { role: 'bot', text: botResponse }]);
+                setRetryCount(0); // Reset retry count on success
+                return true; // Success
+            } catch (error) {
+                console.error(`Error sending message (attempt ${attempts + 1}/${maxAttempts}):`, error);
+                
+                // Handle different error types
+                if (error.code === 'unauthorized' || error.code === 'unauthenticated') {
+                    throw new Error("Your session has expired. Please refresh the page and sign in again.");
+                } else if (error.code === 'network_error' && attempts < maxAttempts - 1) {
+                    attempts++;
+                    const delay = backoffDelay * Math.pow(2, attempts - 1); // Exponential backoff
+                    await new Promise(resolve => setTimeout(resolve, delay));
+                    return false; // Retry
+                } else {
+                    throw new Error(error.code === 'network_error' 
+                        ? "Network error. Please check your connection and try again."
+                        : "Sorry, I couldn't process your message. Please try again.");
+                }
+            }
+        };
+
         try {
-            const response = await api.sendMessage({
-                user_id: user.uid,
-                session: SESSION_ID,
-                message: input
-            });
-            
-            const botResponse = response.fulfillment_response?.messages?.[0]?.text?.text?.[0] || 
-                              "I'm having trouble understanding. Could you try again?";
-            
-            setMessages(prev => [...prev, { role: 'bot', text: botResponse }]);
+            let success = false;
+            while (!success && attempts < maxAttempts) {
+                success = await attemptSend();
+            }
         } catch (error) {
-            console.error('Error sending message:', error);
             setMessages(prev => [...prev, { 
                 role: 'bot', 
-                text: "Sorry, I couldn't process your message. Please try again." 
+                text: error.message
             }]);
+            setError(error.message);
+        } finally {
+            setSending(false);
         }
     };
 
     const handleConsent = async (consent) => {
         try {
-            await api.consent({
+            setError(null);
+            console.log('Chat: Setting consent to:', consent);
+            
+            // FIXED: Now we're explicitly setting consent, not just reading
+            const response = await api.consent({
                 user_id: user.uid,
                 consent: consent,
                 username: user.displayName || 'User'
             });
+            
+            console.log('Chat: Consent response:', response);
+            
             setConsentNeeded(false);
             setMessages([{ 
                 role: 'bot', 
-                text: "Thanks for setting your preferences. How can I help you today?" 
+                text: consent ? 
+                    "Thanks for letting me remember our conversations. I'll do my best to provide more personalized support. How can I help you today?" :
+                    "I'll keep our conversations private and won't store any memory of them. How can I help you today?"
             }]);
         } catch (error) {
             console.error('Error setting consent:', error);
-            setMessages([{ 
-                role: 'bot', 
-                text: "Sorry, I couldn't save your preferences. Please try again later." 
-            }]);
+            const errorMessage = "Sorry, I couldn't save your preferences. Please try again.";
+            setError(errorMessage);
+            setMessages(prev => [...prev, { role: 'bot', text: errorMessage }]);
         }
     };
 
@@ -140,11 +190,24 @@ export default function Chat() {
                     type="text"
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                    onKeyPress={(e) => e.key === 'Enter' && !sending && handleSend()}
                     placeholder="Type your message..."
+                    disabled={sending}
+                    aria-label="Message input"
                 />
-                <button onClick={handleSend}>Send</button>
+                <button 
+                    onClick={handleSend}
+                    disabled={sending || !input.trim()}
+                    className={sending ? styles.loading : ''}
+                >
+                    {sending ? 'Sending...' : 'Send'}
+                </button>
             </div>
+            {error && (
+                <div className={styles.errorContainer}>
+                    <p className={styles.errorMessage}>{error}</p>
+                </div>
+            )}
         </div>
     );
 }

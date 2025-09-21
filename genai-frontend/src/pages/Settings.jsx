@@ -2,39 +2,64 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import styles from './Settings.module.css';
 
-// Mock API - replace with your actual API calls
-const mockApi = {
-    getUserProfile: async (token) => ({
-        profile: { consent: true, username: 'Demo User' }
-    }),
-    setConsent: async (token, consent) => {
-        console.log('Setting consent to', consent);
-        return true;
-    }
-};
+import { api } from '../lib/api';
 
 export default function Settings() {
     const { user } = useAuth();
     const [consent, setConsent] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [updating, setUpdating] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
             if (user) {
-                const token = await user.getIdToken();
-                const profile = await mockApi.getUserProfile(token);
-                setConsent(profile.profile.consent);
-                setLoading(false);
+                try {
+                    console.log('Settings: Fetching profile using login endpoint');
+                    // FIXED: Use login endpoint to READ profile without updating
+                    const profile = await api.login();
+                    console.log('Settings: Profile response:', profile);
+                    setConsent(profile.profile?.consent);
+                    setLoading(false);
+                } catch (error) {
+                    console.error('Error fetching profile:', error);
+                    setError('Failed to load settings. Please refresh the page.');
+                    setLoading(false);
+                }
             }
         };
         fetchProfile();
     }, [user]);
 
     const handleConsentChange = async () => {
-        const newConsent = !consent;
-        const token = await user.getIdToken();
-        await mockApi.setConsent(token, newConsent);
-        setConsent(newConsent);
+        setUpdating(true);
+        setError(null);
+        try {
+            const newConsent = !consent;
+            console.log('Settings: Updating consent to:', newConsent);
+            
+            // FIXED: Only call consent endpoint when actually updating
+            const response = await api.consent({
+                user_id: user.uid,
+                consent: newConsent,
+                username: user.displayName || 'User'
+            });
+            
+            console.log('Settings: Consent update response:', response);
+            
+            if (response.profile?.consent !== undefined) {
+                setConsent(response.profile.consent);
+                console.log('Settings: Consent successfully updated to:', response.profile.consent);
+            } else {
+                throw new Error('Invalid server response');
+            }
+        } catch (error) {
+            console.error('Error updating consent:', error);
+            setError('Failed to update memory settings. Please try again.');
+            // Keep the previous consent state
+        } finally {
+            setUpdating(false);
+        }
     };
 
     if (loading) {
@@ -47,8 +72,14 @@ export default function Settings() {
             <div className={styles.setting}>
                 <p><strong>Conversation Memory</strong></p>
                 <p>Allow EmpathicAI to remember your conversations to provide a better experience.</p>
-                <button onClick={handleConsentChange}>
-                    {consent ? 'Disable Memory' : 'Enable Memory'}
+                <p><em>Current status: {consent === true ? 'Enabled' : consent === false ? 'Disabled' : 'Not set'}</em></p>
+                {error && <p className={styles.error}>{error}</p>}
+                <button 
+                    onClick={handleConsentChange}
+                    disabled={updating}
+                    className={updating ? styles.loading : ''}
+                >
+                    {updating ? 'Updating...' : (consent ? 'Disable Memory' : 'Enable Memory')}
                 </button>
             </div>
         </div>
