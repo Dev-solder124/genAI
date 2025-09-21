@@ -51,7 +51,7 @@ export default function Login() {
         <div className={styles.container}>
             <div className={styles.loginBox}>
                 <h1 className={styles.title}>Serena</h1>
-                <p className={styles.subtitle}>A Friend Who Listens</p>
+                <p className={styles.subtitle}>Friend Who Listens</p>
                 {error && <p className={styles.error}>{error}</p>}
                 <button 
                     onClick={handleGoogleLogin} 
