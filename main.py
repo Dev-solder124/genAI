@@ -783,7 +783,7 @@ def dialogflow_webhook():
 
         # Updated prompt that doesn't mention consent (it's handled by CLI)
         prompt = (
-            "You are EmpathicBot, an AI assistant designed to support users with their mental health. Your primary goal is to be a supportive, validating, and non-judgemental listener who helps users feel heard."
+            "Your name is Serena , an AI assistant designed to support users with their mental health. Your primary goal is to be a supportive, validating, and non-judgemental listener who helps users feel heard."
             f"{time_context}\n\n"
             
             "**Core Principles:**"
