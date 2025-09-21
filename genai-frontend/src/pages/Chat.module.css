@@ -12,6 +12,18 @@
     flex: 1;
     padding: 20px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Hide scrollbar for webkit browsers */
+.messageList::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for Firefox */
+.messageList {
+    scrollbar-width: none;
 }
 
 .message {
@@ -20,6 +32,8 @@
     margin-bottom: 10px;
     max-width: 80%;
     line-height: 1.5;
+    width: fit-content;
+    word-wrap: break-word;
 }
 
 .user {
@@ -37,11 +51,12 @@
 
 .inputArea {
     display: flex;
+    align-items: flex-end;
     padding: 10px;
     border-top: 1px solid var(--border);
 }
 
-.inputArea input {
+.messageInput {
     flex: 1;
     padding: 10px;
     border: 1px solid var(--border);
@@ -49,9 +64,33 @@
     margin-right: 10px;
     background-color: var(--bg);
     color: var(--card-fg);
+    resize: none;
+    overflow-y: auto;
+    min-height: 40px;
+    max-height: 150px;
+    height: 40px;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: 1.4;
+    transition: height 0.1s ease-out;
+    box-sizing: border-box;
 }
 
-.inputArea input:disabled {
+/* Hide scrollbar for textarea */
+.messageInput::-webkit-scrollbar {
+    display: none;
+}
+
+.messageInput {
+    scrollbar-width: none;
+}
+
+.messageInput:focus {
+    outline: none;
+    border-color: var(--primary-orange);
+}
+
+.messageInput:disabled {
     background-color: var(--disabled-bg);
     cursor: not-allowed;
 }
@@ -64,6 +103,8 @@
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
+    height: fit-content;
+    flex-shrink: 0;
 }
 
 .inputArea button:hover:not(:disabled) {
