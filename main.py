@@ -5,6 +5,10 @@ import traceback
 import numpy as np
 import re
 from flask import Flask, request, jsonify, make_response
+from flask_cors import CORS
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+from marshmallow import Schema, fields, ValidationError
 from google.cloud import firestore
 from google.cloud import aiplatform
 from datetime import datetime, timezone
@@ -74,19 +78,49 @@ except Exception as e:
     
 app = Flask(__name__)
 
-def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = '*'
-    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS'
-    response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
-    return response
+# Configure CORS
+CORS(app, resources={r"/*": {
+    "origins": "*",
+    "methods": ["GET", "POST", "OPTIONS"],
+    "allow_headers": ["Authorization", "Content-Type"]
+}})
 
-app.after_request(add_cors_headers)
+# Configure rate limiting
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://"
+)
 
-@app.route('/', methods=['OPTIONS'])
-def handle_options():
-    response = make_response()
-    add_cors_headers(response)
-    return response
+# Validation Schemas
+class ConsentSchema(Schema):
+    user_id = fields.String(required=False)  # Optional because we get it from token
+    consent = fields.Boolean(allow_none=True)
+    username = fields.String(required=True)
+
+class MessageSchema(Schema):
+    session = fields.String(required=True)
+    messages = fields.List(fields.Dict(), required=True)
+    sessionInfo = fields.Dict(required=True)
+
+class DeleteMemoriesSchema(Schema):
+    user_id = fields.String(required=True)
+
+# Error handlers
+@app.errorhandler(ValidationError)
+def handle_validation_error(error):
+    return jsonify({
+        "error": "Validation error",
+        "details": error.messages
+    }), 400
+
+@app.errorhandler(429)
+def handle_rate_limit_error(error):
+    return jsonify({
+        "error": "Rate limit exceeded",
+        "retry_after": error.description
+    }), 429
 
 # Add this debug endpoint to your main.py (temporary for debugging)
 @app.route("/debug/token", methods=["POST"])
@@ -495,14 +529,18 @@ def get_user_profile(user_id):
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Getting user profile for: {user_id} (sanitized: {sanitized_user_id})")
         
-        
         doc_ref = db.collection("users").document(sanitized_user_id)
         doc = doc_ref.get()
 
         if doc.exists:
-            profile = doc.to_dict()
-            logger.debug(f"Found user profile: {profile}")
-            return profile
+            doc_data = doc.to_dict()
+            logger.debug(f"Found user document: {doc_data}")
+            
+            # If the document exists but doesn't have a profile field, create one
+            if 'profile' not in doc_data:
+                doc_data['profile'] = {}
+            
+            return doc_data
         else:
             logger.debug(f"No profile found for user: {user_id}")
             return None
@@ -511,18 +549,31 @@ def get_user_profile(user_id):
         logger.error(traceback.format_exc())
         return None
 
-def upsert_user_profile(user_id, profile):
+def upsert_user_profile(user_id, profile_data):
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
-        logger.debug(f"Upserting profile for {user_id}: {profile}")
+        logger.debug(f"Upserting profile for {user_id}: {profile_data}")
 
-        # CORRECTED LOGIC: Create a nested dictionary for the 'profile' map
-        # This is the correct format for .set() with merge=True
-        update_data = {
-            "profile": profile
+        # Ensure we have a complete document structure
+        doc_data = {
+            "profile": profile_data
         }
         
-        db.collection("users").document(sanitized_user_id).set(update_data, merge=True)
+        # Get current document to ensure we preserve any existing data
+        doc_ref = db.collection("users").document(sanitized_user_id)
+        current_doc = doc_ref.get()
+        
+        if current_doc.exists:
+            current_data = current_doc.to_dict()
+            # Update only the profile section while preserving other top-level fields
+            if 'profile' in current_data:
+                current_data['profile'].update(profile_data)
+            else:
+                current_data['profile'] = profile_data
+            doc_data = current_data
+
+        logger.debug(f"Final document structure to upsert: {doc_data}")
+        doc_ref.set(doc_data, merge=True)
         
         logger.debug(f"Profile upserted successfully for {user_id}")
 
@@ -793,35 +844,69 @@ def dialogflow_webhook():
         logger.error(traceback.format_exc())
         error_response = {"fulfillment_response": {"messages":[{"text": {"text":["I'm having trouble right now. Please try again in a moment."]}}]}}
         return jsonify(error_response), 500
-# --- consent endpoint with debugging
+# --- consent endpoint with validation and rate limiting
 @app.route("/consent", methods=["POST"])
-@token_required # <-- FIX: Add the security decorator
+@token_required
+@limiter.limit("20/minute")
 def consent():
     try:
         logger.info("=== CONSENT/PROFILE UPDATE REQUEST ===")
-        # --- FIX: Get the verified user_id from the token ---
-        user_id = request.user_id 
-        
+        user_id = request.user_id
+
+        # Validate request payload
         payload = request.get_json(silent=True) or {}
         logger.debug(f"Payload: {payload}")
+        
+        # Validate with schema
+        schema = ConsentSchema()
+        try:
+            payload = schema.load(payload)
+        except ValidationError as err:
+            logger.error(f"Validation error: {err.messages}")
+            return jsonify({"error": "Invalid request data", "details": err.messages}), 400
 
-        profile_data = {
+        # First get the existing profile data
+        existing_doc = get_user_profile(user_id)
+        if existing_doc is None:
+            existing_doc = {}
+        
+        # Get the current profile data or create a new one
+        profile_data = existing_doc.get('profile', {})
+        
+        # Keep existing values and update with new ones
+        profile_data.update({
             "updated_at": datetime.now(timezone.utc).isoformat()
-        }
+        })
 
         if 'consent' in payload:
             profile_data['consent'] = bool(payload['consent'])
             logger.info(f"Updating consent for {user_id}: {profile_data['consent']}")
 
-        # This part handles the initial profile sync from the client
         if 'username' in payload:
             profile_data['username'] = payload['username']
             logger.info(f"Updating username for {user_id}: {profile_data['username']}")
 
-        upsert_user_profile(user_id, profile_data)
+        # Create the complete document structure
+        doc_data = {
+            'profile': profile_data  # Nest under 'profile' key
+        }
         
+        try:
+            logger.info(f"Upserting document for {user_id} with data: {doc_data}")
+            # Upsert the document with the nested profile structure
+            upsert_user_profile(user_id, profile_data)
+        except Exception as e:
+            logger.error(f"Database error updating profile: {e}")
+            return jsonify({"error": "Failed to update profile", "details": str(e)}), 500
+
+        # Fetch the complete updated profile
+        updated_profile = get_user_profile(user_id)
+        if not updated_profile:
+            logger.error(f"Failed to retrieve updated profile for {user_id}")
+            return jsonify({"error": "Failed to retrieve updated profile"}), 500
+            
         logger.info(f"Profile for {user_id} updated successfully.")
-        return jsonify({"ok": True, "user_id": user_id, "data_updated": profile_data})
+        return jsonify(updated_profile)
     
     except Exception as e:
         logger.error(f"Error in consent/profile endpoint: {e}")

@@ -61,6 +61,17 @@
 }
 
 .error {
-    color: red;
+    color: #dc3545;
     margin-bottom: 15px;
+    font-size: 0.9em;
+    text-align: center;
+}
+
+.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+button:disabled {
+    cursor: not-allowed;
 }
