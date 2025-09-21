@@ -1,64 +1,80 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { signInWithGoogle, signInAsGuest } from '../lib/firebase.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import { api } from '../lib/api.js'
-import { sanitizeId, loadUsers, saveUsers, setCurrentUserId } from '../lib/storage.js'
 import styles from './Onboarding.module.css'
 
 export default function Onboarding() {
-  const [username, setUsername] = useState('')
-  const [customId, setCustomId] = useState('')
-  const [consent, setConsent] = useState(true)
+  const { user, userProfile, setUserProfile } = useAuth()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const nav = useNavigate()
+  const [consent, setConsent] = useState(true)
+  const navigate = useNavigate()
 
-  async function onSubmit(e) {
-    e.preventDefault()
-    setError('')
-    if (!username.trim()) return setError('Enter a username')
-    if (!consent) return setError('Please accept consent to continue')
-
-    let id = sanitizeId(customId || username)
-    const users = loadUsers()
-    if (users[id]) return setError('User ID already exists, try another')
-
-    const now = new Date().toISOString()
-    const user_data = { user_id: id, username, consent: null, created_date: now, last_chat_date: now }
-    users[id] = user_data
-    saveUsers(users)
-
-    setLoading(true)
-    try {
-      await api.consent({ user_id: id, consent: true, username })
-      users[id].consent = true
-      saveUsers(users)
-      setCurrentUserId(id)
-      nav('/chat')
-    } catch (err) {
-      setError(err.message || 'Failed to sync consent')
-    } finally {
-      setLoading(false)
+  useEffect(() => {
+    if (user && userProfile && userProfile.profile?.consent !== null && userProfile.profile?.consent !== undefined) {
+      navigate('/chat', { replace: true })
     }
+  }, [user, userProfile, navigate])
+
+  async function handleGoogle() {
+    setError(''); setLoading(true)
+    try { await signInWithGoogle() } catch (e) { setError(e.message || 'Sign in failed') }
+    finally { setLoading(false) }
+  }
+  async function handleGuest() {
+    setError(''); setLoading(true)
+    try { await signInAsGuest() } catch (e) { setError(e.message || 'Guest sign in failed') }
+    finally { setLoading(false) }
+  }
+  async function saveConsent() {
+    setError(''); setLoading(true)
+    try {
+      const res = await api.consent({ consent })
+      const updated = { ...(userProfile || {}), profile: { ...(userProfile?.profile || {}), consent: res?.profile?.consent ?? consent } }
+      setUserProfile(updated)
+      navigate('/chat', { replace: true })
+    } catch (e) {
+      setError(e.message || 'Failed to save consent')
+    } finally { setLoading(false) }
+  }
+
+  if (user && userProfile && (userProfile.profile?.consent === null || userProfile.profile?.consent === undefined)) {
+    return (
+      <div className="card" style={{ maxWidth: 560, margin: '0 auto' }}>
+        <h2 className={styles.title}>Privacy & Memory Settings</h2>
+        <p className="label">Allow remembering helpful things between sessions.</p>
+        <label className={styles.line}>
+          <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} />
+          <span>Enable long‑term memory</span>
+        </label>
+        <div style={{ display:'flex', gap:10 }}>
+          <button className="button" onClick={saveConsent} disabled={loading}>{loading ? 'Saving…' : 'Continue'}</button>
+          <button className="button secondary" onClick={() => { setConsent(false); saveConsent(); }} disabled={loading}>Skip</button>
+        </div>
+        {error && <p className={styles.error}>{error}</p>}
+      </div>
+    )
   }
 
   return (
-    <form onSubmit={onSubmit} className={`card ${styles.wrap}`}>
-      <h2 className={styles.title}>Create your profile</h2>
-      <div className={styles.row}>
-        <label className="label">Username</label>
-        <input className="input" value={username} onChange={e => setUsername(e.target.value)} placeholder="Your name" />
+    <div className="card" style={{ maxWidth: 560, margin: '0 auto' }}>
+      <h2 className={styles.title}>Welcome to EmpathicAI</h2>
+      <p className="label">Sign in to start chatting.</p>
+      <div style={{ display:'flex', gap:10 }}>
+        <button className="button" onClick={handleGoogle} disabled={loading}>
+          {loading ? 'Signing in…' : '🔑 Sign in with Google'}
+        </button>
+        <button className="button secondary" onClick={handleGuest} disabled={loading}>
+          {loading ? 'Signing in…' : '👤 Continue as Guest'}
+        </button>
       </div>
-      <div className={styles.row}>
-        <label className="label">User ID (optional)</label>
-        <input className="input" value={customId} onChange={e => setCustomId(e.target.value)} placeholder="letters, digits, _ or -" />
-        <div className="label">Will be sanitized: {sanitizeId(customId || username || 'anonymous_user')}</div>
-      </div>
-      <label className={styles.consentLine}>
-        <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} />
-        <span>I agree the assistant may remember helpful things between sessions.</span>
-      </label>
-      <button className="button" type="submit" disabled={loading || !username.trim()}>{loading ? 'Creating…' : 'Enter Chat'}</button>
       {error && <p className={styles.error}>{error}</p>}
-    </form>
+    </div>
   )
 }
+
+
+
+

@@ -611,49 +611,48 @@ def summarize_conversation(user_text, assistant_text):
         }
  
 
-# --- Dialogflow webhook endpoint with enhanced debugging
+# --- Dialogflow webhook endpoint with enhanced debugging and robust parsing
 @app.route("/dialogflow-webhook", methods=["POST"])
 @token_required
 def dialogflow_webhook():
     try:
         logger.info("=== NEW WEBHOOK REQUEST ===")
-        req = request.get_json(silent=True) or {}
+
+        # Force-parse JSON so dev/proxy Content-Type issues don't yield None
+        req = request.get_json(force=True) or {}  # force ignores mimetype; returns dict or {} [docs]
         logger.debug(f"Raw request: {json.dumps(req, indent=2)}")
-        
+
         session = req.get("session", "")
         session_id = session.split("/")[-1] if session else "unknown_session"
-        user_id = request.user_id  # From the token_required decorator
-        
+        user_id = request.user_id  # From token_required
+
         logger.info(f"Processing request for user_id: {user_id}")
         logger.info(f"Session: {session_id}")
 
-        # parse user message
-        user_text = ""
-        for m in req.get("messages", []):
-            if m.get("text"):
-                user_text = m["text"].get("text", [""])[0]
-                break
+        # Robust text extraction (matches your payload: messages[0].text.text[0])
+        user_text = (
+            (((req.get("messages") or [{}])[0]).get("text") or {}).get("text", [""])[0]
+            or req.get("text")
+            or (req.get("queryInput") or {}).get("text", {}).get("text")
+            or ""
+        ).strip()
         if not user_text:
-            user_text = req.get("text", "") or "Hello"
+            user_text = "Hello"
 
         logger.info(f"User message: '{user_text}'")
 
         user_profile = get_user_profile(user_id) or {}
-        
-        # CORRECTED LINE: Access the consent flag inside the 'profile' map
         has_consent = user_profile.get("profile", {}).get("consent", False)
-        
         logger.info(f"User consent status: {has_consent}")
 
-        # REMOVED: The automatic consent asking logic that was causing the loop
-        # The CLI client now handles consent flow before chatting begins
-        
         # retrieve relevant memories (only if user has consent)
         retrieved_text = ""
         if has_consent:
             logger.info("Retrieving similar memories...")
             retrieved = retrieve_similar_memories(user_id, user_text, top_k=3)
-            retrieved_text = "\n".join([f"- {r.get('summary')} (tags={r.get('metadata', {}).get('topic')})" for r in retrieved]) if retrieved else ""
+            retrieved_text = "\n".join(
+                [f"- {r.get('summary')} (tags={r.get('metadata', {}).get('topic')})" for r in retrieved]
+            ) if retrieved else ""
             logger.info(f"Found {len(retrieved)} relevant memories")
         else:
             logger.info("User has not consented to memory storage - skipping memory retrieval")
@@ -662,21 +661,16 @@ def dialogflow_webhook():
         time_context = ""
         if retrieved:
             try:
-                # Find the most recent memory
                 most_recent_memory = max(retrieved, key=lambda mem: mem.get('created_at', ''))
-                
                 if most_recent_memory.get('created_at'):
                     last_interaction_time = datetime.fromisoformat(most_recent_memory['created_at'])
                     current_time = datetime.now(timezone.utc)
                     time_delta_seconds = (current_time - last_interaction_time).total_seconds()
-                    
                     logger.info(f"Time since last significant interaction: {time_delta_seconds:.0f} seconds.")
-
-                    if time_delta_seconds > 86400: # More than a day
+                    if time_delta_seconds > 86400:
                         time_context = "Note to AI: It has been over a day since you last spoke. Greet the user warmly and welcome them back before continuing."
-                    elif time_delta_seconds > 3600: # More than an hour
+                    elif time_delta_seconds > 3600:
                         time_context = "Note to AI: It has been a while since your last exchange. Acknowledge the pause before continuing the conversation."
-            
             except Exception as e:
                 logger.warning(f"Could not analyze memory timestamps: {e}")
 
@@ -684,33 +678,26 @@ def dialogflow_webhook():
         short_term = json.dumps(session_params) if session_params else ""
         logger.debug(f"Session params: {short_term}")
 
-        # Updated prompt that doesn't mention consent (it's handled by CLI)
         prompt = (
             "You are EmpathicBot, an AI assistant designed to support users with their mental health. Your primary goal is to be a supportive, validating, and non-judgemental listener who helps users feel heard."
             f"{time_context}\n\n"
-            
             "**Core Principles:**"
-            "\n1.  **Validate First:** Always start by recognizing and validating the user's feelings and situation before offering any advice."
-            "\n2.  **Active Listening & Pacing:** Do not rush to solutions. Ask gentle, clarifying questions to understand their situation from a 360-degree perspective. Do not overwhelm the user with too much information."
-            "\n3.  **Maintain Trust:** Be transparent and confidential. Your tone should be warm, friendly, and empathetic."
-            "\n4.  **Suggest Tools, Don't Prescribe:** When appropriate, you may suggest supportive tools like mindfulness, breathing exercises, or CBT-inspired exercises like gratitude journaling. Frame these as options to explore."
-            "\n5.  **Vary Your Responses:** Avoid starting every message with the same phrase (e.g., 'I understand...'). Strive for a natural and varied conversational style."
-            
+            "\n1.  Validate First: Always start by recognizing and validating the user's feelings and situation before offering any advice."
+            "\n2.  Active Listening & Pacing: Do not rush to solutions. Ask gentle, clarifying questions to understand their situation from a 360-degree perspective. Do not overwhelm the user with too much information."
+            "\n3.  Maintain Trust: Be transparent and confidential. Your tone should be warm, friendly, and empathetic."
+            "\n4.  Suggest Tools, Don't Prescribe: When appropriate, you may suggest supportive tools like mindfulness, breathing exercises, or CBT-inspired exercises like gratitude journaling. Frame these as options to explore."
+            "\n5.  Vary Your Responses: Avoid starting every message with the same phrase. Strive for a natural and varied conversational style."
             "\n\n**Memory Usage Protocol:**"
             "\n- If retrieved memories are provided, first analyze them to understand the user's usual behavior, preferences, and dislikes."
             "\n- Then, seamlessly weave specific details from these memories into your response to show you remember their context."
-            
             "\n\n**Safety Protocol:**"
             "\n- If the user is at risk of self-harm or in immediate danger, you must prioritize providing appropriate emergency resources and contact information."
-
             f"\n\n--- CONTEXT ---"
             f"\nRetrieved memories:\n{retrieved_text}\n"
             f"\nUser profile: {json.dumps(user_profile)}\n"
             f"\nSession params: {short_term}\n"
             f"\n--- END CONTEXT ---"
-
             f"\n\nUser: {user_text}\n\n"
-
             "Assistant (response should be empathetic, varied, and context-aware):"
         )
 
@@ -718,15 +705,12 @@ def dialogflow_webhook():
         reply_text = generate_text(prompt, max_output_tokens=250, temperature=0.7).strip()
         logger.info(f"Generated reply: '{reply_text}'")
 
-        # --- UPDATED LOGIC: Only summarize and save if user has consented ---
         if has_consent:
             logger.info("Creating and evaluating summary of the current exchange...")
             analysis_result = summarize_conversation(user_text, reply_text)
-            
-            # Only save the memory if the analysis flagged it as significant
             if analysis_result.get("is_significant"):
                 summary = analysis_result.get("summary")
-                if "error" not in summary.lower():
+                if "error" not in (summary or "").lower():
                     if save_memory(user_id, summary, {"topic": "conversation_exchange", "session_id": session_id}):
                         logger.info("SIGNIFICANT exchange saved as a new memory.")
                     else:
@@ -738,15 +722,17 @@ def dialogflow_webhook():
         else:
             logger.info("User has not consented to memory storage - skipping conversation analysis and memory save.")
 
-        response = {"fulfillment_response": {"messages":[{"text": {"text":[reply_text]}}]}}
+        response = {"fulfillment_response": {"messages": [{"text": {"text": [reply_text]}}]}}
         logger.info("Request completed successfully")
-        return jsonify(response)
-    
+        return jsonify(response), 200
+
     except Exception as e:
         logger.error(f"Error in dialogflow_webhook: {e}")
         logger.error(traceback.format_exc())
-        error_response = {"fulfillment_response": {"messages":[{"text": {"text":["I'm having trouble right now. Please try again in a moment."]}}]}}
+        error_response = {"fulfillment_response": {"messages": [{"text": {"text": ["I'm having trouble right now. Please try again in a moment."]}}]}}
         return jsonify(error_response), 500
+
+
 # --- consent endpoint with debugging
 @app.route("/consent", methods=["POST"])
 @token_required # <-- FIX: Add the security decorator

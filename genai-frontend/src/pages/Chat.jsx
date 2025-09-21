@@ -1,67 +1,73 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { api } from '../lib/api.js'
-import {
-  getCurrentUserId, loadUsers, saveUsers, addHistoryEntry, userRecentHistory
-} from '../lib/storage.js'
+import { useAuth } from '../contexts/AuthContext.jsx'
 import styles from './Chat.module.css'
 
+function now() {
+  const d = new Date()
+  return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+}
+
 export default function Chat() {
-  const user_id = getCurrentUserId()
-  const [session, setSession] = useState(() => `session_${Date.now()}_${user_id || 'anon'}`)
-  const [messages, setMessages] = useState(() => userRecentHistory(user_id || '', 30))
+  const { user, userProfile } = useAuth()
+  const [session, setSession] = useState(() =>
+    `projects/${import.meta.env.VITE_FIREBASE_PROJECT_ID}/agent/sessions/session_${Date.now()}_${user?.uid || 'anon'}`
+  )
+  const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [error, setError] = useState('')
   const listRef = useRef(null)
 
-  const username = useMemo(() => (loadUsers()[user_id]?.username || 'User'), [user_id])
+  const username = useMemo(
+    () => userProfile?.profile?.username || (user?.isAnonymous ? 'Guest' : 'User'),
+    [user, userProfile]
+  )
 
-  useEffect(() => { listRef.current?.scrollTo(0, listRef.current.scrollHeight) }, [messages])
+  useEffect(() => {
+    listRef.current?.scrollTo(0, listRef.current.scrollHeight)
+  }, [messages])
 
-  function newSession() { setSession(`session_${Date.now()}_${user_id || 'anon'}`) }
+  function newSession() {
+    setSession(`projects/${import.meta.env.VITE_FIREBASE_PROJECT_ID}/agent/sessions/session_${Date.now()}_${user?.uid || 'anon'}`)
+    setMessages([])
+  }
 
   async function send() {
-    if (!input.trim() || !user_id) return
+    if (!input.trim()) return
     const text = input.trim()
     setInput('')
-
-    const userEntry = { timestamp: new Date().toISOString(), user_id, session_id: session, user_message: text, bot_response: '' }
-    setMessages(m => [...m, userEntry])
-
+    setMessages(m => [...m, { role: 'user', text, t: now() }])
     try {
-      const data = await api.sendMessage({ user_id, session, message: text })
-      const reply = data?.fulfillment_response?.messages?.[0]?.text?.text?.[0] ?? '…'
-      const botEntry = { timestamp: new Date().toISOString(), user_id, session_id: session, user_message: '', bot_response: reply }
-      addHistoryEntry(userEntry)
-      addHistoryEntry(botEntry)
-      setMessages(m => [...m.slice(0, -1), userEntry, botEntry])
-
-      const users = loadUsers()
-      if (users[user_id]) { users[user_id].last_chat_date = new Date().toISOString(); saveUsers(users) }
+      const data = await api.sendMessage({ session, message: text })
+      const reply =
+        data?.fulfillment_response?.messages?.[0]?.text?.text?.[0] ||
+        data?.fulfillmentResponse?.messages?.[0]?.text?.text?.[0] ||
+        data?.reply || '…'
+      setMessages(m => [...m, { role: 'bot', text: reply, t: now() }])
     } catch (e) {
-      setError(e.message || 'Network error'); setTimeout(() => setError(''), 3000)
+      setError(e.message || 'Network error')
+      setTimeout(() => setError(''), 3000)
+      setMessages(m => [...m, { role: 'bot', text: 'Request failed', t: now() }])
     }
   }
 
-  if (!user_id) return <div className="card">No user selected. Please create a user on the Welcome screen.</div>
-
   return (
-    <div className={`card ${styles.shell}`}>
-      <div className={styles.topBar}>
+    <div className="card chat-shell">
+      <div className="chat-top">
         <div className="label">User: {username}</div>
         <button className="button" onClick={newSession}>New Session</button>
       </div>
-      <div ref={listRef} className={styles.list}>
-        {messages.map((m, i) => {
-          const role = m.user_message ? 'user' : 'bot'
-          const text = m.user_message || m.bot_response
-          return (
-            <div key={i} className={`${styles.row} ${role === 'user' ? styles.right : styles.left}`}>
-              <div className={`${styles.bubble} ${role === 'user' ? styles.user : styles.bot}`}>{text}</div>
+      <div ref={listRef} className="chat-list">
+        {messages.map((m, i) => (
+          <div key={i} className={`row ${m.role === 'user' ? 'right' : 'left'}`}>
+            <div className={`bubble ${m.role === 'user' ? 'user' : 'bot'}`}>
+              {m.text}
+              <span className="timestamp">{m.t}</span>
             </div>
-          )
-        })}
+          </div>
+        ))}
       </div>
-      <div className={styles.inputRow}>
+      <div className="chat-input-row">
         <input
           className="input"
           value={input}
@@ -75,4 +81,6 @@ export default function Chat() {
     </div>
   )
 }
+
+
 

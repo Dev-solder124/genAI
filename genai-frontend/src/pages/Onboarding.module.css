@@ -1,5 +1,5 @@
-.wrap { max-width: 520px; margin: 0 auto; display: grid; gap: 14px; }
-.title { margin: 0; }
-.row { display: grid; gap: 6px; }
-.consentLine { display: flex; gap: 8px; align-items: center; color: var(--fg-muted); }
+.wrap { max-width: 560px; margin: 0 auto; display: grid; gap: 16px; }
+.title { margin: 0; font-family: Sora, Inter, sans-serif; letter-spacing: .2px; }
+.line { display: flex; gap: 10px; align-items: center; color: var(--muted); }
 .error { color: #ef4444; }
+
