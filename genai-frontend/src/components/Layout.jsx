@@ -14,7 +14,7 @@ export default function Layout({ children }) {
     return (
         <div className={styles.layout}>
             <header className={styles.header}>
-                <div className={styles.brand}>EmpathicAI</div>
+                <div className={styles.brand}>Atlas</div>
                 <nav className={styles.nav}>
                     <Link to="/chat" className={styles.navLink}>Chat</Link>
                     <Link to="/settings" className={styles.navLink}>Settings</Link>

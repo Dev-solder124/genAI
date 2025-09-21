@@ -1,40 +1,40 @@
 :root {
-  /* Primary Brand */
-  --primary-orange: #FF6B35;
-  --primary-orange-dark: #E55A2B;
-  --primary-orange-light: #FF7F50;
+  /* Primary Brown */
+  --primary-brown: #A67B5B;         
+  --primary-brown-dark: #8B5A3C;     
+  --primary-brown-light: #C4A68C;    
   
-  /* Secondary */
-  --secondary-blue: #6BB6FF;
-  --secondary-blue-dark: #4A90E2;
-  --secondary-blue-light: #E3F2FD;
+  /* Secondary Green */
+  --secondary-green: #9CAF88;        
+  --secondary-green-dark: #7C906F;   
+  --secondary-green-light: #E8EFDA;  
   
   /* Accents */
-  --accent-yellow: #FFD54F;
-  --accent-yellow-warm: #FFC107;
-  --accent-green: #66BB6A;
-  --accent-green-light: #E8F5E8;
+  --accent-gold: #C9A86A;            
+  --accent-gold-warm: #B89454;       
+  --accent-green: var(--secondary-green); 
+  --accent-green-light: var(--secondary-green-light); 
   
   /* Neutrals */
-  --white: #FFFFFF;
-  --off-white: #FAFAFA;
-  --light-gray: #F5F5F5;
-  --text-primary: #333333;
-  --text-secondary: #757575;
+  --white: #FFFFFF;                  
+  --off-white: #FFFEFB;               
+  --light-beige: #F4F1E8;             
+  --text-primary: #5D3E2A;            
+  --text-secondary: #8B5A3C;         
 
-  /* Maintaining compatibility with existing color usage */
-  --fg: var(--primary-orange-dark);
-  --fg-muted: var(--primary-orange);
-  --bg: var(--white);
-  --card: var(--light-gray);
+  /* --- Mapped to your desired variables --- */
+  --fg: var(--primary-brown-dark);
+  --fg-muted: var(--primary-brown);
+  --bg: var(--off-white);
+  --card: var(--light-beige);
   --card-fg: var(--text-primary);
-  --border: var(--primary-orange);
-  --accent: var(--primary-orange);
-  --accent-weak: rgba(255, 107, 53, 0.1);
+  --border: var(--secondary-green);
+  --accent: var(--secondary-green);
+  --accent-weak: rgba(156, 175, 136, 0.15);
 
-  --bot-bubble: var(--secondary-blue-light);
-  --user-bubble: var(--primary-orange);
-  --user-text: var(--white);
+  --bot-bubble: var(--secondary-green-light);
+  --user-bubble: var(--primary-brown-dark);
+  --user-text: var(--off-white);
   --bot-text: var(--text-primary);
 }
 

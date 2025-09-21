@@ -8,50 +8,97 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 20px;
-    background-color: #fff;
-    border-bottom: 1px solid #e0e0e0;
-    height: 60px;
+    padding: 0 32px;
+    background-color: #FFFEFB; 
+    border-bottom: 1px solid #A67B5B; 
+    height: 80px;
+    box-shadow: 0 2px 4px rgba(156, 175, 136, 0.1); 
 }
 
 .brand {
-    font-size: 1.5em;
+    font-size: 2em;
     font-weight: bold;
-    color: #333;
+    color: #8B5A3C; 
+    letter-spacing: -0.5px;
 }
 
 .nav {
     display: flex;
-    gap: 20px;
+    gap: 32px;
 }
 
 .navLink {
     text-decoration: none;
-    color: #555;
-    font-size: 1em;
+    color: #A67B5B; 
+    font-size: 1.2em;
     transition: color 0.3s;
+    font-weight: 500;
 }
 
 .navLink:hover {
-    color: #000;
+    color: #8B5A3C; 
 }
 
 .signOutButton {
-    background: none;
-    border: 1px solid #ccc;
-    padding: 8px 15px;
-    border-radius: 4px;
+    background: #8B5A3C;
+    border: 1px solid #8B5A3C; 
+    padding: 12px 24px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
+    color: #FFFEFB; 
+    font-weight: 500;
+    font-size: 1em;
+    transition: all 0.3s ease;
 }
 
 .signOutButton:hover {
-    background-color: #f0f0f0;
+    background: transparent !important; 
+    border: 1px solid #8B5A3C !important; 
+    color: #8B5A3C !important; 
 }
 
 .main {
     flex: 1;
     overflow-y: auto;
-    padding: 20px;
-    background-color: #f7f9fc;
+    padding: 32px;
+    background-color: #F4F1E8; 
+}
+
+/* Input styles */
+input[type="text"] {
+    border: 2px solid #8B5A3C !important;
+    font-size: 1em !important;
+    padding: 14px 18px !important;
+}
+
+input[type="text"]:focus {
+    border-color: #A67B5B !important;
+    box-shadow: 0 0 0 2px rgba(139, 90, 60, 0.2) !important;
+    outline: none !important;
+}
+
+/* More specific button targeting */
+button {
+    background: #8B5A3C !important;
+    color: #FFFEFB !important;
+    font-size: 1em !important;
+    padding: 14px 20px !important;
+}
+
+button:hover {
+    background: #9CAF88 !important;
+    color: #FFFFFF !important;
+}
+
+/* Even more specific targeting */
+*[class*="send"], *[id*="send"], button:contains("Send") {
+    background: #8B5A3C !important;
+    color: #FFFEFB !important;
+    font-size: 1em !important;
+    padding: 14px 20px !important;
+}
+
+*[class*="send"]:hover, *[id*="send"]:hover, button:contains("Send"):hover {
+    background: #9CAF88 !important;
+    color: #FFFFFF !important;
 }
