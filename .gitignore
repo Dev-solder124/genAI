@@ -7,12 +7,12 @@ __pycache__/
 # Sensitive Files
 
 
-# key.json
-# service-account-key.json
-#firebase.env
+key.json
+service-account-key.json
+firebase.env
 firebaseCred.txt
 
-# .env
+.env
 *.log
 chat_users_data.json
 chat_history.json

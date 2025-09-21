@@ -6,6 +6,7 @@ marshmallow==3.19.0
 google-cloud-firestore==2.16.0
 google-cloud-aiplatform==1.56.0
 vertexai
+gunicorn
 
 # Firebase Authentication
 firebase-admin==6.5.0
