@@ -50,7 +50,7 @@ export default function Login() {
     return (
         <div className={styles.container}>
             <div className={styles.loginBox}>
-                <h1 className={styles.title}>Atlas</h1>
+                <h1 className={styles.title}>Serena</h1>
                 <p className={styles.subtitle}>Your wellness wingman</p>
                 {error && <p className={styles.error}>{error}</p>}
                 <button 
