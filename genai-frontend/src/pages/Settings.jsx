@@ -1,46 +1,56 @@
-import { useMemo, useState } from 'react'
-import {
-  loadUsers, saveUsers, getCurrentUserId, userFullHistory
-} from '../lib/storage.js'
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import styles from './Settings.module.css';
+
+// Mock API - replace with your actual API calls
+const mockApi = {
+    getUserProfile: async (token) => ({
+        profile: { consent: true, username: 'Demo User' }
+    }),
+    setConsent: async (token, consent) => {
+        console.log('Setting consent to', consent);
+        return true;
+    }
+};
 
 export default function Settings() {
-  const id = getCurrentUserId()
-  const users = loadUsers()
-  const me = users[id] || {}
-  const [username, setUsername] = useState(me.username || '')
+    const { user } = useAuth();
+    const [consent, setConsent] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-  const sessions = useMemo(() => {
-    const list = userFullHistory(id)
-    const set = new Set(list.map(h => h.session_id).filter(Boolean))
-    return set.size
-  }, [id])
+    useEffect(() => {
+        const fetchProfile = async () => {
+            if (user) {
+                const token = await user.getIdToken();
+                const profile = await mockApi.getUserProfile(token);
+                setConsent(profile.profile.consent);
+                setLoading(false);
+            }
+        };
+        fetchProfile();
+    }, [user]);
 
-  function changeUsername() {
-    if (!username.trim()) return
-    users[id].username = username.trim()
-    saveUsers(users)
-    alert('Username updated')
-  }
+    const handleConsentChange = async () => {
+        const newConsent = !consent;
+        const token = await user.getIdToken();
+        await mockApi.setConsent(token, newConsent);
+        setConsent(newConsent);
+    };
 
-  function resetConsent() {
-    if (!confirm('Reset consent? The app will ask again during chat.')) return
-    users[id].consent = null
-    saveUsers(users)
-    alert('Consent reset; next chat will ask again.')
-  }
+    if (loading) {
+        return <div>Loading settings...</div>;
+    }
 
-  if (!id) return <div className="card">No user selected.</div>
-
-  return (
-    <div className="card" style={{ display: 'grid', gap: 12 }}>
-      <div><strong>User ID:</strong> {id}</div>
-      <div style={{ display: 'grid', gap: 6 }}>
-        <label className="label">Username</label>
-        <input className="input" value={username} onChange={e => setUsername(e.target.value)} />
-        <button className="button" onClick={changeUsername}>Save</button>
-      </div>
-      <div className="label">Created: {(me.created_date || '—').slice(0,10)} • Sessions: {sessions}</div>
-      <button className="button" onClick={resetConsent}>Reset Consent</button>
-    </div>
-  )
+    return (
+        <div className={styles.settingsContainer}>
+            <h2>Settings</h2>
+            <div className={styles.setting}>
+                <p><strong>Conversation Memory</strong></p>
+                <p>Allow EmpathicAI to remember your conversations to provide a better experience.</p>
+                <button onClick={handleConsentChange}>
+                    {consent ? 'Disable Memory' : 'Enable Memory'}
+                </button>
+            </div>
+        </div>
+    );
 }
