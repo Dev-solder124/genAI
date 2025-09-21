@@ -1,35 +1,36 @@
 /* ===========================
-   Fonts (self-hosted & fallback)
+   System font stacks (no downloads)
    =========================== */
-/* Place these files:
-   - /public/fonts/Inter-Variable.woff2
-   - /public/fonts/Inter-Italic.woff2
-   - /public/fonts/Sora-Variable.woff2
-*/
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-Variable.woff2') format('woff2-variations');
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+:root {
+  --font-sans:  ,"Segoe UI", Roboto, Helvetica, Arial,
+               "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  --font-head:  "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
-@font-face {
-  font-family: 'Inter';
-  src: url('/fonts/Inter-Italic.woff2') format('woff2');
-  font-style: italic;
-  font-weight: 100 900;
-  font-display: swap;
+
+/* Apply globally */
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  color: var(--fg);
+  background:
+    radial-gradient(1200px 600px at 15% -10%, rgba(139, 92, 246, 0.22), transparent 50%),
+    radial-gradient(900px 500px at 85% -20%, rgba(34, 211, 238, 0.18), transparent 50%),
+    linear-gradient(180deg, #070914 0%, #0a0f1f 100%);
+  font-family: var(--font-sans);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
-@font-face {
-  font-family: 'Sora';
-  src: url('/fonts/Sora-Variable.woff2') format('woff2-variations');
-  font-weight: 100 800;
-  font-style: normal;
-  font-display: swap;
+
+/* Headings and brand */
+h1, h2, h3, h4, h5, h6, .brand, .brand-name {
+  font-family: var(--font-head);
+  font-weight: 700;
+  letter-spacing: 0.2px;
 }
 
 /* ===========================
-   Theme
+   Theme tokens
    =========================== */
 :root {
   /* Base */
@@ -45,7 +46,7 @@
   --brand-2: #22d3ee;
   --brand-weak: color-mix(in oklch, var(--brand) 30%, transparent);
 
-  /* Chat */
+  /* Chat bubbles */
   --bot-bubble: #0f172a;
   --user-bubble: #1b3b8d;
   --user-bubble-2: #2563eb;
@@ -58,27 +59,26 @@
   /* Radii */
   --r-md: 12px;
   --r-lg: 16px;
+
+  /* Motion */
+  --trans-fast: .15s ease;
+  --trans-slow: .25s ease;
 }
 
-/* ===========================
-   App base
-   =========================== */
-* { box-sizing: border-box; }
-html, body, #root { height: 100%; margin: 0; }
-body {
-  color: var(--fg);
-  background:
-    radial-gradient(1200px 600px at 15% -10%, rgba(139, 92, 246, 0.22), transparent 50%),
-    radial-gradient(900px 500px at 85% -20%, rgba(34, 211, 238, 0.18), transparent 50%),
-    linear-gradient(180deg, #070914 0%, #0a0f1f 100%);
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  line-height: 1.5;
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }
+
+/* Text selection & caret */
+::selection { background: color-mix(in oklch, var(--brand) 30%, transparent); color: #fff; }
+input, textarea { caret-color: var(--brand); }
 
 /* ===========================
    Layout
    =========================== */
 .container { max-width: 1080px; margin: 0 auto; padding: 24px; }
+
 .card {
   background: color-mix(in oklch, var(--panel) 86%, transparent);
   border: 1px solid color-mix(in oklch, var(--border) 75%, transparent);
@@ -102,24 +102,22 @@ body {
   background: linear-gradient(180deg, rgba(17,24,39,0.66), rgba(8,12,24,0.66));
   backdrop-filter: blur(var(--blur));
 }
+
 .brand {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  font-family: Sora, Inter, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.2px;
   font-size: 1.1rem;
 }
+
 .brand img { width: 26px; height: 26px; }
+
 .brand-name {
   background: linear-gradient(90deg, var(--brand), var(--brand-2));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
-.center { justify-self: center; color: var(--muted); }
-.right { justify-self: end; }
 
 /* ===========================
    Controls
@@ -132,10 +130,10 @@ body {
   border-radius: var(--r-md);
   width: 100%;
   outline: none;
-  transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
+  transition: border-color var(--trans-fast), box-shadow var(--trans-fast), background var(--trans-fast);
 }
 .input::placeholder { color: var(--muted); }
-.input:focus { border-color: var(--brand); box-shadow: var(--ring); background: color-mix(in oklch, var(--bg-elev) 100%, transparent); }
+.input:focus-visible { border-color: var(--brand); box-shadow: var(--ring); background: color-mix(in oklch, var(--bg-elev) 100%, transparent); }
 
 .button {
   padding: 11px 14px;
@@ -145,18 +143,17 @@ body {
   cursor: pointer;
   background: linear-gradient(135deg, var(--brand), var(--brand-2));
   box-shadow: 0 10px 30px rgba(34, 211, 238, 0.15), 0 6px 18px rgba(139, 92, 246, 0.2);
-  transition: transform .06s ease, filter .2s ease;
+  transition: transform .06s ease, filter var(--trans-slow);
 }
 .button:hover { filter: brightness(1.05); }
 .button:active { transform: translateY(1px); }
+.button:focus-visible { outline: none; box-shadow: var(--ring); }
 .button.secondary {
   background: linear-gradient(135deg, #334155, #1f2937);
   color: var(--fg);
 }
 
-/* ===========================
-   Links / Labels
-   =========================== */
+/* Links / labels */
 .label { color: var(--muted); font-size: 0.95rem; }
 .link { color: var(--fg); text-decoration: none; }
 .link:hover { text-decoration: underline; }
@@ -173,10 +170,18 @@ body {
   border: 1px solid color-mix(in oklch, var(--border) 70%, transparent);
   border-radius: var(--r-lg);
   padding: 14px;
-  background:
-    linear-gradient(180deg, rgba(10,15,31,0.75), rgba(7,9,20,0.75));
+  background: linear-gradient(180deg, rgba(10,15,31,0.75), rgba(7,9,20,0.75));
   backdrop-filter: blur(calc(var(--blur) * 0.6));
+  scroll-behavior: smooth;
 }
+
+/* Smooth custom scrollbars */
+.chat-list::-webkit-scrollbar { width: 10px; }
+.chat-list::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--border) 70%, transparent);
+  border-radius: 10px;
+}
+.chat-list { scrollbar-color: color-mix(in oklch, var(--border) 70%, transparent) transparent; scrollbar-width: thin; }
 
 .row { display: flex; margin: 10px 0; }
 .left { justify-content: flex-start; }
@@ -192,22 +197,34 @@ body {
   position: relative;
   box-shadow: 0 8px 24px rgba(0,0,0,0.25);
 }
-.bot {
-  background: linear-gradient(180deg, #0e1428, #0a0f1f);
-  color: var(--fg);
-}
-.user {
+
+/* Wider user bubbles */
+.bubble.user {
   background: linear-gradient(135deg, var(--user-bubble), var(--user-bubble-2));
   color: #fff;
   border-color: rgba(37, 99, 235, 0.6);
+  max-width: 90%;
+}
+.bubble.bot {
+  background: linear-gradient(180deg, #0e1428, #0a0f1f);
+  color: var(--fg);
+  max-width: 70%;
+}
+
+/* Responsive bubble widths */
+@media (max-width: 640px) {
+  .bubble.user { max-width: 96%; }
+  .bubble.bot  { max-width: 85%; }
+}
+@media (min-width: 1024px) {
+  .bubble.user { max-width: 82%; }
+  .bubble.bot  { max-width: 70%; }
 }
 
 .chat-input-row { display: flex; gap: 10px; }
 
-.input {
-  flex: 1 1 auto;   /* grow and shrink as needed */
-  min-width: 0;     /* allow shrinking in flexbox to avoid overflow */
-}
+/* Make input fill the row beside the send button */
+.input { flex: 1 1 auto; min-width: 0; }
 
 .timestamp {
   position: absolute;
@@ -216,5 +233,22 @@ body {
   font-size: 0.7rem;
   color: var(--muted);
   opacity: 0.8;
+}
+
+/* ===========================
+   Optional: subtle panel separators
+   =========================== */
+.hr {
+  height: 1px;
+  border: 0;
+  background: linear-gradient(90deg,
+    transparent, color-mix(in oklch, var(--border) 60%, transparent), transparent);
+  margin: 8px 0;
+}
+
+/* index.css */
+.button:focus-visible, .link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--brand) 25%, transparent);
 }
 
