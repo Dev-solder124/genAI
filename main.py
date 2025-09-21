@@ -28,12 +28,11 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 import firebase_admin
-from firebase_admin import credentials, auth
+from firebase_admin import auth # No 'credentials' import needed
 
 try:
-    # Use the downloaded service account key
-    cred = credentials.Certificate("service-account-key.json")
-    firebase_admin.initialize_app(cred)
+    # On Cloud Run, the SDK initializes automatically without a key file.
+    firebase_admin.initialize_app()
     logger.info("Firebase Admin SDK initialized successfully")
 except Exception as e:
     logger.error(f"Failed to initialize Firebase Admin SDK: {e}")
@@ -53,27 +52,26 @@ logger.info(f"   REGION: {REGION}")
 logger.info(f"   LLM_MODEL: {LLM_MODEL}")
 logger.info(f"   EMBEDDING_MODEL: {EMBEDDING_MODEL}")
 
+
+
 # --- PASTE THIS NEW CODE IN ITS PLACE ---
 
 try:
-    # Load credentials once for all Google Cloud services
-    from google.oauth2 import service_account
-    credentials = service_account.Credentials.from_service_account_file("service-account-key.json")
-    
-    # Initialize Vertex AI with the loaded credentials
-    aiplatform.init(project=PROJECT_ID, location=REGION, credentials=credentials)
+    # In a deployed Google Cloud environment, the libraries automatically
+    # find the correct credentials from the service account.
+    # We no longer need to load the JSON key file.
+
+    # Initialize Vertex AI
+    aiplatform.init(project=PROJECT_ID, location=REGION)
     logger.info("Vertex AI initialized successfully")
-    
-    # Initialize Firestore client with the same credentials
-    db = firestore.Client(project=PROJECT_ID, credentials=credentials)
+
+    # Initialize Firestore client
+    db = firestore.Client(project=PROJECT_ID)
     logger.info("Firestore client initialized successfully")
 
 except Exception as e:
     logger.critical(f"FATAL: Failed to initialize Google Cloud services: {e}")
     logger.critical(traceback.format_exc())
-    # Consider exiting if core services fail to initialize
-    # import sys
-    # sys.exit(1)
 
     
 app = Flask(__name__)

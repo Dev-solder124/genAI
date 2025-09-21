@@ -1,6 +1,6 @@
 import { getAuth } from 'firebase/auth'
 
-const BASE = (import.meta.env.VITE_API_BASE || '/api').replace(/\/$/, '')
+const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 
 class ApiError extends Error {
   constructor(message, status, code) {
