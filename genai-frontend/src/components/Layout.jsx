@@ -14,7 +14,7 @@ export default function Layout({ children }) {
     return (
         <div className={styles.layout}>
             <header className={styles.header}>
-                <div className={styles.brand}>Atlas</div>
+                <div className={styles.brand}>Serena</div>
                 <nav className={styles.nav}>
                     <Link to="/chat" className={styles.navLink}>Chat</Link>
                     <Link to="/settings" className={styles.navLink}>Settings</Link>
