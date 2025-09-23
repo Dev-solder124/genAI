@@ -547,34 +547,26 @@ def get_user_profile(user_id):
         logger.error(traceback.format_exc())
         return None
 
-def upsert_user_profile(user_id, profile_data):
+def upsert_user_profile(user_id, profile_data_to_update):
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
-        logger.debug(f"Upserting profile for {user_id}: {profile_data}")
-
-        # Ensure we have a complete document structure
-        doc_data = {
-            "profile": profile_data
-        }
+        logger.debug(f"Updating profile for {user_id} with: {profile_data_to_update}")
         
-        # Get current document to ensure we preserve any existing data
         doc_ref = db.collection("users").document(sanitized_user_id)
-        current_doc = doc_ref.get()
+        update_payload = {f"profile.{key}": value for key, value in profile_data_to_update.items()}
         
-        if current_doc.exists:
-            current_data = current_doc.to_dict()
-            # Update only the profile section while preserving other top-level fields
-            if 'profile' in current_data:
-                current_data['profile'].update(profile_data)
+        # Try update first (for existing docs)
+        try:
+            doc_ref.update(update_payload)
+            logger.debug(f"Profile updated successfully for {user_id}")
+        except Exception as update_error:
+            # If update fails (likely because doc doesn't exist), create it
+            if "NOT_FOUND" in str(update_error) or "not found" in str(update_error).lower():
+                doc_ref.set({"profile": profile_data_to_update})
+                logger.debug(f"New profile document created for {user_id}")
             else:
-                current_data['profile'] = profile_data
-            doc_data = current_data
-
-        logger.debug(f"Final document structure to upsert: {doc_data}")
-        doc_ref.set(doc_data, merge=True)
-        
-        logger.debug(f"Profile upserted successfully for {user_id}")
-
+                raise update_error
+                
     except Exception as e:
         logger.error(f"Error upserting user profile: {e}")
         logger.error(traceback.format_exc())
