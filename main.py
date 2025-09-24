@@ -43,7 +43,7 @@ PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJE
 REGION = os.environ.get("REGION", "asia-south1")
 
 # Updated to use Gemini models (Bison models are deprecated)
-LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-1.5-flash")
+LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-2.5-flash")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "text-embedding-004")
 
 logger.info(f"Starting chatbot with config:")
@@ -383,7 +383,7 @@ def health_check():
     # Test Vertex AI Text Generation with multiple models
     try:
         
-        test_models = ["gemini-1.5-flash"]
+        test_models = ["gemini-2.5-flash"]
         success = False
         working_model = None
         
@@ -495,7 +495,7 @@ def generate_text(prompt, max_output_tokens=300, temperature=0.2):
     """Main text generation function with fallback models"""
     fallback_models = [
         LLM_MODEL,
-        "gemini-1.5-flash",
+        "gemini-2.5-flash",
     ]
     
     # Remove duplicates while preserving order
@@ -547,26 +547,34 @@ def get_user_profile(user_id):
         logger.error(traceback.format_exc())
         return None
 
-def upsert_user_profile(user_id, profile_data_to_update):
+def upsert_user_profile(user_id, profile_data):
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
-        logger.debug(f"Updating profile for {user_id} with: {profile_data_to_update}")
+        logger.debug(f"Upserting profile for {user_id}: {profile_data}")
+
+        # Ensure we have a complete document structure
+        doc_data = {
+            "profile": profile_data
+        }
         
+        # Get current document to ensure we preserve any existing data
         doc_ref = db.collection("users").document(sanitized_user_id)
-        update_payload = {f"profile.{key}": value for key, value in profile_data_to_update.items()}
+        current_doc = doc_ref.get()
         
-        # Try update first (for existing docs)
-        try:
-            doc_ref.update(update_payload)
-            logger.debug(f"Profile updated successfully for {user_id}")
-        except Exception as update_error:
-            # If update fails (likely because doc doesn't exist), create it
-            if "NOT_FOUND" in str(update_error) or "not found" in str(update_error).lower():
-                doc_ref.set({"profile": profile_data_to_update})
-                logger.debug(f"New profile document created for {user_id}")
+        if current_doc.exists:
+            current_data = current_doc.to_dict()
+            # Update only the profile section while preserving other top-level fields
+            if 'profile' in current_data:
+                current_data['profile'].update(profile_data)
             else:
-                raise update_error
-                
+                current_data['profile'] = profile_data
+            doc_data = current_data
+
+        logger.debug(f"Final document structure to upsert: {doc_data}")
+        doc_ref.set(doc_data, merge=True)
+        
+        logger.debug(f"Profile upserted successfully for {user_id}")
+
     except Exception as e:
         logger.error(f"Error upserting user profile: {e}")
         logger.error(traceback.format_exc())
@@ -802,7 +810,7 @@ def dialogflow_webhook():
         )
 
         logger.info("Generating response...")
-        reply_text = generate_text(prompt, max_output_tokens=250, temperature=0.7).strip()
+        reply_text = generate_text(prompt, max_output_tokens=2500, temperature=0.7).strip()
         logger.info(f"Generated reply: '{reply_text}'")
 
         # --- UPDATED LOGIC: Only summarize and save if user has consented ---
