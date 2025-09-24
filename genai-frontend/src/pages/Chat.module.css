@@ -6,34 +6,52 @@
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    min-height: 0; /* Important for flex child to shrink */
 }
 
 .messageList {
     flex: 1;
-    padding: 20px;
+    padding: 12px;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    gap: 8px;
+    min-height: 0; /* Important for scrolling to work properly */
 }
 
 /* Hide scrollbar for webkit browsers */
 .messageList::-webkit-scrollbar {
-    display: none;
+    width: 4px;
+}
+
+.messageList::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messageList::-webkit-scrollbar-thumb {
+    background: rgba(156, 175, 136, 0.3);
+    border-radius: 2px;
+}
+
+.messageList::-webkit-scrollbar-thumb:hover {
+    background: rgba(156, 175, 136, 0.5);
 }
 
 /* Hide scrollbar for Firefox */
 .messageList {
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 175, 136, 0.3) transparent;
 }
 
 .message {
-    padding: 10px 15px;
+    padding: 12px 16px;
     border-radius: 18px;
-    margin-bottom: 10px;
-    max-width: 80%;
+    max-width: 85%;
     line-height: 1.5;
     width: fit-content;
     word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 .user {
@@ -41,81 +59,110 @@
     color: var(--user-text);
     align-self: flex-end;
     margin-left: auto;
+    border-bottom-right-radius: 6px;
 }
 
 .bot {
     background-color: var(--bot-bubble);
     color: var(--bot-text);
     align-self: flex-start;
+    border-bottom-left-radius: 6px;
 }
 
 .inputArea {
     display: flex;
     align-items: flex-end;
-    padding: 10px;
+    padding: 12px;
     border-top: 1px solid var(--border);
+    gap: 8px;
+    flex-shrink: 0;
 }
 
 .messageInput {
     flex: 1;
-    padding: 10px;
+    padding: 12px 16px;
     border: 1px solid var(--border);
     border-radius: 20px;
-    margin-right: 10px;
     background-color: var(--bg);
     color: var(--card-fg);
     resize: none;
     overflow-y: auto;
-    min-height: 40px;
-    max-height: 150px;
-    height: 40px;
+    min-height: 44px;
+    max-height: 120px;
+    height: 44px;
     font-family: inherit;
-    font-size: inherit;
+    font-size: 16px; /* Prevents zoom on iOS */
     line-height: 1.4;
-    transition: height 0.1s ease-out;
+    transition: height 0.1s ease-out, border-color 0.2s ease;
     box-sizing: border-box;
 }
 
 /* Hide scrollbar for textarea */
 .messageInput::-webkit-scrollbar {
-    display: none;
+    width: 4px;
+}
+
+.messageInput::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.messageInput::-webkit-scrollbar-thumb {
+    background: rgba(156, 175, 136, 0.3);
+    border-radius: 2px;
 }
 
 .messageInput {
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(156, 175, 136, 0.3) transparent;
 }
 
 .messageInput:focus {
     outline: none;
-    border-color: var(--primary-orange);
+    border-color: var(--primary-brown);
+    box-shadow: 0 0 0 2px rgba(139, 90, 60, 0.1);
 }
 
 .messageInput:disabled {
-    background-color: var(--disabled-bg);
+    background-color: rgba(156, 175, 136, 0.1);
     cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.messageInput::placeholder {
+    color: var(--fg-muted);
+    opacity: 0.7;
 }
 
 .inputArea button {
-    padding: 10px 20px;
+    padding: 12px 20px;
     border: none;
-    background-color: var(--primary-orange);
+    background-color: var(--primary-brown-dark);
     color: var(--white);
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
     height: fit-content;
     flex-shrink: 0;
+    font-weight: 500;
+    min-width: 60px;
+    font-size: 14px;
 }
 
 .inputArea button:hover:not(:disabled) {
-    background-color: var(--primary-orange-dark);
+    background-color: var(--secondary-green);
     transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.3);
+}
+
+.inputArea button:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .inputArea button:disabled {
-    background-color: var(--disabled-bg);
+    background-color: var(--fg-muted);
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.5;
+    transform: none;
 }
 
 .loading {
@@ -149,39 +196,188 @@
 }
 
 .consentContainer {
-    padding: 40px;
+    padding: 24px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.consentContainer h2 {
+    margin-bottom: 16px;
+    color: var(--card-fg);
+    font-size: 1.5em;
+}
+
+.consentContainer p {
+    margin-bottom: 12px;
+    color: var(--fg-muted);
+    line-height: 1.6;
+    max-width: 600px;
 }
 
 .consentButtons {
-    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    margin-top: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .consentButtons button {
-    padding: 10px 20px;
-    margin: 0 10px;
+    padding: 12px 24px;
     cursor: pointer;
-    background-color: var(--primary-orange);
+    background-color: var(--primary-brown-dark);
     color: var(--white);
     border: none;
     border-radius: 20px;
-    transition: background-color 0.3s;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    min-width: 160px;
 }
 
 .consentButtons button:hover {
-    background-color: var(--primary-orange-dark);
+    background-color: var(--secondary-green);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.3);
 }
 
 .errorContainer {
-    padding: 10px 20px;
-    margin: 10px;
-    background-color: var(--error-bg);
+    padding: 12px 16px;
+    margin: 12px;
+    background-color: rgba(220, 53, 69, 0.1);
     border-radius: 8px;
-    border-left: 4px solid var(--error);
+    border-left: 4px solid #dc3545;
 }
 
 .errorMessage {
-    color: var(--error);
+    color: #dc3545;
     margin: 0;
     font-size: 0.9em;
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+    .messageList {
+        padding: 16px;
+        gap: 10px;
+    }
+    
+    .message {
+        padding: 12px 18px;
+        max-width: 80%;
+    }
+    
+    .inputArea {
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .messageInput {
+        padding: 14px 18px;
+        max-height: 140px;
+        min-height: 48px;
+        height: 48px;
+    }
+    
+    .inputArea button {
+        padding: 14px 24px;
+        font-size: 15px;
+    }
+    
+    .consentContainer {
+        padding: 32px;
+    }
+    
+    .consentButtons {
+        gap: 16px;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+    .messageList {
+        padding: 20px;
+        gap: 10px;
+    }
+    
+    .message {
+        padding: 10px 15px;
+        max-width: 75%;
+    }
+    
+    .inputArea {
+        padding: 10px;
+        gap: 10px;
+    }
+    
+    .messageInput {
+        padding: 10px;
+        max-height: 150px;
+        min-height: 40px;
+        height: 40px;
+        font-size: inherit; /* Use default font size on desktop */
+    }
+    
+    .inputArea button {
+        padding: 10px 20px;
+        font-size: inherit;
+    }
+    
+    .consentContainer {
+        padding: 40px;
+    }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 480px) {
+    .messageList {
+        padding: 8px;
+    }
+    
+    .message {
+        padding: 10px 14px;
+        max-width: 90%;
+        font-size: 15px;
+    }
+    
+    .inputArea {
+        padding: 8px;
+        gap: 6px;
+    }
+    
+    .messageInput {
+        padding: 10px 14px;
+        border-radius: 16px;
+        max-height: 100px;
+        min-height: 40px;
+        height: 40px;
+    }
+    
+    .inputArea button {
+        padding: 10px 16px;
+        border-radius: 16px;
+        font-size: 13px;
+        min-width: 50px;
+    }
+    
+    .consentContainer {
+        padding: 20px;
+    }
+    
+    .consentContainer h2 {
+        font-size: 1.3em;
+    }
+    
+    .consentButtons {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .consentButtons button {
+        width: 100%;
+        min-width: auto;
+    }
 }

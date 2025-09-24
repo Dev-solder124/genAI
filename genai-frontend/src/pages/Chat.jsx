@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { api } from '../lib/api'; // Assuming you have an API library
+import { api } from '../lib/api';
 import styles from './Chat.module.css';
 
 // Initialize session ID for the chat
@@ -16,19 +16,14 @@ export default function Chat() {
     const textareaRef = useRef(null);
     const [error, setError] = useState(null);
     const [sending, setSending] = useState(false);
-    const [retryCount, setRetryCount] = useState(0);
 
     const adjustTextareaHeight = (element) => {
         if (!element) return;
         
-        // Reset height to auto to get the correct scrollHeight
         element.style.height = 'auto';
-        
-        // Calculate the new height based on content, respecting min and max heights
         const scrollHeight = element.scrollHeight;
-        const minHeight = 40; // Match the min-height in CSS
-        const maxHeight = 150; // Match the max-height in CSS
-        
+        const minHeight = 40;
+        const maxHeight = 150;
         const newHeight = Math.max(minHeight, Math.min(scrollHeight, maxHeight));
         element.style.height = newHeight + 'px';
     };
@@ -46,30 +41,43 @@ export default function Chat() {
     useEffect(() => {
         const fetchUserProfile = async () => {
             if (!user) {
-                console.log('No user logged in');
+                console.log('Chat: No user logged in');
                 return;
             }
 
             try {
                 console.log('Chat: Fetching profile for user:', user.uid);
-                // FIXED: Use login endpoint to read profile without updating
+                
                 const response = await api.login();
                 console.log('Chat: Profile response:', response);
                 
                 setUserProfile(response);
-                if (response.profile?.consent === null) {
-                    console.log('Chat: Consent is null, showing consent screen');
+                
+                const consentValue = response.profile?.consent;
+                console.log('Chat: Consent value from profile:', consentValue);
+                
+                if (consentValue === null || consentValue === undefined) {
+                    console.log('Chat: Consent is null/undefined, showing consent screen');
                     setConsentNeeded(true);
                 } else {
-                    console.log('Chat: Consent already set to:', response.profile?.consent);
+                    console.log('Chat: Consent already set to:', consentValue);
                     setConsentNeeded(false);
                 }
             } catch (error) {
-                console.error('Error fetching user profile:', error);
-                // Show error message to user
+                console.error('Chat: Error fetching user profile:', error);
+                
+                let errorMessage = "Sorry, I'm having trouble connecting to the server. Please try again later.";
+                
+                if (error.code === 'unauthorized' || error.code === 'unauthenticated') {
+                    errorMessage = "Your session has expired. Please refresh the page and sign in again.";
+                } else if (error.code === 'network_error') {
+                    errorMessage = "Network error. Please check your connection and try again.";
+                }
+                
+                setError(errorMessage);
                 setMessages(prev => [...prev, { 
                     role: 'bot', 
-                    text: "Sorry, I'm having trouble connecting to the server. Please try again later." 
+                    text: errorMessage
                 }]);
             }
         };
@@ -97,60 +105,46 @@ export default function Chat() {
         if (textareaRef.current) {
             setTimeout(() => {
                 textareaRef.current.style.height = 'auto';
-                textareaRef.current.style.height = '40px'; // Reset to min-height
+                textareaRef.current.style.height = '40px';
             }, 0);
         }
 
-        let attempts = 0;
-        const maxAttempts = 3;
-        const backoffDelay = 1000; // Start with 1 second delay
-
-        const attemptSend = async () => {
-            try {
-                const response = await api.sendMessage({
-                    user_id: user.uid,
-                    session: SESSION_ID,
-                    message: trimmedInput
-                });
-                
-                const botResponse = response.fulfillment_response?.messages?.[0]?.text?.text?.[0];
-                if (!botResponse) {
-                    throw new Error('Invalid response format from server');
-                }
-                
-                setMessages(prev => [...prev, { role: 'bot', text: botResponse }]);
-                setRetryCount(0); // Reset retry count on success
-                return true; // Success
-            } catch (error) {
-                console.error(`Error sending message (attempt ${attempts + 1}/${maxAttempts}):`, error);
-                
-                // Handle different error types
-                if (error.code === 'unauthorized' || error.code === 'unauthenticated') {
-                    throw new Error("Your session has expired. Please refresh the page and sign in again.");
-                } else if (error.code === 'network_error' && attempts < maxAttempts - 1) {
-                    attempts++;
-                    const delay = backoffDelay * Math.pow(2, attempts - 1); // Exponential backoff
-                    await new Promise(resolve => setTimeout(resolve, delay));
-                    return false; // Retry
-                } else {
-                    throw new Error(error.code === 'network_error' 
-                        ? "Network error. Please check your connection and try again."
-                        : "Sorry, I couldn't process your message. Please try again.");
-                }
-            }
-        };
-
         try {
-            let success = false;
-            while (!success && attempts < maxAttempts) {
-                success = await attemptSend();
+            console.log('Chat: Sending message:', trimmedInput);
+            
+            const response = await api.sendMessage({
+                session: SESSION_ID,
+                message: trimmedInput
+            });
+            
+            console.log('Chat: Message response:', response);
+            
+            // Extract response from the backend format
+            const botResponse = response.fulfillment_response?.messages?.[0]?.text?.text?.[0];
+            if (!botResponse) {
+                throw new Error('Invalid response format from server');
             }
+            
+            setMessages(prev => [...prev, { role: 'bot', text: botResponse }]);
+            
         } catch (error) {
+            console.error('Chat: Error sending message:', error);
+            
+            let errorMessage = "Sorry, I couldn't process your message. Please try again.";
+            
+            if (error.code === 'unauthorized' || error.code === 'unauthenticated') {
+                errorMessage = "Your session has expired. Please refresh the page and sign in again.";
+            } else if (error.code === 'network_error') {
+                errorMessage = "Network error. Please check your connection and try again.";
+            } else if (error.code === 'rate_limited') {
+                errorMessage = "Too many requests. Please wait a moment before trying again.";
+            }
+            
             setMessages(prev => [...prev, { 
                 role: 'bot', 
-                text: error.message
+                text: errorMessage
             }]);
-            setError(error.message);
+            setError(errorMessage);
         } finally {
             setSending(false);
         }
@@ -159,7 +153,6 @@ export default function Chat() {
     const handleInputChange = (e) => {
         const value = e.target.value;
         setInput(value);
-        // Adjust height immediately as user types
         adjustTextareaHeight(e.target);
     };
 
@@ -175,16 +168,16 @@ export default function Chat() {
             setError(null);
             console.log('Chat: Setting consent to:', consent);
             
-            // FIXED: Now we're explicitly setting consent, not just reading
             const response = await api.consent({
-                user_id: user.uid,
                 consent: consent,
-                username: user.displayName || 'User'
+                username: user.displayName || user.email || 'User'
             });
             
             console.log('Chat: Consent response:', response);
             
             setConsentNeeded(false);
+            setUserProfile(response);
+            
             setMessages([{ 
                 role: 'bot', 
                 text: consent ? 
@@ -192,8 +185,16 @@ export default function Chat() {
                     "I'll keep our conversations private and won't store any memory of them. How can I help you today?"
             }]);
         } catch (error) {
-            console.error('Error setting consent:', error);
-            const errorMessage = "Sorry, I couldn't save your preferences. Please try again.";
+            console.error('Chat: Error setting consent:', error);
+            
+            let errorMessage = "Sorry, I couldn't save your preferences. Please try again.";
+            
+            if (error.code === 'unauthorized' || error.code === 'unauthenticated') {
+                errorMessage = "Your session has expired. Please refresh the page and sign in again.";
+            } else if (error.code === 'network_error') {
+                errorMessage = "Network error. Please check your connection and try again.";
+            }
+            
             setError(errorMessage);
             setMessages(prev => [...prev, { role: 'bot', text: errorMessage }]);
         }
@@ -203,8 +204,9 @@ export default function Chat() {
         return (
             <div className={styles.consentContainer}>
                 <h2>Privacy & Memory Settings</h2>
-                <p>EmpathicAI can remember important parts of our conversations to provide better, more personalized support over time.</p>
-                <p>Your privacy matters. You can delete your data anytime.</p>
+                <p>Serena can remember important parts of our conversations to provide better, more personalized support over time.</p>
+                <p>Your privacy matters. You can delete your data anytime in Settings.</p>
+                {error && <p className={styles.error}>{error}</p>}
                 <div className={styles.consentButtons}>
                     <button onClick={() => handleConsent(true)}>Remember Conversations</button>
                     <button onClick={() => handleConsent(false)}>Forget Conversations</button>

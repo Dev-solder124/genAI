@@ -2,21 +2,23 @@
     display: flex;
     flex-direction: column;
     height: 100vh;
+    overflow: hidden;
 }
 
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 32px;
+    padding: 0 16px;
     background-color: #FFFEFB; 
     border-bottom: 1px solid #A67B5B; 
-    height: 80px;
-    box-shadow: 0 2px 4px rgba(156, 175, 136, 0.1); 
+    height: 60px;
+    box-shadow: 0 2px 4px rgba(156, 175, 136, 0.1);
+    flex-shrink: 0;
 }
 
 .brand {
-    font-size: 2em;
+    font-size: 1.5em;
     font-weight: bold;
     color: #8B5A3C; 
     letter-spacing: -0.5px;
@@ -24,31 +26,37 @@
 
 .nav {
     display: flex;
-    gap: 32px;
+    gap: 16px;
 }
 
 .navLink {
     text-decoration: none;
     color: #A67B5B; 
-    font-size: 1.2em;
+    font-size: 1em;
     transition: color 0.3s;
     font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
 }
 
 .navLink:hover {
-    color: #8B5A3C; 
+    color: #8B5A3C;
+    background-color: rgba(156, 175, 136, 0.1);
 }
 
 .signOutButton {
     background: #8B5A3C;
     border: 1px solid #8B5A3C; 
-    padding: 12px 24px;
-    border-radius: 8px;
+    padding: 8px 16px;
+    border-radius: 6px;
     cursor: pointer;
     color: #FFFEFB; 
     font-weight: 500;
-    font-size: 1em;
+    font-size: 0.9em;
     transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .signOutButton:hover {
@@ -59,16 +67,18 @@
 
 .main {
     flex: 1;
-    overflow-y: auto;
-    padding: 32px;
-    background-color: #F4F1E8; 
+    overflow: hidden;
+    padding: 16px;
+    background-color: #F4F1E8;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Input styles */
 input[type="text"] {
     border: 2px solid #8B5A3C !important;
     font-size: 1em !important;
-    padding: 14px 18px !important;
+    padding: 12px 16px !important;
 }
 
 input[type="text"]:focus {
@@ -77,12 +87,16 @@ input[type="text"]:focus {
     outline: none !important;
 }
 
-/* More specific button targeting */
+/* Button styles */
 button {
     background: #8B5A3C !important;
     color: #FFFEFB !important;
     font-size: 1em !important;
-    padding: 14px 20px !important;
+    padding: 12px 18px !important;
+    border-radius: 6px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
 }
 
 button:hover {
@@ -90,15 +104,96 @@ button:hover {
     color: #FFFFFF !important;
 }
 
-/* Even more specific targeting */
-*[class*="send"], *[id*="send"], button:contains("Send") {
-    background: #8B5A3C !important;
-    color: #FFFEFB !important;
-    font-size: 1em !important;
-    padding: 14px 20px !important;
+button:disabled {
+    opacity: 0.7 !important;
+    cursor: not-allowed !important;
 }
 
-*[class*="send"]:hover, *[id*="send"]:hover, button:contains("Send"):hover {
-    background: #9CAF88 !important;
-    color: #FFFFFF !important;
+/* Tablet styles */
+@media (min-width: 768px) {
+    .header {
+        height: 70px;
+        padding: 0 24px;
+    }
+    
+    .brand {
+        font-size: 1.8em;
+    }
+    
+    .nav {
+        gap: 24px;
+    }
+    
+    .navLink {
+        font-size: 1.1em;
+        padding: 10px 16px;
+    }
+    
+    .signOutButton {
+        padding: 10px 20px;
+        font-size: 1em;
+    }
+    
+    .main {
+        padding: 24px;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+    .header {
+        height: 80px;
+        padding: 0 32px;
+    }
+    
+    .brand {
+        font-size: 2em;
+    }
+    
+    .nav {
+        gap: 32px;
+    }
+    
+    .navLink {
+        font-size: 1.2em;
+        padding: 12px 20px;
+    }
+    
+    .signOutButton {
+        padding: 12px 24px;
+    }
+    
+    .main {
+        padding: 32px;
+    }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 480px) {
+    .header {
+        padding: 0 12px;
+        height: 56px;
+    }
+    
+    .brand {
+        font-size: 1.3em;
+    }
+    
+    .nav {
+        gap: 8px;
+    }
+    
+    .navLink {
+        font-size: 0.9em;
+        padding: 6px 10px;
+    }
+    
+    .signOutButton {
+        padding: 6px 12px;
+        font-size: 0.85em;
+    }
+    
+    .main {
+        padding: 12px;
+    }
 }

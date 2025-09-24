@@ -158,7 +158,9 @@ def debug_token():
         }), 400
 
 #firestore auth function
+
 from functools import wraps
+import logging
 
 def token_required(f):
     """Decorator to protect endpoints with Firebase ID token verification."""
@@ -166,32 +168,174 @@ def token_required(f):
     def decorated_function(*args, **kwargs):
         token = None
         if 'Authorization' in request.headers:
-            # Expected format: "Bearer <token>"
             try:
-                token = request.headers['Authorization'].split(' ')[1]
+                auth_header = request.headers['Authorization']
+                if not auth_header.startswith('Bearer '):
+                    logger.error("Authorization header must start with 'Bearer '")
+                    return jsonify({"error": "Invalid Authorization header format"}), 401
+                token = auth_header.split(' ')[1]
             except IndexError:
+                logger.error("Failed to extract token from Authorization header")
                 return jsonify({"error": "Invalid Authorization header format"}), 401
 
         if not token:
+            logger.error("No authorization token provided")
             return jsonify({"error": "Authorization token is missing"}), 401
 
         try:
-            # Verify the token
+            # Verify the token with additional error handling for anonymous users
+            logger.debug(f"Verifying token for endpoint: {request.endpoint}")
             decoded_token = auth.verify_id_token(token)
-            # Add the verified user ID to the request context for the endpoint to use
-            request.user_id = decoded_token['uid']
-            logger.info(f"Token verified successfully for UID: {request.user_id}")
-        except auth.ExpiredIdTokenError:
-            return jsonify({"error": "Token has expired"}), 401
+            
+            # Extract user ID
+            user_id = decoded_token['uid']
+            logger.info(f"Token verified successfully for UID: {user_id}")
+            
+            # Check if this is an anonymous user
+            firebase_info = decoded_token.get('firebase', {})
+            sign_in_provider = firebase_info.get('sign_in_provider')
+            is_anonymous = sign_in_provider == 'anonymous'
+            
+            logger.debug(f"Sign-in provider: {sign_in_provider}, Is anonymous: {is_anonymous}")
+            
+            # Add the verified user info to the request context
+            request.user_id = user_id
+            request.is_anonymous = is_anonymous
+            request.decoded_token = decoded_token
+            
+        except auth.ExpiredIdTokenError as e:
+            logger.error(f"Token has expired: {e}")
+            return jsonify({
+                "error": "Token has expired",
+                "code": "token_expired"
+            }), 401
         except auth.InvalidIdTokenError as e:
             logger.error(f"Invalid token error: {e}")
-            return jsonify({"error": "Invalid authorization token"}), 401
+            # More specific error handling for anonymous users
+            error_str = str(e).lower()
+            if 'anonymous' in error_str or 'custom' in error_str:
+                return jsonify({
+                    "error": "Anonymous authentication failed",
+                    "code": "anonymous_auth_failed",
+                    "details": str(e)
+                }), 401
+            else:
+                return jsonify({
+                    "error": "Invalid authorization token",
+                    "code": "invalid_token",
+                    "details": str(e)
+                }), 401
+        except auth.CertificateFetchError as e:
+            logger.error(f"Certificate fetch error: {e}")
+            return jsonify({
+                "error": "Authentication service temporarily unavailable",
+                "code": "cert_fetch_error"
+            }), 503
         except Exception as e:
-            logger.error(f"An unexpected error occurred during token verification: {e}")
-            return jsonify({"error": "Could not verify token"}), 500
+            logger.error(f"Unexpected error during token verification: {e}")
+            logger.error(f"Token (first 20 chars): {token[:20]}...")
+            return jsonify({
+                "error": "Could not verify token",
+                "code": "verification_failed",
+                "details": str(e) if logger.level <= logging.DEBUG else None
+            }), 500
 
         return f(*args, **kwargs)
     return decorated_function
+
+# Also update your login endpoint to handle anonymous users better:
+@app.route("/login", methods=["POST"])
+@token_required
+def login():
+    """
+    Called after a client gets an ID token.
+    Verifies token, finds user profile, creates one if it doesn't exist,
+    and returns the profile.
+    """
+    try:
+        user_id = request.user_id # From @token_required decorator
+        is_anonymous = getattr(request, 'is_anonymous', False)
+        decoded_token = getattr(request, 'decoded_token', {})
+        
+        logger.info(f"Processing login for user_id: {user_id}, anonymous: {is_anonymous}")
+        
+        # Check if a profile already exists in Firestore
+        user_profile = get_user_profile(user_id)
+        
+        if user_profile:
+            logger.info(f"Found existing profile for {user_id}")
+            return jsonify(user_profile), 200
+        
+        logger.info(f"No profile found for UID {user_id}, creating one.")
+        
+        # Handle profile creation differently for anonymous vs authenticated users
+        if is_anonymous:
+            logger.info(f"Creating anonymous user profile for {user_id}")
+            new_profile = {
+                "username": "Guest User",
+                "email": None,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "consent": None,
+                "is_anonymous": True,
+                "provider": "anonymous"
+            }
+        else:
+            # Try to get user info from Firebase Auth for non-anonymous users
+            try:
+                firebase_user = auth.get_user(user_id)
+                logger.info(f"Retrieved Firebase user info for {user_id}")
+                
+                new_profile = {
+                    "username": firebase_user.display_name or firebase_user.email or "User",
+                    "email": firebase_user.email,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "consent": None,
+                    "is_anonymous": False,
+                    "provider": decoded_token.get('firebase', {}).get('sign_in_provider', 'unknown')
+                }
+                
+            except auth.UserNotFoundError:
+                logger.warning(f"User {user_id} not found in Firebase Auth, treating as anonymous")
+                new_profile = {
+                    "username": "Guest User",
+                    "email": None,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "consent": None,
+                    "is_anonymous": True,
+                    "provider": "anonymous"
+                }
+            except Exception as auth_error:
+                logger.error(f"Error getting Firebase user info for {user_id}: {auth_error}")
+                # Fallback to basic profile
+                new_profile = {
+                    "username": "User",
+                    "email": None,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "consent": None,
+                    "is_anonymous": False,
+                    "provider": "unknown"
+                }
+        
+        logger.info(f"Creating profile for {user_id}: {new_profile}")
+        
+        # Save the profile
+        upsert_user_profile(user_id, new_profile)
+        logger.info(f"Profile saved for {user_id}")
+        
+        # Re-fetch to get the full document structure
+        user_profile = get_user_profile(user_id)
+        if not user_profile:
+            logger.error(f"Failed to retrieve saved profile for {user_id}")
+            return jsonify({"error": "Failed to create user profile"}), 500
+            
+        logger.info(f"Login successful for UID {user_id}")
+        return jsonify(user_profile), 200
+        
+    except Exception as e:
+        logger.error(f"Unexpected error in login endpoint: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": "An error occurred during login."}), 500
+
 
 def format_time_delta(timestamp_str):
     """Converts an ISO format timestamp string to a relative time string."""
@@ -227,7 +371,10 @@ def login():
     """
     try:
         user_id = request.user_id # From @token_required decorator
-        logger.info(f"Processing login for user_id: {user_id}")
+        is_anonymous = getattr(request, 'is_anonymous', False)
+        decoded_token = getattr(request, 'decoded_token', {})
+        
+        logger.info(f"Processing login for user_id: {user_id}, anonymous: {is_anonymous}")
         
         # Check if a profile already exists in Firestore
         user_profile = get_user_profile(user_id)
@@ -238,51 +385,53 @@ def login():
         
         logger.info(f"No profile found for UID {user_id}, creating one.")
         
-        # Try to get user info from Firebase Auth
-        try:
-            firebase_user = auth.get_user(user_id)
-            logger.info(f"Retrieved Firebase user info for {user_id}")
-            
-            # Check if this is an anonymous user
-            is_anonymous = len(firebase_user.provider_data) == 0
-            logger.info(f"User {user_id} is anonymous: {is_anonymous}")
-            
-            if is_anonymous:
-                new_profile = {
-                    "username": "Guest User",
-                    "email": None,
-                    "created_at": datetime.now(timezone.utc).isoformat(),
-                    "consent": None,
-                    "is_anonymous": True
-                }
-            else:
+        # Handle profile creation differently for anonymous vs authenticated users
+        if is_anonymous:
+            logger.info(f"Creating anonymous user profile for {user_id}")
+            new_profile = {
+                "username": "Guest User",
+                "email": None,
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "consent": None,
+                "is_anonymous": True,
+                "provider": "anonymous"
+            }
+        else:
+            # Try to get user info from Firebase Auth for non-anonymous users
+            try:
+                firebase_user = auth.get_user(user_id)
+                logger.info(f"Retrieved Firebase user info for {user_id}")
+                
                 new_profile = {
                     "username": firebase_user.display_name or firebase_user.email or "User",
                     "email": firebase_user.email,
                     "created_at": datetime.now(timezone.utc).isoformat(),
                     "consent": None,
-                    "is_anonymous": False
+                    "is_anonymous": False,
+                    "provider": decoded_token.get('firebase', {}).get('sign_in_provider', 'unknown')
                 }
-            
-        except auth.UserNotFoundError:
-            logger.warning(f"User {user_id} not found in Firebase Auth, creating anonymous profile")
-            new_profile = {
-                "username": "Guest User",
-                "email": None,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "consent": None,
-                "is_anonymous": True
-            }
-        except Exception as auth_error:
-            logger.error(f"Error getting Firebase user info for {user_id}: {auth_error}")
-            logger.error(traceback.format_exc())
-            new_profile = {
-                "username": "Guest User",
-                "email": None,
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "consent": None,
-                "is_anonymous": True
-            }
+                
+            except auth.UserNotFoundError:
+                logger.warning(f"User {user_id} not found in Firebase Auth, treating as anonymous")
+                new_profile = {
+                    "username": "Guest User",
+                    "email": None,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "consent": None,
+                    "is_anonymous": True,
+                    "provider": "anonymous"
+                }
+            except Exception as auth_error:
+                logger.error(f"Error getting Firebase user info for {user_id}: {auth_error}")
+                # Fallback to basic profile
+                new_profile = {
+                    "username": "User",
+                    "email": None,
+                    "created_at": datetime.now(timezone.utc).isoformat(),
+                    "consent": None,
+                    "is_anonymous": False,
+                    "provider": "unknown"
+                }
         
         logger.info(f"Creating profile for {user_id}: {new_profile}")
         
@@ -303,6 +452,7 @@ def login():
         logger.error(f"Unexpected error in login endpoint: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": "An error occurred during login."}), 500
+
         
 # Function to sanitize user_id for use as Firestore collection name
 def sanitize_collection_name(user_id):

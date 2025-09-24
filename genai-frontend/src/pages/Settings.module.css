@@ -1,48 +1,224 @@
 .settingsContainer {
-    max-width: 600px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 16px;
     background-color: var(--card);
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: fit-content;
+}
+
+.settingsContainer h2 {
+    margin-bottom: 24px;
+    color: var(--card-fg);
+    font-size: 1.5em;
+    font-weight: 600;
 }
 
 .setting {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
+    padding: 20px;
+    background-color: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
 }
 
 .setting p {
-    margin-bottom: 10px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    color: var(--card-fg);
+}
+
+.setting p:last-of-type {
+    margin-bottom: 16px;
+}
+
+.setting strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.setting em {
+    color: var(--fg-muted);
+    font-style: italic;
+    font-size: 0.95em;
 }
 
 .setting button {
-    padding: 10px 15px;
+    padding: 12px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
-    background-color: var(--primary-orange);
+    background-color: var(--primary-brown-dark);
     color: var(--white);
-    transition: all 0.3s;
+    transition: all 0.3s ease;
     min-width: 140px;
+    font-weight: 500;
+    font-size: 15px;
+    box-shadow: 0 2px 8px rgba(139, 90, 60, 0.2);
 }
 
 .setting button:hover:not(:disabled) {
-    background-color: var(--primary-orange-dark);
+    background-color: var(--secondary-green);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.3);
+}
+
+.setting button:active:not(:disabled) {
+    transform: translateY(0);
 }
 
 .setting button:disabled {
     background-color: var(--text-secondary);
     cursor: not-allowed;
     opacity: 0.7;
+    transform: none;
+    box-shadow: none;
 }
 
 .loading {
     position: relative;
     pointer-events: none;
+    overflow: hidden;
+}
+
+.loading::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+    );
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(100%);
+    }
 }
 
 .error {
     color: #dc3545;
-    margin: 8px 0;
+    margin: 12px 0;
     font-size: 0.9em;
+    background-color: rgba(220, 53, 69, 0.1);
+    padding: 10px 12px;
+    border-radius: 6px;
+    border-left: 4px solid #dc3545;
+}
+
+/* Tablet styles */
+@media (min-width: 768px) {
+    .settingsContainer {
+        max-width: 700px;
+        padding: 24px;
+    }
+    
+    .settingsContainer h2 {
+        font-size: 1.8em;
+        margin-bottom: 28px;
+    }
+    
+    .setting {
+        padding: 24px;
+        margin-bottom: 28px;
+    }
+    
+    .setting button {
+        padding: 14px 24px;
+        font-size: 16px;
+        min-width: 160px;
+    }
+}
+
+/* Desktop styles */
+@media (min-width: 1024px) {
+    .settingsContainer {
+        max-width: 600px;
+        padding: 20px;
+    }
+    
+    .settingsContainer h2 {
+        font-size: 1.6em;
+        margin-bottom: 24px;
+    }
+    
+    .setting {
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+    
+    .setting button {
+        padding: 10px 15px;
+        min-width: 140px;
+        font-size: 15px;
+    }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 480px) {
+    .settingsContainer {
+        padding: 12px;
+        border-radius: 6px;
+    }
+    
+    .settingsContainer h2 {
+        font-size: 1.3em;
+        margin-bottom: 20px;
+    }
+    
+    .setting {
+        padding: 16px;
+        margin-bottom: 20px;
+        border-radius: 6px;
+    }
+    
+    .setting p {
+        font-size: 0.95em;
+        margin-bottom: 10px;
+    }
+    
+    .setting button {
+        padding: 10px 16px;
+        font-size: 14px;
+        min-width: 120px;
+        width: 100%;
+        border-radius: 6px;
+    }
+    
+    .error {
+        font-size: 0.85em;
+        padding: 8px 10px;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 360px) {
+    .settingsContainer {
+        padding: 10px;
+    }
+    
+    .setting {
+        padding: 14px;
+    }
+    
+    .setting p {
+        font-size: 0.9em;
+    }
+    
+    .setting button {
+        padding: 9px 14px;
+        font-size: 13px;
+    }
 }
