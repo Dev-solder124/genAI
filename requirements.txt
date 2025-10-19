@@ -16,3 +16,6 @@ Pyrebase4==4.8.0
 numpy==1.26.4
 requests==2.32.3
 python-dotenv==1.0.1
+
+# Google Cloud KMS for encryption
+google-cloud-kms==2.20.0

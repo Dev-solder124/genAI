@@ -15,6 +15,7 @@ from datetime import datetime, timezone
 import vertexai
 import functools
 from vertexai.generative_models import GenerativeModel, GenerationConfig
+from encryption import get_encryption_service
 
 # Enhanced logging configuration
 logging.basicConfig(
@@ -37,6 +38,13 @@ try:
 except Exception as e:
     logger.error(f"Failed to initialize Firebase Admin SDK: {e}")
     logger.error(traceback.format_exc())
+
+try:
+    encryption_service = get_encryption_service()
+    logger.info("Encryption service initialized successfully")
+except Exception as e:
+    logger.error(f"Failed to initialize encryption service: {e}")
+    encryption_service = None
 
 # CONFIG: Updated model configuration for Gemini
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT") or "genai-bot-kdf"
@@ -418,6 +426,25 @@ def health_check():
         health_status["status"] = "unhealthy"
         logger.error(f"Vertex AI text generation health check failed: {e}")
     
+    try:
+        if encryption_service:
+            test_text = "health check test"
+            encrypted = encryption_service.encrypt(test_text)
+            decrypted = encryption_service.decrypt(encrypted)
+            
+            if decrypted == test_text:
+                health_status["services"]["encryption"] = "OK"
+                logger.info("Encryption service health check passed")
+            else:
+                health_status["services"]["encryption"] = "ERROR: Decryption mismatch"
+                health_status["status"] = "unhealthy"
+        else:
+            health_status["services"]["encryption"] = "WARNING: Service not initialized"
+    except Exception as e:
+        health_status["services"]["encryption"] = f"ERROR: {str(e)}"
+        health_status["status"] = "unhealthy"
+        logger.error(f"Encryption health check failed: {e}")
+    
     return jsonify(health_status), 200 if health_status["status"] == "healthy" else 503
 
 # --- simple cosine with debugging
@@ -522,7 +549,11 @@ def generate_text(prompt, max_output_tokens=300, temperature=0.2):
     return "I'm having trouble generating a response right now. Please try again in a moment."
 
 # --- Updated Firestore helpers for new structure
+
 def get_user_profile(user_id):
+    """
+    Get user profile and decrypt PII fields.
+    """
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Getting user profile for: {user_id} (sanitized: {sanitized_user_id})")
@@ -538,6 +569,18 @@ def get_user_profile(user_id):
             if 'profile' not in doc_data:
                 doc_data['profile'] = {}
             
+            # Decrypt profile fields if encrypted
+            if encryption_service and doc_data.get('profile'):
+                sensitive_fields = ['username', 'email']
+                try:
+                    doc_data['profile'] = encryption_service.decrypt_dict(
+                        doc_data['profile'], 
+                        sensitive_fields
+                    )
+                    logger.debug("Profile data decrypted")
+                except Exception as e:
+                    logger.error(f"Profile decryption error: {e}")
+            
             return doc_data
         else:
             logger.debug(f"No profile found for user: {user_id}")
@@ -547,10 +590,27 @@ def get_user_profile(user_id):
         logger.error(traceback.format_exc())
         return None
 
+
+
 def upsert_user_profile(user_id, profile_data):
+    """
+    Upsert user profile with encryption for PII fields.
+    """
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Upserting profile for {user_id}: {profile_data}")
+
+        # Fields to encrypt
+        sensitive_fields = ['username', 'email']
+        
+        # Encrypt sensitive fields if encryption is available
+        if encryption_service:
+            try:
+                profile_data = encryption_service.encrypt_dict(profile_data, sensitive_fields)
+                logger.debug("Profile data encrypted")
+            except Exception as e:
+                logger.error(f"Profile encryption error: {e}")
+                logger.warning("Storing profile without encryption")
 
         # Ensure we have a complete document structure
         doc_data = {
@@ -580,7 +640,13 @@ def upsert_user_profile(user_id, profile_data):
         logger.error(traceback.format_exc())
         raise
 
+
+
 def save_memory(user_id, summary_text, metadata=None):
+    """
+    Save memory with encrypted summary.
+    Embedding is generated from PLAINTEXT before encryption.
+    """
     try:
         if metadata is None:
             metadata = {}
@@ -591,57 +657,107 @@ def save_memory(user_id, summary_text, metadata=None):
         logger.debug(f"Metadata: {metadata}")
         
         created_at = datetime.now(timezone.utc).isoformat()
+        
+        # CRITICAL: Generate embedding from PLAINTEXT summary
         vec = embed_texts([summary_text])[0].tolist()
+        logger.debug(f"Generated embedding from plaintext (dim: {len(vec)})")
+        
+        # Encrypt the summary text
+        encrypted_summary = summary_text
+        is_encrypted = False
+        
+        if encryption_service:
+            try:
+                encrypted_summary = encryption_service.encrypt(summary_text)
+                if encrypted_summary:
+                    is_encrypted = True
+                    logger.debug("Summary encrypted successfully")
+                else:
+                    logger.warning("Encryption failed, storing plaintext")
+            except Exception as e:
+                logger.error(f"Encryption error: {e}")
+                logger.warning("Storing plaintext due to encryption failure")
+        else:
+            logger.warning("Encryption service not available, storing plaintext")
         
         # Use timestamp-based ID for memory documents
         memory_id = f"mem_{int(datetime.now(timezone.utc).timestamp() * 1000)}"
         
         mem_doc = {
             "user_id": user_id,
-            "summary": summary_text,
-            "embedding": vec,
+            "summary": encrypted_summary,  # Store encrypted version
+            "summary_encrypted": is_encrypted,  # Flag for decryption
+            "embedding": vec,  # Store UNENCRYPTED embedding
             "metadata": metadata,
             "created_at": created_at
         }
         
         db.collection("users").document(sanitized_user_id).collection("memories").document(memory_id).set(mem_doc)
 
-        logger.debug(f"Memory saved with ID: {memory_id}")
+        logger.debug(f"Memory saved with ID: {memory_id} (encrypted: {is_encrypted})")
         return True
     except Exception as e:
         logger.error(f"Error saving memory: {e}")
         logger.error(traceback.format_exc())
         return False
 
+
 def retrieve_similar_memories(user_id, query_text, top_k=3):
+    """
+    Retrieve similar memories and decrypt summaries before returning.
+    Similarity search uses UNENCRYPTED embeddings.
+    """
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Retrieving similar memories for {user_id} (sanitized: {sanitized_user_id})")
         logger.debug(f"Query: {query_text[:100]}...")
         
+        # Generate query embedding
         q_vec = embed_texts([query_text])[0]
         
-        
+        # Retrieve all memories
         docs = db.collection("users").document(sanitized_user_id).collection("memories").stream()
         scored = []
         doc_count = 0
+        
         for d in docs:
             doc_count += 1
             data = d.to_dict()
+            
+            # Get embedding (unencrypted)
             emb = np.array(data.get("embedding", []))
             if emb.size == 0:
                 logger.debug(f"Empty embedding in document {d.id}")
                 continue
+            
+            # Calculate similarity using embeddings
             score = cosine_similarity(q_vec, emb)
+            
+            # Decrypt summary if encrypted
+            if data.get("summary_encrypted"):
+                if encryption_service:
+                    try:
+                        decrypted_summary = encryption_service.decrypt(data.get("summary", ""))
+                        if decrypted_summary:
+                            data["summary"] = decrypted_summary
+                            logger.debug(f"Decrypted summary for doc {d.id}")
+                        else:
+                            logger.warning(f"Failed to decrypt summary for doc {d.id}")
+                    except Exception as e:
+                        logger.error(f"Decryption error for doc {d.id}: {e}")
+                else:
+                    logger.warning(f"Cannot decrypt doc {d.id}: encryption service unavailable")
+            
             scored.append((score, data))
             logger.debug(f"Doc {d.id}: similarity = {score:.4f}")
         
         logger.debug(f"Found {doc_count} total memories, {len(scored)} with valid embeddings")
         
+        # Sort by similarity and return top K
         scored.sort(key=lambda x: x[0], reverse=True)
         results = [item[1] for item in scored[:top_k]]
         
-        logger.debug(f"Returning top {len(results)} similar memories")
+        logger.debug(f"Returning top {len(results)} similar memories (decrypted)")
         for i, result in enumerate(results):
             logger.debug(f"   #{i+1}: {result.get('summary', '')[:50]}...")
         
@@ -650,6 +766,7 @@ def retrieve_similar_memories(user_id, query_text, top_k=3):
         logger.error(f"Error retrieving memories: {e}")
         logger.error(traceback.format_exc())
         return []
+
 
 def summarize_conversation(user_text, assistant_text):
     try:
