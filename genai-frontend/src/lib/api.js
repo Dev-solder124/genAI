@@ -1,6 +1,6 @@
-import { getAuth } from 'firebase/auth'
+import { auth } from './auth'
 
-const BASE = (import.meta.env.VITE_API_BASE || '/api').replace(/\/$/, '')
+const BASE = (import.meta.env.VITE_API_BASE_URL || '/api').replace(/\/$/, '')
 
 class ApiError extends Error {
   constructor(message, status, code) {
@@ -18,7 +18,6 @@ async function sleep(ms) {
 }
 
 async function http(path, opts = {}, retryCount = 0) {
-  const auth = getAuth()
   const user = auth.currentUser
   if (!user) {
     throw new ApiError('Not authenticated', 401, 'unauthenticated')
@@ -65,10 +64,8 @@ async function http(path, opts = {}, retryCount = 0) {
 }
 
 export const api = {
-  // NEW: Use login endpoint to get user profile without updating it
   login: () => http('/login', { method: 'POST' }),
   
-  // UPDATED: Only call this when you want to UPDATE consent
   consent: ({ user_id, consent, username }) =>
     http('/consent', { method: 'POST', body: JSON.stringify({ user_id, consent, username }) }),
     
@@ -81,6 +78,7 @@ export const api = {
         sessionInfo: { parameters: { user_id } },
       }),
     }),
+  
   deleteMemories: ({ user_id }) =>
     http('/delete_memories', { method: 'POST', body: JSON.stringify({ user_id }) }),
 }

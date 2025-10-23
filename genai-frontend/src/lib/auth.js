@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously } from 'firebase/auth';
+import { getAuth, signInWithPopup, GoogleAuthProvider, signInAnonymously, signOut as firebaseSignOut } from 'firebase/auth';
 
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -11,7 +11,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 
 class AuthError extends Error {
     constructor(message, code) {
@@ -24,7 +24,7 @@ export const signInWithGoogle = async () => {
     try {
         const provider = new GoogleAuthProvider();
         provider.setCustomParameters({
-            prompt: 'select_account'  // Always show account selection
+            prompt: 'select_account'
         });
         const result = await signInWithPopup(auth, provider);
         return result.user;
@@ -52,7 +52,7 @@ export const signInAsGuest = async () => {
 
 export const signOut = async () => {
     try {
-        await auth.signOut();
+        await firebaseSignOut(auth);
     } catch (error) {
         console.error('Sign-out error:', error);
         throw new AuthError(
@@ -62,19 +62,8 @@ export const signOut = async () => {
     }
 };
 
-// Force token refresh if needed
 export const refreshToken = async () => {
     const user = auth.currentUser;
     if (!user) throw new AuthError('No user signed in', 'auth/no-user');
     return user.getIdToken(true);
-};
-
-export const onAuthStateChanged = (callback) => {
-    return auth.onAuthStateChanged((user) => {
-        try {
-            callback(user);
-        } catch (error) {
-            console.error('Auth state change handler error:', error);
-        }
-    });
 };
