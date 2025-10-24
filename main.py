@@ -14,8 +14,13 @@ from google.cloud import aiplatform
 from datetime import datetime, timezone
 import vertexai
 import functools
-from vertexai.generative_models import GenerativeModel, GenerationConfig
+from vertexai.preview.generative_models import GenerativeModel, GenerationConfig
+from vertexai.preview.language_models import TextEmbeddingModel
 from encryption import get_encryption_service
+from google.cloud.aiplatform.matching_engine import MatchingEngineIndexEndpoint
+from google.cloud.aiplatform import MatchingEngineIndex  
+from google.cloud.aiplatform_v1.types import IndexDatapoint
+from google.cloud.aiplatform.matching_engine.matching_engine_index_endpoint import Namespace
 
 # Enhanced logging configuration
 logging.basicConfig(
@@ -29,10 +34,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 import firebase_admin
-from firebase_admin import auth # No 'credentials' import needed
+from firebase_admin import auth
 
 try:
-    # On Cloud Run, the SDK initializes automatically without a key file.
     firebase_admin.initialize_app()
     logger.info("Firebase Admin SDK initialized successfully")
 except Exception as e:
@@ -50,30 +54,27 @@ except Exception as e:
 PROJECT_ID = os.environ.get("GOOGLE_CLOUD_PROJECT") or os.environ.get("GCP_PROJECT") or "genai-bot-kdf"
 REGION = os.environ.get("REGION", "asia-south1")
 
-# Updated to use Gemini models (Bison models are deprecated)
 LLM_MODEL = os.environ.get("LLM_MODEL", "gemini-2.5-flash")
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "text-embedding-004")
 
+# Vector Search Configuration
+VECTOR_SEARCH_ENDPOINT_ID = os.environ.get("VECTOR_SEARCH_ENDPOINT_ID")
+DEPLOYED_INDEX_ID = os.environ.get("DEPLOYED_INDEX_ID", "chatbot_memories_deployed")
+VECTOR_SEARCH_INDEX_ID = os.environ.get("VECTOR_SEARCH_INDEX_ID")
+
+logger.info(f"Vector Search Config:")
+logger.info(f"   ENDPOINT_ID: {VECTOR_SEARCH_ENDPOINT_ID}")
+logger.info(f"   DEPLOYED_INDEX_ID: {DEPLOYED_INDEX_ID}")
 logger.info(f"Starting chatbot with config:")
 logger.info(f"   PROJECT_ID: {PROJECT_ID}")
 logger.info(f"   REGION: {REGION}")
 logger.info(f"   LLM_MODEL: {LLM_MODEL}")
 logger.info(f"   EMBEDDING_MODEL: {EMBEDDING_MODEL}")
 
-
-
-# --- PASTE THIS NEW CODE IN ITS PLACE ---
-
 try:
-    # In a deployed Google Cloud environment, the libraries automatically
-    # find the correct credentials from the service account.
-    # We no longer need to load the JSON key file.
-
-    # Initialize Vertex AI
     aiplatform.init(project=PROJECT_ID, location=REGION)
     logger.info("Vertex AI initialized successfully")
 
-    # Initialize Firestore client
     db = firestore.Client(project=PROJECT_ID)
     logger.info("Firestore client initialized successfully")
 
@@ -81,17 +82,46 @@ except Exception as e:
     logger.critical(f"FATAL: Failed to initialize Google Cloud services: {e}")
     logger.critical(traceback.format_exc())
 
+# Initialize Vector Search endpoint
+vector_search_endpoint = None
+if VECTOR_SEARCH_ENDPOINT_ID:
+    try:
+        vector_search_endpoint = MatchingEngineIndexEndpoint(
+            index_endpoint_name=VECTOR_SEARCH_ENDPOINT_ID
+        )
+        logger.info(f"✓ Vertex AI Vector Search endpoint initialized successfully")
+        
+    except Exception as e:
+        logger.error(f"✗ Failed to initialize Vector Search endpoint: {e}")
+        logger.error("Vector Search will be unavailable")
+else:
+    logger.warning("VECTOR_SEARCH_ENDPOINT_ID not set - Vector Search disabled")
+
+logger.info(f"DEBUG: PROJECT_ID = {PROJECT_ID}")
+logger.info(f"DEBUG: VECTOR_SEARCH_INDEX_ID = {VECTOR_SEARCH_INDEX_ID}")
+logger.info(f"DEBUG: Building index_name...")
+
+# Initialize Vector Search index for upserts
+matching_engine_index = None
+if VECTOR_SEARCH_INDEX_ID:
+    try:
+        index_name = f"projects/922976482476/locations/{REGION}/indexes/{VECTOR_SEARCH_INDEX_ID}"
+        matching_engine_index = MatchingEngineIndex(index_name=index_name)
+        logger.info(f"✓ Vertex AI Vector Search index initialized successfully")
+    except Exception as e:
+        logger.error(f"✗ Failed to initialize Vector Search index: {e}")
+        logger.error("Vector Search upserts will be unavailable")
+else:
+    logger.warning("VECTOR_SEARCH_INDEX_ID not set - Vector Search upserts disabled")
     
 app = Flask(__name__)
 
-# Configure CORS
 CORS(app, resources={r"/*": {
     "origins": "*",
     "methods": ["GET", "POST", "OPTIONS"],
     "allow_headers": ["Authorization", "Content-Type"]
 }})
 
-# Configure rate limiting
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
@@ -101,7 +131,7 @@ limiter = Limiter(
 
 # Validation Schemas
 class ConsentSchema(Schema):
-    user_id = fields.String(required=False)  # Optional because we get it from token
+    user_id = fields.String(required=False)
     consent = fields.Boolean(allow_none=True)
     username = fields.String(required=True)
 
@@ -128,7 +158,6 @@ def handle_rate_limit_error(error):
         "retry_after": error.description
     }), 429
 
-# Add this debug endpoint to your main.py (temporary for debugging)
 @app.route("/debug/token", methods=["POST"])
 def debug_token():
     """Debug endpoint to test token verification without creating profiles"""
@@ -143,7 +172,6 @@ def debug_token():
         if not token:
             return jsonify({"error": "No token provided"}), 400
 
-        # Try to verify the token
         decoded_token = auth.verify_id_token(token)
         
         return jsonify({
@@ -165,7 +193,6 @@ def debug_token():
             "error_type": type(e).__name__
         }), 400
 
-#firestore auth function
 from functools import wraps
 
 def token_required(f):
@@ -174,7 +201,6 @@ def token_required(f):
     def decorated_function(*args, **kwargs):
         token = None
         if 'Authorization' in request.headers:
-            # Expected format: "Bearer <token>"
             try:
                 token = request.headers['Authorization'].split(' ')[1]
             except IndexError:
@@ -184,9 +210,7 @@ def token_required(f):
             return jsonify({"error": "Authorization token is missing"}), 401
 
         try:
-            # Verify the token
             decoded_token = auth.verify_id_token(token)
-            # Add the verified user ID to the request context for the endpoint to use
             request.user_id = decoded_token['uid']
             logger.info(f"Token verified successfully for UID: {request.user_id}")
         except auth.ExpiredIdTokenError:
@@ -213,16 +237,15 @@ def format_time_delta(timestamp_str):
         seconds = delta.total_seconds()
         if seconds < 120:
             return "(just now)"
-        elif seconds < 3600:  # less than 1 hour
+        elif seconds < 3600:
             return f"({int(seconds / 60)} minutes ago)"
-        elif seconds < 86400:  # less than 1 day
+        elif seconds < 86400:
             return f"({int(seconds / 3600)} hours ago)"
-        elif seconds < 2592000:  # less than 30 days
+        elif seconds < 2592000:
             return f"({int(seconds / 86400)} days ago)"
         else:
             return f"({int(seconds / 2592000)} months ago)"
     except (ValueError, TypeError):
-        # Return empty string if the timestamp is malformed
         return ""
 
 @app.route("/login", methods=["POST"])
@@ -234,10 +257,9 @@ def login():
     and returns the profile.
     """
     try:
-        user_id = request.user_id # From @token_required decorator
+        user_id = request.user_id
         logger.info(f"Processing login for user_id: {user_id}")
         
-        # Check if a profile already exists in Firestore
         user_profile = get_user_profile(user_id)
         
         if user_profile:
@@ -246,12 +268,10 @@ def login():
         
         logger.info(f"No profile found for UID {user_id}, creating one.")
         
-        # Try to get user info from Firebase Auth
         try:
             firebase_user = auth.get_user(user_id)
             logger.info(f"Retrieved Firebase user info for {user_id}")
             
-            # Check if this is an anonymous user
             is_anonymous = len(firebase_user.provider_data) == 0
             logger.info(f"User {user_id} is anonymous: {is_anonymous}")
             
@@ -294,11 +314,9 @@ def login():
         
         logger.info(f"Creating profile for {user_id}: {new_profile}")
         
-        # Save the profile
         upsert_user_profile(user_id, new_profile)
         logger.info(f"Profile saved for {user_id}")
         
-        # Re-fetch to get the full document structure
         user_profile = get_user_profile(user_id)
         if not user_profile:
             logger.error(f"Failed to retrieve saved profile for {user_id}")
@@ -311,22 +329,17 @@ def login():
         logger.error(f"Unexpected error in login endpoint: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": "An error occurred during login."}), 500
-        
-# Function to sanitize user_id for use as Firestore collection name
+
 def sanitize_collection_name(user_id):
     """Sanitize user_id to be valid Firestore collection name"""
-    # Replace invalid characters with underscores
     sanitized = re.sub(r'[^a-zA-Z0-9_-]', '_', user_id)
-    # Ensure it doesn't start with a number
     if sanitized and sanitized[0].isdigit():
         sanitized = f"user_{sanitized}"
-    # Ensure minimum length
     if not sanitized:
         sanitized = "anonymous_user"
     logger.debug(f"Sanitized user_id '{user_id}' to '{sanitized}'")
     return sanitized
 
-# Function to list available models for debugging
 def list_available_models():
     try:
         from google.cloud import aiplatform
@@ -351,7 +364,6 @@ def list_available_models():
         logger.error(f"Error listing models: {e}")
         return []
 
-# Add a health check endpoint with improved model testing
 @app.route("/health", methods=["GET"])
 def health_check():
     """Health check endpoint to verify all services are working"""
@@ -387,10 +399,28 @@ def health_check():
         health_status["services"]["vertex_ai_embeddings"] = f"ERROR: {str(e)}"
         health_status["status"] = "unhealthy"
         logger.error(f"Vertex AI embeddings health check failed: {e}")
-    
-    # Test Vertex AI Text Generation with multiple models
+
+    # Test Vertex AI Vector Search
     try:
-        
+        if vector_search_endpoint and DEPLOYED_INDEX_ID:
+            test_vec = embed_texts(["health check test"])[0].tolist()
+            response = vector_search_endpoint.find_neighbors(
+                deployed_index_id=DEPLOYED_INDEX_ID,
+                queries=[test_vec],
+                num_neighbors=1
+            )
+            health_status["services"]["vertex_ai_vector_search"] = "OK"
+            logger.info("Vertex AI Vector Search health check passed")
+        else:
+            health_status["services"]["vertex_ai_vector_search"] = "NOT_CONFIGURED"
+            logger.info("Vector Search not configured")
+    except Exception as e:
+        health_status["services"]["vertex_ai_vector_search"] = f"ERROR: {str(e)}"
+        health_status["status"] = "unhealthy"
+        logger.error(f"Vertex AI Vector Search health check failed: {e}")
+    
+    # Test Vertex AI Text Generation
+    try:
         test_models = ["gemini-2.5-flash"]
         success = False
         working_model = None
@@ -417,7 +447,6 @@ def health_check():
             health_status["services"]["vertex_ai_generation"] = "ERROR: All models failed"
             health_status["status"] = "unhealthy"
         else:
-            # Update global model to working one
             global LLM_MODEL
             LLM_MODEL = working_model
             
@@ -447,7 +476,6 @@ def health_check():
     
     return jsonify(health_status), 200 if health_status["status"] == "healthy" else 503
 
-# --- simple cosine with debugging
 def cosine_similarity(a: np.ndarray, b: np.ndarray):
     try:
         if np.linalg.norm(a) == 0 or np.linalg.norm(b) == 0:
@@ -460,13 +488,11 @@ def cosine_similarity(a: np.ndarray, b: np.ndarray):
         logger.error(f"Error calculating cosine similarity: {e}")
         return 0.0
 
-# --- embeddings wrapper with debugging
 def embed_texts(texts):
     try:
         logger.debug(f"Embedding {len(texts)} texts")
         logger.debug(f"Texts preview: {[t[:50] + '...' if len(t) > 50 else t for t in texts]}")
         
-        from vertexai.language_models import TextEmbeddingModel
         model = TextEmbeddingModel.from_pretrained("text-embedding-004")
         embeddings = model.get_embeddings(texts)
         vectors = [np.array(embedding.values) for embedding in embeddings]
@@ -479,8 +505,6 @@ def embed_texts(texts):
         logger.error(traceback.format_exc())
         raise
 
-# --- Updated text generation with Gemini model support
-# --- Updated text generation with the modern Generative AI SDK
 def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, temperature=0.2):
     try:
         if model_name is None:
@@ -489,10 +513,8 @@ def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, tem
         logger.debug(f"Generating text with model: {model_name} using the GenerativeModel SDK")
         logger.debug(f"Prompt preview: {prompt[:200]}...")
 
-        # Initialize the model from the high-level SDK
         model = GenerativeModel(model_name)
         
-        # Configure generation parameters
         generation_config = GenerationConfig(
             temperature=temperature,
             top_p=0.95,
@@ -500,15 +522,13 @@ def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, tem
             max_output_tokens=max_output_tokens
         )
         
-        # Generate content
         response = model.generate_content(
-            contents=[prompt],
-            generation_config=generation_config
+        contents=[prompt],
+        generation_config=generation_config
         )
         
         logger.debug(f"Raw response from {model_name}: {response}")
         
-        # Extract the text from the response
         result = response.text
         logger.debug(f"Generated text: {result[:100]}...")
         return result
@@ -525,7 +545,6 @@ def generate_text(prompt, max_output_tokens=300, temperature=0.2):
         "gemini-2.5-flash",
     ]
     
-    # Remove duplicates while preserving order
     models_to_try = []
     for model in fallback_models:
         if model not in models_to_try:
@@ -548,8 +567,6 @@ def generate_text(prompt, max_output_tokens=300, temperature=0.2):
     logger.error("All models failed to generate text")
     return "I'm having trouble generating a response right now. Please try again in a moment."
 
-# --- Updated Firestore helpers for new structure
-
 def get_user_profile(user_id):
     """
     Get user profile and decrypt PII fields.
@@ -565,11 +582,9 @@ def get_user_profile(user_id):
             doc_data = doc.to_dict()
             logger.debug(f"Found user document: {doc_data}")
             
-            # If the document exists but doesn't have a profile field, create one
             if 'profile' not in doc_data:
                 doc_data['profile'] = {}
             
-            # Decrypt profile fields if encrypted
             if encryption_service and doc_data.get('profile'):
                 sensitive_fields = ['username', 'email']
                 try:
@@ -590,8 +605,6 @@ def get_user_profile(user_id):
         logger.error(traceback.format_exc())
         return None
 
-
-
 def upsert_user_profile(user_id, profile_data):
     """
     Upsert user profile with encryption for PII fields.
@@ -600,10 +613,8 @@ def upsert_user_profile(user_id, profile_data):
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Upserting profile for {user_id}: {profile_data}")
 
-        # Fields to encrypt
         sensitive_fields = ['username', 'email']
         
-        # Encrypt sensitive fields if encryption is available
         if encryption_service:
             try:
                 profile_data = encryption_service.encrypt_dict(profile_data, sensitive_fields)
@@ -612,18 +623,15 @@ def upsert_user_profile(user_id, profile_data):
                 logger.error(f"Profile encryption error: {e}")
                 logger.warning("Storing profile without encryption")
 
-        # Ensure we have a complete document structure
         doc_data = {
             "profile": profile_data
         }
         
-        # Get current document to ensure we preserve any existing data
         doc_ref = db.collection("users").document(sanitized_user_id)
         current_doc = doc_ref.get()
         
         if current_doc.exists:
             current_data = current_doc.to_dict()
-            # Update only the profile section while preserving other top-level fields
             if 'profile' in current_data:
                 current_data['profile'].update(profile_data)
             else:
@@ -640,12 +648,10 @@ def upsert_user_profile(user_id, profile_data):
         logger.error(traceback.format_exc())
         raise
 
-
-
 def save_memory(user_id, summary_text, metadata=None):
     """
-    Save memory with encrypted summary.
-    Embedding is generated from PLAINTEXT before encryption.
+    Save memory with encrypted summary to Firestore
+    and send the embedding to Vertex AI Vector Search.
     """
     try:
         if metadata is None:
@@ -653,16 +659,14 @@ def save_memory(user_id, summary_text, metadata=None):
         
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Saving memory for {user_id} (sanitized: {sanitized_user_id})")
-        logger.debug(f"Summary: {summary_text[:100]}...")
-        logger.debug(f"Metadata: {metadata}")
         
         created_at = datetime.now(timezone.utc).isoformat()
         
-        # CRITICAL: Generate embedding from PLAINTEXT summary
+        # 1. Generate embedding from PLAINTEXT
         vec = embed_texts([summary_text])[0].tolist()
         logger.debug(f"Generated embedding from plaintext (dim: {len(vec)})")
         
-        # Encrypt the summary text
+        # 2. Encrypt the summary text
         encrypted_summary = summary_text
         is_encrypted = False
         
@@ -671,67 +675,122 @@ def save_memory(user_id, summary_text, metadata=None):
                 encrypted_summary = encryption_service.encrypt(summary_text)
                 if encrypted_summary:
                     is_encrypted = True
-                    logger.debug("Summary encrypted successfully")
-                else:
-                    logger.warning("Encryption failed, storing plaintext")
             except Exception as e:
                 logger.error(f"Encryption error: {e}")
-                logger.warning("Storing plaintext due to encryption failure")
-        else:
-            logger.warning("Encryption service not available, storing plaintext")
         
-        # Use timestamp-based ID for memory documents
+        # 3. Use timestamp-based ID for memory documents
         memory_id = f"mem_{int(datetime.now(timezone.utc).timestamp() * 1000)}"
         
+        # 4. Create the Firestore document WITHOUT embedding array
         mem_doc = {
             "user_id": user_id,
-            "summary": encrypted_summary,  # Store encrypted version
-            "summary_encrypted": is_encrypted,  # Flag for decryption
-            "embedding": vec,  # Store UNENCRYPTED embedding
+            "summary": encrypted_summary,
+            "summary_encrypted": is_encrypted,
             "metadata": metadata,
             "created_at": created_at
         }
         
-        db.collection("users").document(sanitized_user_id).collection("memories").document(memory_id).set(mem_doc)
+        # 5. Save metadata to Firestore
+        mem_ref = db.collection("users").document(sanitized_user_id).collection("memories").document(memory_id)
+        mem_ref.set(mem_doc)
+        logger.debug(f"✓ Memory metadata saved to Firestore: {memory_id}")
 
-        logger.debug(f"Memory saved with ID: {memory_id} (encrypted: {is_encrypted})")
+        # 6. Upsert the vector to Vertex AI Vector Search
+        # 6. Upsert the vector to Vertex AI Vector Search
+        if matching_engine_index:
+            try:
+                user_restriction = IndexDatapoint.Restriction(
+                    namespace="user_id",
+                    allow_list=[sanitized_user_id]
+                )
+
+                datapoint = IndexDatapoint(
+                    datapoint_id=memory_id,
+                    feature_vector=vec,
+                    restricts=[user_restriction]
+                )
+                
+                # Use MatchingEngineIndex for upserts
+                matching_engine_index.upsert_datapoints(datapoints=[datapoint])
+                logger.debug(f"✓ Vector for memory {memory_id} upserted to Vertex AI")
+            except Exception as ve:
+                logger.error(f"✗ Failed to upsert vector for {memory_id}: {ve}")
+                logger.error(traceback.format_exc())
+                logger.error("Memory saved to Firestore but not to Vector Search")
+        else:
+            logger.warning(f"Vector Search not available - memory {memory_id} saved only to Firestore")
+
+        logger.debug(f"Memory saved successfully: {memory_id} (encrypted: {is_encrypted})")
         return True
+        
     except Exception as e:
         logger.error(f"Error saving memory: {e}")
         logger.error(traceback.format_exc())
         return False
 
-
 def retrieve_similar_memories(user_id, query_text, top_k=3):
     """
-    Retrieve similar memories and decrypt summaries before returning.
-    Similarity search uses UNENCRYPTED embeddings.
+    Retrieve similar memories from Vertex AI Vector Search
+    and hydrate them with data from Firestore.
     """
     try:
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Retrieving similar memories for {user_id} (sanitized: {sanitized_user_id})")
-        logger.debug(f"Query: {query_text[:100]}...")
+        
+        # Require Vector Search to be available
+        if not vector_search_endpoint:
+            logger.error("Vector Search is not available - cannot retrieve memories")
+            return []
         
         # Generate query embedding
-        q_vec = embed_texts([query_text])[0]
+        q_vec = embed_texts([query_text])[0].tolist()
         
-        # Retrieve all memories
-        docs = db.collection("users").document(sanitized_user_id).collection("memories").stream()
-        scored = []
-        doc_count = 0
+        logger.debug(f"Querying Vector Search endpoint with top_k={top_k}")
         
-        for d in docs:
-            doc_count += 1
-            data = d.to_dict()
-            
-            # Get embedding (unencrypted)
-            emb = np.array(data.get("embedding", []))
-            if emb.size == 0:
-                logger.debug(f"Empty embedding in document {d.id}")
+        # Create namespace filter
+        query_filter = [Namespace(
+            name="user_id",
+            allow_tokens=[sanitized_user_id],
+            deny_tokens=[]
+        )]
+        
+        # Query Vector Search with user-specific filtering
+        response = vector_search_endpoint.find_neighbors(
+            deployed_index_id=DEPLOYED_INDEX_ID,
+            queries=[q_vec],
+            num_neighbors=top_k,
+            filter=query_filter
+        )
+
+        if not response or not response[0]:
+            logger.debug("Vector Search returned no neighbors")
+            return []
+
+        # Get the IDs and distances of the neighbors
+        neighbor_ids = [n.id for n in response[0]]
+        neighbor_distances = [n.distance for n in response[0]]
+        
+        logger.debug(f"Vector Search found {len(neighbor_ids)} neighbors")
+        for i, (nid, dist) in enumerate(zip(neighbor_ids, neighbor_distances)):
+            logger.debug(f"  #{i+1}: {nid} (distance: {dist:.4f})")
+
+        # Hydrate the results from Firestore
+        mem_collection_ref = db.collection("users").document(sanitized_user_id).collection("memories")
+        doc_refs = [mem_collection_ref.document(mem_id) for mem_id in neighbor_ids if mem_id]
+        
+        if not doc_refs:
+            return []
+
+        # Batch get for efficiency
+        docs = db.get_all(doc_refs)
+        
+        results = []
+        for doc in docs:
+            if not doc.exists:
+                logger.warning(f"Memory ID {doc.id} found in Vector Search but not in Firestore (may have been deleted)")
                 continue
-            
-            # Calculate similarity using embeddings
-            score = cosine_similarity(q_vec, emb)
+                
+            data = doc.to_dict()
             
             # Decrypt summary if encrypted
             if data.get("summary_encrypted"):
@@ -740,33 +799,22 @@ def retrieve_similar_memories(user_id, query_text, top_k=3):
                         decrypted_summary = encryption_service.decrypt(data.get("summary", ""))
                         if decrypted_summary:
                             data["summary"] = decrypted_summary
-                            logger.debug(f"Decrypted summary for doc {d.id}")
                         else:
-                            logger.warning(f"Failed to decrypt summary for doc {d.id}")
+                            logger.warning(f"Failed to decrypt summary for doc {doc.id}")
                     except Exception as e:
-                        logger.error(f"Decryption error for doc {d.id}: {e}")
+                        logger.error(f"Decryption error for doc {doc.id}: {e}")
                 else:
-                    logger.warning(f"Cannot decrypt doc {d.id}: encryption service unavailable")
+                    logger.warning(f"Cannot decrypt doc {doc.id}: encryption service unavailable")
             
-            scored.append((score, data))
-            logger.debug(f"Doc {d.id}: similarity = {score:.4f}")
+            results.append(data)
         
-        logger.debug(f"Found {doc_count} total memories, {len(scored)} with valid embeddings")
-        
-        # Sort by similarity and return top K
-        scored.sort(key=lambda x: x[0], reverse=True)
-        results = [item[1] for item in scored[:top_k]]
-        
-        logger.debug(f"Returning top {len(results)} similar memories (decrypted)")
-        for i, result in enumerate(results):
-            logger.debug(f"   #{i+1}: {result.get('summary', '')[:50]}...")
-        
+        logger.debug(f"✓ Returning {len(results)} hydrated and decrypted memories from Vector Search")
         return results
+        
     except Exception as e:
         logger.error(f"Error retrieving memories: {e}")
         logger.error(traceback.format_exc())
         return []
-
 
 def summarize_conversation(user_text, assistant_text):
     try:
@@ -782,20 +830,16 @@ def summarize_conversation(user_text, assistant_text):
             "**Your Analysis:**"
         )
         
-        # We ask for a slightly longer response to accommodate the structured output
         analysis_text = generate_text(prompt, max_output_tokens=200, temperature=0.1)
         
-        # --- NEW PARSING LOGIC ---
         lines = analysis_text.strip().split('\n')
         is_significant = False
         summary = "No summary generated."
 
-        # Robustly parse the output
         if lines:
             if "yes" in lines[0].lower():
                 is_significant = True
             
-            # Find the summary line
             summary_line = next((line for line in lines if "summary:" in line.lower()), None)
             if summary_line:
                 summary = summary_line.split(":", 1)[1].strip()
@@ -814,9 +858,7 @@ def summarize_conversation(user_text, assistant_text):
             "is_significant": False,
             "summary": "Error generating summary"
         }
- 
 
-# --- Dialogflow webhook endpoint with enhanced debugging
 @app.route("/dialogflow-webhook", methods=["POST"])
 @token_required
 def dialogflow_webhook():
@@ -832,18 +874,14 @@ def dialogflow_webhook():
 
         logger.info(f"Processing request for user_id: {user_id}")
 
-        # STEP 1: Get the profile FIRST to access the timestamp from the LAST interaction.
         user_profile = get_user_profile(user_id) or {}
 
-        # STEP 2: Now, update the profile with a new 'updated_at' timestamp
-        # for the NEXT request to use. This marks the current interaction time.
         try:
             upsert_user_profile(user_id, {"updated_at": datetime.now(timezone.utc).isoformat()})
             logger.info(f"Updated 'updated_at' timestamp for user {user_id}")
         except Exception as e:
             logger.error(f"Failed to update 'updated_at' for user {user_id}: {e}")
 
-        # Parse user message from the request
         user_text = ""
         for m in req.get("messages", []):
             if m.get("text"):
@@ -857,7 +895,6 @@ def dialogflow_webhook():
         has_consent = user_profile.get("profile", {}).get("consent", False)
         logger.info(f"User consent status: {has_consent}")
 
-        # Retrieve relevant memories and format them with individual time context
         retrieved_text = ""
         if has_consent:
             logger.info("Retrieving similar memories...")
@@ -876,7 +913,6 @@ def dialogflow_webhook():
         else:
             retrieved_text = "Memory retrieval is disabled for this user."
 
-        # Generate the main conversational greeting based on the user's last interaction time
         time_context = ""
         try:
             last_seen_str = user_profile.get("profile", {}).get("updated_at")
@@ -884,7 +920,6 @@ def dialogflow_webhook():
                 last_interaction_time = datetime.fromisoformat(last_seen_str)
                 time_delta_seconds = (datetime.now(timezone.utc) - last_interaction_time).total_seconds()
                 
-                # Only add a time context note if it's been more than 15 minutes
                 if time_delta_seconds > 900:
                     time_ago_str = format_time_delta(last_seen_str).strip('()')
                     time_context = f"Note to AI: The user's last interaction was about {time_ago_str}. Acknowledge this pause before continuing the conversation."
@@ -896,7 +931,6 @@ def dialogflow_webhook():
         short_term = json.dumps(session_params) if session_params else ""
         logger.debug(f"Session params: {short_term}")
 
-        # Updated prompt that doesn't mention consent (it's handled by CLI)
         prompt = (
             "Your name is Serena , an AI assistant designed to support users with their mental health. Your primary goal is to be a supportive, validating, and non-judgemental listener who helps users feel heard."
             f"{time_context}\n\n"
@@ -930,12 +964,10 @@ def dialogflow_webhook():
         reply_text = generate_text(prompt, max_output_tokens=2500, temperature=0.7).strip()
         logger.info(f"Generated reply: '{reply_text}'")
 
-        # --- UPDATED LOGIC: Only summarize and save if user has consented ---
         if has_consent:
             logger.info("Creating and evaluating summary of the current exchange...")
             analysis_result = summarize_conversation(user_text, reply_text)
             
-            # Only save the memory if the analysis flagged it as significant
             if analysis_result.get("is_significant"):
                 summary = analysis_result.get("summary")
                 if "error" not in summary.lower():
@@ -959,7 +991,7 @@ def dialogflow_webhook():
         logger.error(traceback.format_exc())
         error_response = {"fulfillment_response": {"messages":[{"text": {"text":["I'm having trouble right now. Please try again in a moment."]}}]}}
         return jsonify(error_response), 500
-# --- consent endpoint with validation and rate limiting
+
 @app.route("/consent", methods=["POST"])
 @token_required
 @limiter.limit("20/minute")
@@ -968,11 +1000,9 @@ def consent():
         logger.info("=== CONSENT/PROFILE UPDATE REQUEST ===")
         user_id = request.user_id
 
-        # Validate request payload
         payload = request.get_json(silent=True) or {}
         logger.debug(f"Payload: {payload}")
         
-        # Validate with schema
         schema = ConsentSchema()
         try:
             payload = schema.load(payload)
@@ -980,15 +1010,12 @@ def consent():
             logger.error(f"Validation error: {err.messages}")
             return jsonify({"error": "Invalid request data", "details": err.messages}), 400
 
-        # First get the existing profile data
         existing_doc = get_user_profile(user_id)
         if existing_doc is None:
             existing_doc = {}
         
-        # Get the current profile data or create a new one
         profile_data = existing_doc.get('profile', {})
         
-        # Keep existing values and update with new ones
         profile_data.update({
             "updated_at": datetime.now(timezone.utc).isoformat()
         })
@@ -1001,20 +1028,17 @@ def consent():
             profile_data['username'] = payload['username']
             logger.info(f"Updating username for {user_id}: {profile_data['username']}")
 
-        # Create the complete document structure
         doc_data = {
-            'profile': profile_data  # Nest under 'profile' key
+            'profile': profile_data
         }
         
         try:
             logger.info(f"Upserting document for {user_id} with data: {doc_data}")
-            # Upsert the document with the nested profile structure
             upsert_user_profile(user_id, profile_data)
         except Exception as e:
             logger.error(f"Database error updating profile: {e}")
             return jsonify({"error": "Failed to update profile", "details": str(e)}), 500
 
-        # Fetch the complete updated profile
         updated_profile = get_user_profile(user_id)
         if not updated_profile:
             logger.error(f"Failed to retrieve updated profile for {user_id}")
@@ -1027,34 +1051,58 @@ def consent():
         logger.error(f"Error in consent/profile endpoint: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
-        
-# --- delete memories with debugging for new structure
+
 @app.route("/delete_memories", methods=["POST"])
 @token_required
 def delete_memories():
+    """
+    Delete memories from both Firestore and Vertex AI Vector Search.
+    """
     try:
         logger.info("=== DELETE MEMORIES REQUEST ===")
-        payload = request.get_json(silent=True) or {}
-        logger.debug(f"Delete payload: {payload}")
-        
-        user_id = payload.get("user_id")
-        if not user_id:
-            logger.warning("Missing user_id in delete request")
-            return jsonify({"error":"user_id required"}), 400
-        
+        user_id = request.user_id 
         sanitized_user_id = sanitize_collection_name(user_id)
+        
         logger.info(f"Deleting memories for user: {user_id} (sanitized: {sanitized_user_id})")
         
-        # Delete all memories in the user's memory subcollection
-        mems = db.collection("users").document(sanitized_user_id).collection("memories").stream()
+        mems_ref = db.collection("users").document(sanitized_user_id).collection("memories")
+        mems = mems_ref.stream()
         
         count = 0
+        ids_to_delete = []
+        refs_to_delete = []
+
         for m in mems:
-            m.reference.delete()
+            ids_to_delete.append(m.id)
+            refs_to_delete.append(m.reference)
             count += 1
-            logger.debug(f"Deleted memory {m.id}")
         
-        logger.info(f"Deleted {count} memories for {user_id}")
+        if not ids_to_delete:
+            logger.info(f"No memories to delete for {user_id}")
+            return jsonify({"ok": True, "deleted": 0})
+
+        # 1. Delete from Vertex AI Vector Search
+        # 1. Delete from Vertex AI Vector Search
+        if matching_engine_index:
+            try:
+                matching_engine_index.remove_datapoints(
+                    datapoint_ids=ids_to_delete
+                )
+                logger.info(f"✓ Deleted {len(ids_to_delete)} vectors from Vertex AI for user {user_id}")
+            except Exception as ve:
+                logger.error(f"✗ Failed to delete vectors from Vector Search: {ve}")
+                logger.error(traceback.format_exc())
+                logger.warning("Continuing with Firestore deletion despite Vector Search error")
+        else:
+            logger.warning(f"Vector Search not available - skipping vector deletion for {user_id}")
+
+        # 2. Delete from Firestore (using a batch for efficiency)
+        batch = db.batch()
+        for ref in refs_to_delete:
+            batch.delete(ref)
+        batch.commit()
+        
+        logger.info(f"✓ Deleted {count} memories from Firestore for {user_id}")
         return jsonify({"ok": True, "deleted": count})
     
     except Exception as e:
@@ -1062,7 +1110,6 @@ def delete_memories():
         logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
-# --- Debug endpoint to list available models
 @app.route("/debug/models", methods=["GET"])
 def debug_models():
     try:

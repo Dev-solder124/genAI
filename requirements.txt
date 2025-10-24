@@ -1,21 +1,21 @@
-# Core Flask and Google Cloud
-Flask==3.0.3
-Flask-CORS==4.0.0
-Flask-Limiter==3.3.1
-marshmallow==3.19.0
-google-cloud-firestore==2.16.0
-google-cloud-aiplatform==1.56.0
-vertexai
-gunicorn
+# Core Flask & Web Server
+Flask>=3.0.0
+Flask-CORS>=4.0.0
+Flask-Limiter>=3.0.0 # Keep this for rate limiting
+marshmallow>=3.19.0 # Keep this for schema validation
+gunicorn # Needed for Cloud Run deployment
+
+# Google Cloud Services (Pin aiplatform for SDK compatibility)
+google-cloud-firestore>=2.16.0
+google-cloud-aiplatform==1.122.0 # *** Pin this specific version ***
+google-cloud-kms>=2.20.0 # Keep this for encryption
+google-genai>=0.2.0 # Required for newer SDK structure
 
 # Firebase Authentication
-firebase-admin==6.5.0
-Pyrebase4==4.8.0
+firebase-admin>=6.3.0
 
 # Helper Libraries
-numpy==1.26.4
-requests==2.32.3
-python-dotenv==1.0.1
+numpy>=1.26.0 # Needed for vector math
 
-# Google Cloud KMS for encryption
-google-cloud-kms==2.20.0
+# Optional for stability (Recommended, but remove if conflicts persist)
+grpcio-status>=1.64.0
