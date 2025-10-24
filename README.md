@@ -548,7 +548,7 @@ VECTOR_SEARCH_ENDPOINT_ID=projects/922976482476/locations/asia-south1/indexEndpo
 DEPLOYED_INDEX_ID=serena_memory_deployed,\
 VECTOR_SEARCH_INDEX_ID=your-index-id
 
-# Deploy frontend
+# Deploy front end
 cd genai-frontend
 npm run build
 firebase deploy --only hosting
