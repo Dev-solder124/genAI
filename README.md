@@ -49,6 +49,7 @@ The result is a chatbot that provides personalized, continuous mental health sup
 
 - **Intelligent Memory:** Only saves conversations with significant therapeutic value, preventing memory clutter
 - **Semantic Memory Retrieval:** Uses 768-dimensional vector embeddings (text-embedding-004) for accurate similarity matching
+- **Global User Instructions:** Users can provide direct instructions (e.g., "Always call me 'Captain'") that the chatbot will remember and follow in all future conversations.
 - **Encrypted Storage:** Conversation summaries and PII are encrypted before storage
 - **Plaintext Processing:** Vector embeddings generated from plaintext for accurate similarity matching
 - **Granular Memory Timestamps:** Each retrieved memory includes precise temporal context (e.g., "2 days ago", "5 minutes ago")
@@ -171,6 +172,7 @@ users (collection)
     │   ├── email_encrypted (boolean)
     │   ├── consent (boolean) - Memory storage permission
     │   ├── is_anonymous (boolean)
+    │   ├── user_instructions (list) 🔒 ENCRYPTED - A list of global instructions from the user.
     │   ├── created_at (string) - ISO 8601 timestamp
     │   └── updated_at (string) - ISO 8601 timestamp (last interaction)
     |

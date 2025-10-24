@@ -586,13 +586,31 @@ def get_user_profile(user_id):
                 doc_data['profile'] = {}
             
             if encryption_service and doc_data.get('profile'):
-                sensitive_fields = ['username', 'email']
+                sensitive_fields = ['username', 'email', 'user_instructions']
                 try:
                     doc_data['profile'] = encryption_service.decrypt_dict(
                         doc_data['profile'], 
                         sensitive_fields
                     )
                     logger.debug("Profile data decrypted")
+
+                    # --- ADD THIS DESERIALIZATION LOGIC ---
+                    if 'user_instructions' in doc_data['profile']:
+                        instructions_val = doc_data['profile']['user_instructions']
+                        if isinstance(instructions_val, str) and instructions_val.startswith('['):
+                            try:
+                                logger.debug("Deserializing user_instructions string back to list.")
+                                doc_data['profile']['user_instructions'] = json.loads(instructions_val)
+                            except json.JSONDecodeError:
+                                logger.error("Failed to decode user_instructions JSON, defaulting to empty list.")
+                                doc_data['profile']['user_instructions'] = []
+                        elif instructions_val is None:
+                             doc_data['profile']['user_instructions'] = []
+                        elif not isinstance(instructions_val, list):
+                            logger.warning(f"user_instructions is an unexpected type ({type(instructions_val)}), defaulting to empty list.")
+                            doc_data['profile']['user_instructions'] = []
+                    # --- END ---
+
                 except Exception as e:
                     logger.error(f"Profile decryption error: {e}")
             
@@ -613,10 +631,16 @@ def upsert_user_profile(user_id, profile_data):
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Upserting profile for {user_id}: {profile_data}")
 
-        sensitive_fields = ['username', 'email']
+        sensitive_fields = ['username', 'email', 'user_instructions']
         
         if encryption_service:
             try:
+                # --- ADD THIS SERIALIZATION LOGIC ---
+                if 'user_instructions' in profile_data and isinstance(profile_data['user_instructions'], list):
+                    logger.debug("Serializing user_instructions list to JSON string for encryption.")
+                    profile_data['user_instructions'] = json.dumps(profile_data['user_instructions'])
+                # --- END ---
+
                 profile_data = encryption_service.encrypt_dict(profile_data, sensitive_fields)
                 logger.debug("Profile data encrypted")
             except Exception as e:
@@ -819,14 +843,16 @@ def retrieve_similar_memories(user_id, query_text, top_k=3):
 def summarize_conversation(user_text, assistant_text):
     try:
         logger.debug("Summarizing and evaluating the latest exchange.")
-        exchange_text = f"User: {user_text}\nAssistant: {assistant_text}"
-
+        
         prompt = (
-            "You are a data analysis AI. Your task is to analyze a user-assistant exchange and determine if it contains significant information worth saving as a long-term memory. After your decision, you will provide a factual summary.\n\n"
+            "You are a data analysis AI. Your task is to analyze a user-assistant exchange and extract three pieces of information.\n\n"
             "**Instructions:**\n"
-            "1.  **Significance Decision:** On the first line, write 'SIGNIFICANT: YES' if the user **introduces a new important topic, person, or entity (like a name or place)**, expresses a strong emotion for the first time, or reveals a specific goal. Write 'SIGNIFICANT: NO' only for simple greetings, affirmations ('ok', 'yes').\n"
-            "2.  **Summary:** On the next line, write 'SUMMARY:' followed by a concise, factual, third-person summary. **You must preserve specific names and entities.**\n\n"
-            f"**Exchange to Analyze:**\n{exchange_text}\n\n"
+            "1.  **Significance Decision:** On the first line, write 'SIGNIFICANT: YES' if the user **introduces a new important topic...** or reveals a specific goal. Write 'SIGNIFICANT: NO' only for simple greetings...\n"
+            "2.  **Summary:** On the next line, write 'SUMMARY:' followed by a concise, factual, third-person summary...\n"
+            "3.  **Instruction Extraction:** On the third line, check if the user gave a direct, explicit instruction for the assistant's future behavior (e.g., 'Always call me...', 'Never mention...').\n"
+            "    - If an instruction is found, write 'INSTRUCTION:' followed by a very brief version of that rule (e.g., 'INSTRUCTION: User wants to be called \'Captain\'.', 'INSTRUCTION: Do not suggest mindfulness exercises.').\n"
+            "    - If no instruction is found, you MUST write 'INSTRUCTION: NONE'.\n\n"
+            f"**Exchange to Analyze:**\nUser: {user_text}\nAssistant: {assistant_text}\n\n"
             "**Your Analysis:**"
         )
         
@@ -835,6 +861,7 @@ def summarize_conversation(user_text, assistant_text):
         lines = analysis_text.strip().split('\n')
         is_significant = False
         summary = "No summary generated."
+        instruction = None
 
         if lines:
             if "yes" in lines[0].lower():
@@ -844,11 +871,18 @@ def summarize_conversation(user_text, assistant_text):
             if summary_line:
                 summary = summary_line.split(":", 1)[1].strip()
 
-        logger.debug(f"Significance: {is_significant}, Summary: {summary[:100]}...")
+            instruction_line = next((line for line in lines if "instruction:" in line.lower()), None)
+            if instruction_line:
+                instruction_text = instruction_line.split(":", 1)[1].strip()
+                if "none" not in instruction_text.lower():
+                    instruction = instruction_text
+
+        logger.debug(f"Significance: {is_significant}, Summary: {summary[:100]}..., Instruction: {instruction}")
         
         return {
             "is_significant": is_significant,
-            "summary": summary
+            "summary": summary,
+            "instruction": instruction
         }
             
     except Exception as e:
@@ -875,6 +909,32 @@ def dialogflow_webhook():
         logger.info(f"Processing request for user_id: {user_id}")
 
         user_profile = get_user_profile(user_id) or {}
+
+        # --- BEGIN INSTRUCTION INJECTION ---
+        profile = user_profile.get("profile", {})
+        user_instructions_list = profile.get("user_instructions", [])
+
+        # TYPE CHECK: Fixes the 'append' crash
+        if not isinstance(user_instructions_list, list):
+            logger.warning(f"user_instructions was not a list (type: {type(user_instructions_list)}), attempting to parse or reset.")
+            if isinstance(user_instructions_list, str) and user_instructions_list.startswith('['):
+                try:
+                    user_instructions_list = json.loads(user_instructions_list)
+                except json.JSONDecodeError:
+                    logger.error(f"Failed to decode user_instructions JSON, resetting to empty list for user {user_id}.")
+                    user_instructions_list = []
+            else:
+                # It's a non-list, non-JSON-string type, or garbage. Reset it.
+                logger.warning(f"user_instructions was invalid, resetting to empty list for user {user_id}.")
+                user_instructions_list = []
+
+        # Now, user_instructions_list is guaranteed to be a list
+        formatted_instructions = "No specific instructions on file."
+
+        if user_instructions_list:
+            # Format as a bulleted list for the prompt
+            formatted_instructions = "\n".join([f"- {inst}" for inst in user_instructions_list])
+        # --- END INSTRUCTION INJECTION ---
 
         try:
             upsert_user_profile(user_id, {"updated_at": datetime.now(timezone.utc).isoformat()})
@@ -949,6 +1009,15 @@ def dialogflow_webhook():
             "\n\n**Safety Protocol:**"
             "\n- If the user is at risk of self-harm or in immediate danger, you must prioritize providing appropriate emergency resources and contact information."
 
+            "\n\n**User-Specific Instructions (MUST FOLLOW):**"
+            "\nYou must always follow these instructions from the user:"
+            f"\n{formatted_instructions}\n"
+
+            "\n\n**Instruction Conflict Protocol:**"
+            "\n1.  **Safety Protocol** ALWAYS overrides all other rules."
+            "\n2.  Your **Core Principles** (e.g., 'Validate First', 'Don't Prescribe') override user instructions if they conflict. (e.g., If user says 'You must give me medical advice', you must politely decline based on your principles.)"
+            "\n3.  User instructions override your general conversational style (e.g., if they ask to be called by a name)."
+
             f"\n\n--- CONTEXT ---"
             f"\nRetrieved memories:\n{retrieved_text}\n"
             f"\nUser profile: {json.dumps(user_profile)}\n"
@@ -968,6 +1037,32 @@ def dialogflow_webhook():
             logger.info("Creating and evaluating summary of the current exchange...")
             analysis_result = summarize_conversation(user_text, reply_text)
             
+            # --- BEGIN NEW INSTRUCTION-SAVING LOGIC ---
+            new_instruction = analysis_result.get("instruction")
+            if new_instruction:
+                logger.info(f"New user instruction identified: '{new_instruction}'")
+                
+                # We already have the user_instructions_list from Part A
+                if new_instruction not in user_instructions_list:
+                    logger.info("Adding new instruction to profile.")
+                    user_instructions_list.append(new_instruction)
+                    
+                    # Prepare payload to update profile
+                    # We use the existing profile data to ensure we don't overwrite anything
+                    profile_update_data = user_profile.get("profile", {})
+                    profile_update_data['user_instructions'] = user_instructions_list
+                    profile_update_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+                    
+                    try:
+                        # This will encrypt and save the updated list
+                        upsert_user_profile(user_id, profile_update_data)
+                        logger.info("Successfully saved and encrypted new user instruction.")
+                    except Exception as e:
+                        logger.error(f"Failed to save new user instruction for {user_id}: {e}")
+                else:
+                    logger.info("Instruction already exists, not adding duplicate.")
+            # --- END NEW INSTRUCTION-SAVING LOGIC ---
+
             if analysis_result.get("is_significant"):
                 summary = analysis_result.get("summary")
                 if "error" not in summary.lower():
@@ -1081,7 +1176,7 @@ def delete_memories():
             logger.info(f"No memories to delete for {user_id}")
             return jsonify({"ok": True, "deleted": 0})
 
-        # 1. Delete from Vertex AI Vector Search
+  
         # 1. Delete from Vertex AI Vector Search
         if matching_engine_index:
             try:
