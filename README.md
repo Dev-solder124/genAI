@@ -41,6 +41,7 @@ The result is a chatbot that provides personalized, continuous mental health sup
 
 - **Privacy-First Design:** Explicit user consent required before storing any conversations
 - **User Data Control:** Users can delete all their memories and change consent settings anytime
+- **Instruction Reset:** Users can clear all custom instructions given to the chatbot, resetting its behavior to default.
 - **End-to-End Encryption:** All sensitive data encrypted at rest using Google Cloud KMS
 - **HIPAA-Grade Security:** Enterprise-level encryption for mental health data protection
 - **Complete User Isolation:** Users can only access their own memories via namespace filtering
@@ -456,7 +457,7 @@ All endpoints require Firebase ID token authentication (except /health):
 
 ### Public Endpoints
 
-- `GET /health` - Service health check (includes Vector Search status)
+- `GET /health` - Service health check
 
 ### Authenticated Endpoints
 
@@ -464,6 +465,7 @@ All endpoints require Firebase ID token authentication (except /health):
 - `POST /dialogflow-webhook` - Main chat endpoint with Vector Search retrieval
 - `POST /consent` - User consent management
 - `POST /delete_memories` - Delete from both Firestore and Vector Search
+- `POST /reset_instructions` - Clears all custom instructions from the user's profile.
 
 #### Endpoint Details
 
@@ -480,6 +482,9 @@ All endpoints require Firebase ID token authentication (except /health):
   - Deletes vectors from Vector Search (by datapoint IDs)
   - Batch-deletes documents from Firestore
   - Returns deletion count
+- `POST /reset_instructions` - Clear Custom Instructions:
+  - Clears the `user_instructions` array in the user's profile.
+  - Resets the chatbot's behavior to its default state.
 
 ## Usage Instructions
 
