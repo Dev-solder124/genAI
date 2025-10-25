@@ -79,9 +79,13 @@ export const api = {
       }),
     }),
   
+  // FIX: Add the user_id to the request body
   deleteMemories: ({ user_id }) =>
     http('/delete_memories', { 
       method: 'POST', 
       body: JSON.stringify({ user_id }) 
     }),
+  
+  resetInstructions: () =>
+    http('/reset_instructions', { method: 'POST' }),
 }

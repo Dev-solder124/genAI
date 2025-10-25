@@ -11,13 +11,13 @@ export default function Settings() {
     const [error, setError] = useState(null);
     const [updating, setUpdating] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [resetting, setResetting] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
             if (user) {
                 try {
                     console.log('Settings: Fetching profile using login endpoint');
-                    // FIXED: Use login endpoint to READ profile without updating
                     const profile = await api.login();
                     console.log('Settings: Profile response:', profile);
                     setConsent(profile.profile?.consent);
@@ -48,6 +48,22 @@ export default function Settings() {
         }
     };
 
+    const handleResetInstructions = async () => {
+        if (window.confirm('Are you sure you want to reset Serena? This will clear all custom instructions you\'ve given her.')) {
+            setResetting(true);
+            setError(null);
+            try {
+                await api.resetInstructions();
+                alert('Serena has been reset. All custom instructions have been cleared.');
+            } catch (error) {
+                console.error('Error resetting instructions:', error);
+                setError('Failed to reset instructions. Please try again.');
+            } finally {
+                setResetting(false);
+            }
+        }
+    };
+
     const handleConsentChange = async () => {
         setUpdating(true);
         setError(null);
@@ -55,7 +71,6 @@ export default function Settings() {
             const newConsent = !consent;
             console.log('Settings: Updating consent to:', newConsent);
             
-            // FIXED: Only call consent endpoint when actually updating
             const response = await api.consent({
                 user_id: user.uid,
                 consent: newConsent,
@@ -73,7 +88,6 @@ export default function Settings() {
         } catch (error) {
             console.error('Error updating consent:', error);
             setError('Failed to update memory settings. Please try again.');
-            // Keep the previous consent state
         } finally {
             setUpdating(false);
         }
@@ -86,9 +100,10 @@ export default function Settings() {
     return (
         <div className={styles.settingsContainer}>
             <h2>Settings</h2>
+            
             <div className={styles.setting}>
                 <p><strong>Conversation Memory</strong></p>
-                <p>Allow EmpathicAI to remember your conversations to provide a better experience.</p>
+                <p>Allow Serena to remember your conversations to provide a better experience.</p>
                 <p><em>Current status: {consent === true ? 'Enabled' : consent === false ? 'Disabled' : 'Not set'}</em></p>
                 {error && <p className={styles.error}>{error}</p>}
                 <button
@@ -99,6 +114,19 @@ export default function Settings() {
                     {updating ? 'Updating...' : (consent ? 'Disable Memory' : 'Enable Memory')}
                 </button>
             </div>
+
+            <div className={styles.setting}>
+                <p><strong>Reset Serena</strong></p>
+                <p>Clear all custom instructions you've given to Serena. She will forget any special preferences or rules you've set.</p>
+                <button
+                    onClick={handleResetInstructions}
+                    disabled={resetting}
+                    className={`${resetting ? styles.loading : ''} ${styles.resetButton}`}
+                >
+                    {resetting ? 'Resetting...' : 'Reset Serena'}
+                </button>
+            </div>
+
             <div className={styles.setting}>
                 <p><strong>Delete Memories</strong></p>
                 <p>This will permanently delete all of your stored conversation memories.</p>

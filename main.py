@@ -1205,6 +1205,45 @@ def delete_memories():
         logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
 
+@app.route("/reset_instructions", methods=["POST"])
+@token_required
+def reset_instructions():
+    """
+    Reset user instructions by clearing the user_instructions list from the profile.
+    """
+    try:
+        logger.info("=== RESET INSTRUCTIONS REQUEST ===")
+        user_id = request.user_id
+        sanitized_user_id = sanitize_collection_name(user_id)
+        
+        logger.info(f"Resetting instructions for user: {user_id} (sanitized: {sanitized_user_id})")
+        
+        # Get current profile
+        user_profile = get_user_profile(user_id)
+        
+        if not user_profile:
+            logger.error(f"No profile found for user {user_id}")
+            return jsonify({"error": "User profile not found"}), 404
+        
+        # Update profile to clear user_instructions
+        profile_data = user_profile.get('profile', {})
+        profile_data['user_instructions'] = []
+        profile_data['updated_at'] = datetime.now(timezone.utc).isoformat()
+        
+        # Save updated profile
+        upsert_user_profile(user_id, profile_data)
+        
+        logger.info(f"✓ Successfully reset instructions for user {user_id}")
+        
+        # Return updated profile
+        updated_profile = get_user_profile(user_id)
+        return jsonify(updated_profile), 200
+    
+    except Exception as e:
+        logger.error(f"Error in reset_instructions endpoint: {e}")
+        logger.error(traceback.format_exc())
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/debug/models", methods=["GET"])
 def debug_models():
     try:

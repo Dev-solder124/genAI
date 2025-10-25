@@ -44,6 +44,15 @@
     background-color: #c82333;
 }
 
+.resetButton {
+    background-color: #ffc107;
+    color: #000;
+}
+
+.resetButton:hover:not(:disabled) {
+    background-color: #e0a800;
+}
+
 .loading {
     position: relative;
     pointer-events: none;
