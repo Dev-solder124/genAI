@@ -80,5 +80,8 @@ export const api = {
     }),
   
   deleteMemories: ({ user_id }) =>
-    http('/delete_memories', { method: 'POST', body: JSON.stringify({ user_id }) }),
+    http('/delete_memories', { 
+      method: 'POST', 
+      body: JSON.stringify({ user_id }) 
+    }),
 }

@@ -10,6 +10,7 @@ export default function Settings() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [updating, setUpdating] = useState(false);
+    const [deleting, setDeleting] = useState(false);
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -30,6 +31,22 @@ export default function Settings() {
         };
         fetchProfile();
     }, [user]);
+
+    const handleDeleteMemories = async () => {
+        if (window.confirm('Are you sure you want to delete all your memories? This action cannot be undone.')) {
+            setDeleting(true);
+            setError(null);
+            try {
+                await api.deleteMemories({ user_id: user.uid });
+                alert('Your memories have been deleted.');
+            } catch (error) {
+                console.error('Error deleting memories:', error);
+                setError('Failed to delete memories. Please try again.');
+            } finally {
+                setDeleting(false);
+            }
+        }
+    };
 
     const handleConsentChange = async () => {
         setUpdating(true);
@@ -74,12 +91,23 @@ export default function Settings() {
                 <p>Allow EmpathicAI to remember your conversations to provide a better experience.</p>
                 <p><em>Current status: {consent === true ? 'Enabled' : consent === false ? 'Disabled' : 'Not set'}</em></p>
                 {error && <p className={styles.error}>{error}</p>}
-                <button 
+                <button
                     onClick={handleConsentChange}
                     disabled={updating}
                     className={updating ? styles.loading : ''}
                 >
                     {updating ? 'Updating...' : (consent ? 'Disable Memory' : 'Enable Memory')}
+                </button>
+            </div>
+            <div className={styles.setting}>
+                <p><strong>Delete Memories</strong></p>
+                <p>This will permanently delete all of your stored conversation memories.</p>
+                <button
+                    onClick={handleDeleteMemories}
+                    disabled={deleting}
+                    className={`${deleting ? styles.loading : ''} ${styles.deleteButton}`}
+                >
+                    {deleting ? 'Deleting...' : 'Delete All Memories'}
                 </button>
             </div>
         </div>
