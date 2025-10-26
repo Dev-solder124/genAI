@@ -1,4 +1,4 @@
-# genai-chatbot — Intelligent Memory Mental Health Chatbot
+# Serena — Intelligent Memory Mental Health Chatbot
 
 **Status:** Fully functional / deployment-ready with Vertex AI Vector Search
 
