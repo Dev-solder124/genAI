@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api'; // Assuming you have an API library
 import styles from './Chat.module.css';
@@ -8,6 +9,7 @@ const SESSION_ID = `session_${Date.now()}`;
 
 export default function Chat() {
     const { user, loading } = useAuth();
+    const navigate = useNavigate();
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState('');
     const [userProfile, setUserProfile] = useState(null);
@@ -52,21 +54,19 @@ export default function Chat() {
 
             try {
                 console.log('Chat: Fetching profile for user:', user.uid);
-                // FIXED: Use login endpoint to read profile without updating
                 const response = await api.login();
                 console.log('Chat: Profile response:', response);
-                
+
                 setUserProfile(response);
                 if (response.profile?.consent === null) {
-                    console.log('Chat: Consent is null, showing consent screen');
-                    setConsentNeeded(true);
-                } else {
-                    console.log('Chat: Consent already set to:', response.profile?.consent);
-                    setConsentNeeded(false);
+                    // Consent is missing, redirect to onboarding
+                    console.log('Chat: Consent is null, redirecting to onboarding');
+                    navigate('/onboarding', { replace: true });
                 }
+                // If consent is not null, we do nothing and the chat page loads normally.
+
             } catch (error) {
                 console.error('Error fetching user profile:', error);
-                // Show error message to user
                 setMessages(prev => [...prev, { 
                     role: 'bot', 
                     text: "Sorry, I'm having trouble connecting to the server. Please try again later." 
@@ -77,7 +77,8 @@ export default function Chat() {
         if (user) {
             fetchUserProfile();
         }
-    }, [user]);
+    }, [user, navigate]); // <-- ADD navigate to the dependency array
+
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

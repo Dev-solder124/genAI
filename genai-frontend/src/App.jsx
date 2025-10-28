@@ -1,18 +1,23 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Chat from './pages/Chat';
 import Settings from './pages/Settings';
-import Onboarding from './pages/Onboarding'; // Will be removed later
+import Onboarding from './pages/Onboarding';
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
+          
+          {/* Protected Routes */}
           <Route 
             path="/chat" 
             element={
@@ -33,17 +38,19 @@ export default function App() {
               </ProtectedRoute>
             } 
           />
-          {/* Redirect root to chat if authenticated, otherwise to login */}
-          <Route
-            path="/"
+          <Route 
+            path="/onboarding" 
             element={
               <ProtectedRoute>
                 <Layout>
-                  <Chat />
+                  <Onboarding />
                 </Layout>
               </ProtectedRoute>
-            }
+            } 
           />
+          
+          {/* Catch all - redirect to landing */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
