@@ -1,8 +1,26 @@
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Landing.module.css';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
+
+// Throttle helper function (unchanged)
+function throttle(func, limit) {
+    let inThrottle;
+    return function() {
+        const args = arguments;
+        const context = this;
+        if (!inThrottle) {
+            func.apply(context, args);
+            inThrottle = true;
+            setTimeout(() => inThrottle = false, limit);
+        }
+    }
+}
 
 export default function Landing() {
     const navigate = useNavigate();
+    const scrollContainerRef = useRef(null);
+    const intervalRef = useRef(null);
+    const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
@@ -10,6 +28,104 @@ export default function Landing() {
             element.scrollIntoView({ behavior: 'smooth' });
         }
     };
+
+    // --- LOGIC 1: Find and "Pop" the Center Card (Unchanged) ---
+    const findAndSetCenterCard = useCallback(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        const containerCenter = container.getBoundingClientRect().left + container.offsetWidth / 2;
+        let minDiff = Infinity;
+        let centerCard = null;
+
+        Array.from(container.children).forEach((card) => {
+            const cardCenter = card.getBoundingClientRect().left + card.offsetWidth / 2;
+            const diff = Math.abs(containerCenter - cardCenter);
+            
+            if (diff < minDiff) {
+                minDiff = diff;
+                centerCard = card;
+            }
+            card.classList.remove(styles.isCenter);
+        });
+
+        if (centerCard) {
+            centerCard.classList.add(styles.isCenter);
+        }
+    }, []);
+
+    const throttledFindCenter = throttle(findAndSetCenterCard, 100);
+
+    // --- LOGIC 2: NEW Autoplay Function (Simple Rewind) ---
+    const startAutoplay = useCallback(() => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+        
+        intervalRef.current = setInterval(() => {
+            const container = scrollContainerRef.current;
+            if (!container || container.children.length === 0) return;
+            
+            const firstCard = container.children[0];
+            const gap = parseInt(window.getComputedStyle(container).gap) || 32;
+            const scrollAmount = firstCard.offsetWidth + gap;
+
+            // Check if we are at (or very near) the end
+            const atEnd = container.scrollLeft + container.offsetWidth >= container.scrollWidth - (scrollAmount / 2);
+
+            if (atEnd) {
+                // --- THIS IS THE FIX ---
+                // Instantly jump to the start. No 'smooth' behavior.
+                container.scrollTo({ left: 0, behavior: 'instant' }); 
+            } else {
+                // Scroll by one card
+                container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+            }
+
+        }, 4000);
+    }, []);
+
+    const stopAutoplay = () => {
+        if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+
+    // --- LOGIC 3: Manage Listeners (Simplified) ---
+    useEffect(() => {
+        const container = scrollContainerRef.current;
+        if (!container) return;
+
+        // --- Event Handlers ---
+        const handleMouseEnter = () => setIsAutoplayPaused(true);
+        const handleMouseLeave = () => setIsAutoplayPaused(false);
+        const handleTouchStart = () => setIsAutoplayPaused(true);
+
+        // --- Add Listeners ---
+        container.addEventListener('mouseenter', handleMouseEnter);
+        container.addEventListener('mouseleave', handleMouseLeave);
+        container.addEventListener('scroll', throttledFindCenter); // Just for popping
+        container.addEventListener('touchstart', handleTouchStart, { passive: true });
+
+        // Set the initial center card on load
+        findAndSetCenterCard();
+
+        // --- Cleanup ---
+        return () => {
+            stopAutoplay();
+            container.removeEventListener('mouseenter', handleMouseEnter);
+            container.removeEventListener('mouseleave', handleMouseLeave);
+            container.removeEventListener('scroll', throttledFindCenter);
+            container.removeEventListener('touchstart', handleTouchStart);
+        };
+    }, [findAndSetCenterCard, throttledFindCenter]); // Removed complex dependencies
+
+    // --- LOGIC 4: Start/Stop Autoplay (Unchanged) ---
+    useEffect(() => {
+        if (!isAutoplayPaused) {
+            startAutoplay();
+        } else {
+            stopAutoplay();
+        }
+        return () => stopAutoplay();
+    }, [isAutoplayPaused, startAutoplay]);
+
 
     return (
         <div className={styles.landingContainer}>
@@ -56,9 +172,7 @@ export default function Landing() {
                         </div>
                     </div>
                     <div className={styles.heroVisual}>
-                        <div className={styles.heroVisual}>
-                            <img src="/logoS.png" alt="Serena Logo" className={styles.heroLogoPulse} />
-                        </div> 
+                        <img src="/logoS.png" alt="Serena Logo" className={styles.heroLogoPulse} />
                     </div>
                 </div>
             </section>
@@ -66,7 +180,12 @@ export default function Landing() {
             {/* Features Section */}
             <section id="features" className={styles.features}>
                 <h2 className={styles.sectionTitle}>Intelligent Support That Remembers</h2>
-                <div className={styles.featuresGrid}>
+                
+                <div 
+                    className={styles.featuresGrid}
+                    ref={scrollContainerRef}
+                >
+                    {/* NO CLONES. Just the original 6 cards. */}
                     <div className={styles.featureCard}>
                         <div className={styles.featureIcon}>
                             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -152,6 +271,7 @@ export default function Landing() {
                     </div>
                 </div>
             </section>
+            
             {/* How It Works Section */}
             <section id="how-it-works" className={styles.howItWorks}>
                 <h2 className={styles.sectionTitle}>How It Works</h2>
@@ -170,12 +290,10 @@ export default function Landing() {
                         </p>
                     </div>
                     <div className={styles.stepConnector}>
-                        {/* --- Desktop Arrow (Horizontal) --- */}
                         <svg className={styles.arrowDesktop} width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 12H40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M36 8L40 12L36 16" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
-                        {/* --- Mobile Arrow (Vertical) --- */}
                         <svg className={styles.arrowMobile} width="24" height="48" viewBox="0 0 24 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 4L12 40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M8 36L12 40L16 36" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -196,12 +314,10 @@ export default function Landing() {
                         </p>
                     </div>
                     <div className={styles.stepConnector}>
-                        {/* --- Desktop Arrow (Horizontal) --- */}
                         <svg className={styles.arrowDesktop} width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 12H40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M36 8L40 12L36 16" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
-                        {/* --- Mobile Arrow (Vertical) --- */}
                         <svg className={styles.arrowMobile} width="24" height="48" viewBox="0 0 24 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 4L12 40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M8 36L12 40L16 36" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -219,12 +335,10 @@ export default function Landing() {
                         </p>
                     </div>
                     <div className={styles.stepConnector}>
-                        {/* --- Desktop Arrow (Horizontal) --- */}
                         <svg className={styles.arrowDesktop} width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 12H40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M36 8L40 12L36 16" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
-                        {/* --- Mobile Arrow (Vertical) --- */}
                         <svg className={styles.arrowMobile} width="24" height="48" viewBox="0 0 24 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 4L12 40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M8 36L12 40L16 36" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -246,12 +360,10 @@ export default function Landing() {
                         </p>
                     </div>
                     <div className={styles.stepConnector}>
-                        {/* --- Desktop Arrow (Horizontal) --- */}
                         <svg className={styles.arrowDesktop} width="48" height="24" viewBox="0 0 48 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M4 12H40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M36 8L40 12L36 16" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                         </svg>
-                        {/* --- Mobile Arrow (Vertical) --- */}
                         <svg className={styles.arrowMobile} width="24" height="48" viewBox="0 0 24 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M12 4L12 40" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeDasharray="4 4"/>
                             <path d="M8 36L12 40L16 36" stroke="#C9B8AB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -273,11 +385,12 @@ export default function Landing() {
                         </div>
                         <h3 className={styles.stepTitle}>Continuous Support</h3>
                         <p className={styles.stepDescription}>
-                            Every conversation builds on the last, providing increasingly meaningful support.
+                            Every conversation builds on the last, providing increasingly personalized and meaningful support.
                         </p>
                     </div>
                 </div>
             </section>
+            
             {/* Technology Section */}
             <section className={styles.technology}>
                 <h2 className={styles.sectionTitle}>Powered by Advanced Technology</h2>
@@ -316,7 +429,7 @@ export default function Landing() {
                 <div className={styles.footerContent}>
                     <div className={styles.footerBrand}>
                         <img src="/logoS.png" alt="Serena Logo" className={styles.footerLogo} />
-                        <span className={styles.footerBrandName}>Serena</span>
+                        <span className={styles.brandName}>Serena</span>
                         <p className={styles.footerTagline}>Mental health support that remembers</p>
                     </div>
                     <div className={styles.footerLinks}>

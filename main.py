@@ -122,9 +122,22 @@ CORS(app, resources={r"/*": {
     "allow_headers": ["Authorization", "Content-Type"]
 }})
 
+def get_user_key():
+    """
+    Custom key function for rate limiting.
+    Uses the user_id if the endpoint is protected by @token_required,
+    otherwise falls back to the remote IP address for public endpoints.
+    """
+    # Check if the @token_required decorator has run and set the user_id
+    if hasattr(request, 'user_id') and request.user_id:
+        return request.user_id
+    
+    # Fallback for unprotected routes
+    return get_remote_address()
+
 limiter = Limiter(
     app=app,
-    key_func=get_remote_address,
+    key_func=get_user_key,
     default_limits=["200 per day", "50 per hour"],
     storage_uri="memory://"
 )

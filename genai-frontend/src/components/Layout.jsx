@@ -1,31 +1,29 @@
-import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { signOut } from '../lib/auth';
-import styles from './Layout.module.css';
+import React, { useState } from 'react';
+import AppHeader from './AppHeader';
+import Sidebar from './Sidebar';
+import styles from './Layout.module.css'; // This will be our new CSS file
 
 export default function Layout({ children }) {
-    const navigate = useNavigate();
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-    const handleSignOut = async () => {
-        await signOut();
-        navigate('/login');
-    };
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
 
-    return (
-        <div className={styles.layout}>
-            <header className={styles.header}>
-                <div className={styles.brand}>Serena</div>
-                <nav className={styles.nav}>
-                    <Link to="/chat" className={styles.navLink}>Chat</Link>
-                    <Link to="/settings" className={styles.navLink}>Settings</Link>
-                </nav>
-                <button onClick={handleSignOut} className={styles.signOutButton}>
-                    Sign Out
-                </button>
-            </header>
-            <main className={styles.main}>
-                {children}
-            </main>
-        </div>
-    );
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+
+  return (
+    // This class name comes from the *new* Layout.module.css
+    <div className={styles.layoutContainer}>
+      <AppHeader onToggleSidebar={toggleSidebar} />
+      
+      <main className={styles.content}>
+        {children}
+      </main>
+      
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+    </div>
+  );
 }

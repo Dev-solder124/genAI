@@ -1,0 +1,163 @@
+/* Sidebar Container */
+.sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 90vw; /* Make it 90% of the viewport width */
+    max-width: 320px; /* But never let it get wider than 320px */
+    background: #FFFEFB;
+    box-shadow: -4px 0 15px rgba(0, 0, 0, 0.1);
+    z-index: 1001;
+    
+    /* This is key for the sticky footer */
+    display: flex;
+    flex-direction: column;
+    
+    transform: translateX(100%);
+    transition: transform 0.3s ease-out;
+}
+
+.sidebarOpen {
+    transform: translateX(0);
+}
+
+/* Overlay Background */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease-out;
+}
+
+.overlayOpen {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Sidebar Header */
+.sidebarHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes close button to the right */
+    padding: 0 20px;
+    height: 60px;
+    flex-shrink: 0; /* Prevents header from shrinking */
+    border-bottom: 1px solid #F4F1E8;
+}
+
+/* Add this new rule */
+.headerTitle {
+    color: #8B5A3C;
+    font-weight: 600;
+    font-size: 1.1em;
+    margin: 0;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    color: #A67B5B;
+    transition: background-color 0.2s;
+}
+
+.closeButton:hover {
+    background-color: #F4F1E8;
+}
+
+/* Navigation & Settings List */
+.sidebarNav {
+    flex: 1; /* This makes the nav fill the space, pushing footer down */
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto; /* Lets settings scroll if needed */
+}
+
+
+.navItem {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 0;
+    font-size: 16px;
+    color: #5D3E2A;
+}
+
+.navButton {
+    padding: 6px 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background-color: #F4F1E8;
+    color: #5D3E2A;
+    font-weight: 500;
+    font-size: 0.9em;
+    transition: all 0.2s;
+}
+
+.navButton:hover:not(:disabled) {
+    background-color: #A67B5B;
+    color: white;
+}
+
+.navButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.deleteButton {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.deleteButton:hover:not(:disabled) {
+    background-color: #dc3545;
+    color: white;
+}
+
+.error {
+    color: #dc3545;
+    background-color: rgba(220, 53, 69, 0.1);
+    padding: 10px;
+    border-radius: 4px;
+    margin: 0 0 8px 0;
+    font-size: 0.9em;
+}
+
+
+/* Footer (Sign Out) */
+.sidebarFooter {
+    padding: 20px;
+    border-top: 1px solid #F4F1E8;
+    flex-shrink: 0; /* Prevents footer from shrinking */
+    
+    /* This makes sure it's at the bottom */
+    margin-top: auto; 
+}
+
+.signOutButton {
+    width: 100%;
+    background: #8B5A3C;
+    border: 1px solid #8B5A3C; 
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    color: #FFFEFB; 
+    font-weight: 500;
+    font-size: 1em;
+    transition: all 0.3s ease;
+}
+
+.signOutButton:hover {
+    background: transparent !important; 
+    border: 1px solid #8B5A3C !important; 
+    color: #8B5A3C !important; 
+}

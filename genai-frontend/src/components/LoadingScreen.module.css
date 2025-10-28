@@ -1,0 +1,40 @@
+/* Using colors from your Landing.module.css */
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%; /* Use 100% to fill its container */
+  min-height: 300px; /* Ensure it has some size */
+  background-color: transparent;
+}
+
+.loadingLogo {
+  width: 100px;
+  height: 100px;
+  animation: pulse 4s ease-in-out infinite;
+  filter: drop-shadow(0 10px 30px rgba(139, 90, 60, 0.2)); 
+}
+
+.loadingText {
+  margin-top: 24px;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--text-secondary, #8B5A3C);
+}
+
+/* Copied from your Landing.module.css */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+}

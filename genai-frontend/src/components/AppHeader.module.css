@@ -1,0 +1,43 @@
+/* Using colors from your Login.module.css */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    height: 60px;
+    background-color: var(--white, #FFFFFF);
+    border-bottom: 1px solid var(--light-beige, #F4F1E8);
+    flex-shrink: 0;
+    color: var(--text-primary, #5D3E2A);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.logo {
+    width: 32px;
+    height: 32px;
+}
+
+.brandName {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.sidebarToggle {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    color: var(--text-secondary, #8B5A3C);
+}
+
+.sidebarToggle:hover {
+    background-color: var(--light-beige, #F4F1E8);
+}

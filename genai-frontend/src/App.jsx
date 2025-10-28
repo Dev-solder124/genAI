@@ -1,3 +1,4 @@
+import './global.css';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -5,7 +6,6 @@ import Layout from './components/Layout';
 import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Chat from './pages/Chat';
-import Settings from './pages/Settings';
 import Onboarding from './pages/Onboarding';
 
 export default function App() {
@@ -24,16 +24,6 @@ export default function App() {
               <ProtectedRoute>
                 <Layout>
                   <Chat />
-                </Layout>
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <ProtectedRoute>
-                <Layout>
-                  <Settings />
                 </Layout>
               </ProtectedRoute>
             } 

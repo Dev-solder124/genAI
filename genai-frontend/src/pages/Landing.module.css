@@ -212,13 +212,8 @@
     width: 400px;
     height: 400px;
     border-radius: 50%;
-    /* background: linear-gradient(135deg, 
-        rgba(166, 123, 91, 0.3) 0%, 
-        rgba(156, 175, 136, 0.3) 50%, 
-        rgba(201, 168, 106, 0.3) 100%); */
     background: linear-gradient(-45deg, #814008, #C9B8AB, #26d75e);
     filter: blur(10px);
-    /* animation: float 6s ease-in-out infinite; */
     animation: moveGradient 12s ease-in-out infinite;
 }
 
@@ -229,7 +224,7 @@
 
 /* Features Section */
 .features {
-    padding: 64px 32px;
+    padding: 100px 0;
     background: var(--light-beige);
 }
 
@@ -239,63 +234,97 @@
     text-align: center;
     margin: 0 0 48px 0;
     color: var(--text-primary);
+    padding: 0 32px;
 }
 
 .featuresGrid {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
     gap: 32px;
+    overflow-x: auto;
+    
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+
+    /* Hide scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    
+    /* Padding for centering first and last cards */
+    padding: 40px calc(50% - 180px);
+}
+
+.featuresGrid::-webkit-scrollbar {
+    display: none;
 }
 
 .featureCard {
     background: var(--white);
     padding: 32px;
     border-radius: 16px;
+    
+    transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s;
+    
+    scroll-snap-align: center;
+    
+    /* Card sizing */
+    flex: 0 0 360px;
+    max-width: 360px;
+    min-height: 300px;
+    
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.featureCard:hover {
+.featureCard.isCenter {
+    transform: scale(1.08);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+    z-index: 10;
+    position: relative;
+}
+
+.featureCard:hover:not(.isCenter) {
     transform: translateY(-4px);
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
 .featureIcon {
-    font-size: 48px;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .featureTitle {
     font-size: 20px;
     font-weight: 600;
-    margin: 0 0 12px 0;
     color: var(--text-primary);
+    margin: 0 0 12px 0;
 }
 
 .featureDescription {
-    font-size: 16px;
+    font-size: 15px;
     line-height: 1.6;
     color: var(--text-secondary);
     margin: 0;
 }
 
-/* --- How It Works Section --- */
+/* How It Works Section */
 .howItWorks {
     padding: 80px 5%;
-    background-color: #fcfbf9; /* A soft, warm off-white */
+    background-color: #fcfbf9;
 }
 
 .stepsContainer {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start; /* Aligns icons at the top */
+    align-items: flex-start;
     width: 100%;
 }
 
 .step {
-    flex: 0 1 18%; /* Don't grow, shrink, with a base of 18% */
+    flex: 0 1 18%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -303,17 +332,16 @@
 }
 
 .stepIcon {
-    width: 64px; /* A fixed size for the icon container */
+    width: 64px;
     height: 64px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #EDE8E4; /* A light tan background */
+    background-color: #EDE8E4;
     border-radius: 50%;
     margin-bottom: 20px;
 }
 
-/* Make the icon SVG scale */
 .stepIcon svg {
     width: 40px;
     height: 40px;
@@ -331,58 +359,28 @@
     color: #555;
     line-height: 1.5;
 }
+
 .stepConnector {
     flex-grow: 1;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 1rem; /* Horizontal spacing for desktop */
+    margin: 0 1rem;
     min-width: 40px;
-    /* --- ADD THIS LINE --- */
-    margin-top: 20px; /* Aligns arrow with icon center */
+    margin-top: 20px;
 }
 
 .arrowDesktop {
-    display: block; /* Show by default */
+    display: block;
     width: 100%;
     height: 24px;
     max-width: 150px;
 }
 
 .arrowMobile {
-    display: none; /* Hide by default */
+    display: none;
 }
 
-/* --- Media Query for Mobile --- */
-@media (max-width: 900px) {
-    .stepsContainer {
-        flex-direction: column;
-        align-items: center;
-        gap: 20px;
-    }
-
-    .step {
-        flex-basis: 100%; /* Each step takes full width */
-        max-width: 400px; /* But not *too* wide */
-    }
-
-    .stepConnector {
-        flex-grow: 0;
-        margin: 16px 0; /* Vertical spacing */
-        width: 24px;
-        height: 48px; /* Explicit size for vertical arrow */
-    }
-
-    .arrowDesktop {
-        display: none; /* Hide desktop arrow */
-    }
-
-    .arrowMobile {
-        display: block; /* Show mobile arrow */
-        width: 24px;
-        height: 48px;
-    }
-}
 /* Technology Section */
 .technology {
     padding: 64px 32px;
@@ -533,13 +531,27 @@
         display: none;
     }
 
+    .navButtons {
+        gap: 8px;
+    }
+
+    .loginButton,
+    .getStartedButton {
+        padding: 8px 16px;
+        font-size: 14px;
+    }
+
     .navLogo {
         height: 28px;
         width: 28px;
     }
 
     .brandName {
-        font-size: 20px;
+        font-size: 18px;
+    }
+
+    .hero {
+        padding: 100px 20px 48px;
     }
 
     .heroContent {
@@ -548,28 +560,72 @@
     }
 
     .heroTitle {
-        font-size: 36px;
+        font-size: 32px;
     }
 
     .heroSubtitle {
         font-size: 16px;
     }
 
+    .heroText {
+    text-align: center;
+    }
+    
     .gradientOrb {
         width: 280px;
         height: 280px;
     }
 
     .heroVisual {
-        height: 300px;
+        display: none;
     }
 
-    .featuresGrid {
-        grid-template-columns: 1fr;
-    }
+    /* .heroLogoPulse {
+        width: 250px;
+        height: 250px;
+    } */
 
     .sectionTitle {
         font-size: 32px;
+    }
+
+    .featuresGrid {
+        padding: 40px 10vw;
+        gap: 24px;
+    }
+
+    .featureCard {
+        flex: 0 0 80vw;
+        max-width: 80vw;
+        min-height: 280px;
+    }
+
+    .stepsContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .step {
+        flex-basis: 100%;
+        max-width: 400px;
+    }
+
+    .stepConnector {
+        flex-grow: 0;
+        margin: 16px 0;
+        width: 24px;
+        height: 48px;
+    }
+
+    .arrowDesktop {
+        display: none;
+    }
+
+    .arrowMobile {
+        display: block;
+        width: 24px;
+        height: 48px;
     }
 
     .techGrid {
@@ -603,7 +659,7 @@
 
 @media (max-width: 1024px) and (min-width: 769px) {
     .featuresGrid {
-        grid-template-columns: repeat(2, 1fr);
+        padding: 40px calc(50% - 220px);
     }
 }
 
@@ -622,36 +678,35 @@ a:focus {
 }
 
 @keyframes moveGradient {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
 }
 
 .heroLogoPulse {
-  width: 350px; /* Adjust size as needed */
-  height: 350px;
-  animation: pulse 4s ease-in-out infinite;
-  /* Adds a very subtle drop shadow for depth */
-  filter: drop-shadow(0 10px 30px rgba(139, 90, 60, 0.2)); 
+    width: 350px;
+    height: 350px;
+    animation: pulse 4s ease-in-out infinite;
+    filter: drop-shadow(0 10px 30px rgba(139, 90, 60, 0.2)); 
 }
 
 @keyframes pulse {
-  0% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  50% {
-    transform: scale(1.05);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0.8;
-  }
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
 }

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import LoadingScreen from './LoadingScreen'; // <-- 1. Import the new component
 
 export default function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
 
     if (loading) {
-        // You can render a loading spinner here
-        return <div>Loading...</div>;
+        // 2. Replace the old div with the new component
+        return <LoadingScreen text="Authenticating..." />;
     }
 
     if (!user) {

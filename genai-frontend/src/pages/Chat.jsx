@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api'; // Assuming you have an API library
 import styles from './Chat.module.css';
+import { IconSend } from '../components/icons/IconSend';
+import LoadingScreen from '../components/LoadingScreen';
 
 // Initialize session ID for the chat
 const SESSION_ID = `session_${Date.now()}`;
@@ -37,7 +39,7 @@ export default function Chat() {
 
     // Show loading state while auth is initializing
     if (loading) {
-        return <div>Loading...</div>;
+        return <LoadingScreen text="Loading your chat..." />;
     }
 
     // Redirect or show message if not authenticated
@@ -237,11 +239,11 @@ export default function Chat() {
                     aria-label="Message input"
                 />
                 <button 
-                    onClick={handleSend}
-                    disabled={sending || !input.trim()}
-                    className={sending ? styles.loading : ''}
-                >
-                    {sending ? 'Sending...' : 'Send'}
+                onClick={handleSend}
+                disabled={sending || !input.trim()}
+                className={sending ? styles.loading : ''}
+            >
+                {sending ? <div className={styles.loadingSpinner}></div> : <IconSend />}
                 </button>
             </div>
             {error && (

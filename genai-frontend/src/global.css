@@ -1,0 +1,39 @@
+/* Global color palette for SerenaChat
+  Derived from your AppHeader.module.css and screenshots.
+*/
+:root {
+  /* Brand Colors (Browns & Beiges) */
+  --primary-orange: #8B5A3C;       /* Main action color (buttons, user bubble) */
+  --primary-orange-dark: #5D3E2A;  /* Hover color / dark text */
+  --light-beige: #F4F1E8;          /* Light background */
+  --border: #E0DACA;               /* Borders and dividers */
+
+  /* Text Colors */
+  --text-primary: #5D3E2A;
+  --text-secondary: #8B5A3C;
+  --white: #FFFFFF;
+  --black: #333333;
+
+  /* Chat Bubble Colors */
+  --user-bubble: #8B5A3C;          /* Brown bubble for user */
+  --user-text: #FFFFFF;            /* White text on brown bubble */
+  --bot-bubble: #EBF1E6;           /* Light green bubble for bot */
+  --bot-text: #333333;             /* Dark text on green bubble */
+
+  /* Utility & State Colors */
+  --bg: #FFFFFF;                   /* Main page background */
+  --card-fg: #333333;              /* Text color for inputs */
+  --disabled-bg: #E0DACA;         /* Disabled button background */
+  --error: #D9534F;                /* Red for errors */
+  --error-bg: #FDF7F7;             /* Light red for error container */
+}
+
+/* Optional: Apply a base background color */
+body {
+  background-color: var(--light-beige);
+  color: var(--text-primary);
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
