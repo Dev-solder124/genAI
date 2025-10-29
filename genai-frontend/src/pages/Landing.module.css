@@ -9,6 +9,11 @@
     --white: #FFFFFF;
     --off-white: #FFFEFB;
     --light-beige: #F4F1E8;
+
+    /* Mapped hover/transparent colors from original file */
+    --primary-dark-hover: #6D2E10; 
+    --primary-transparent-10: rgba(166, 123, 91, 0.1);
+    --primary-transparent-30: rgba(139, 90, 60, 0.3);
 }
 
 /* Main Container */
@@ -16,6 +21,7 @@
     min-height: 100vh;
     background: var(--off-white);
     color: var(--text-primary);
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 /* Navigation */
@@ -99,7 +105,7 @@
 }
 
 .loginButton:hover {
-    background: rgba(166, 123, 91, 0.1);
+    background: var(--primary-transparent-10);
     transform: translateY(-1px);
 }
 
@@ -119,9 +125,9 @@
 }
 
 .getStartedButton:hover {
-    background: #6D2E10;
+    background: var(--primary-dark-hover);
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(139, 90, 60, 0.3);
+    box-shadow: 0 6px 20px var(--primary-transparent-30);
 }
 
 /* Hero Section */
@@ -143,24 +149,45 @@
 }
 
 .heroTitle {
-    font-size: 56px;
+    font-size: clamp(36px, 8vw, 56px); /* Fluid typography */
     font-weight: 700;
-    line-height: 1.1;
+    line-height: 1.2;
     margin: 0 0 24px 0;
     color: var(--text-primary);
 }
 
 .heroSubtitle {
-    font-size: 18px;
+    font-size: clamp(16px, 4.5vw, 18px); /* Fluid typography */
     line-height: 1.6;
     color: var(--text-secondary);
     margin: 0 0 32px 0;
+}
+
+/* New Credibility Section */
+.credibilitySection {
+    margin-top: 32px;
+}
+
+.badges {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.badge {
+    background: var(--primary-transparent-10);
+    color: var(--primary-brown-dark);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
 }
 
 .heroCtas {
     display: flex;
     gap: 16px;
     flex-wrap: wrap;
+    margin-top: 32px;
 }
 
 .primaryCta {
@@ -179,26 +206,9 @@
 }
 
 .primaryCta:hover {
-    background: #6D2E10;
+    background: var(--primary-dark-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.3);
-}
-
-.secondaryCta {
-    padding: 16px 32px;
-    background: transparent;
-    color: var(--text-primary);
-    border: 2px solid var(--primary-brown);
-    border-radius: 10px;
-    font-size: 17px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-.secondaryCta:hover {
-    background: rgba(166, 123, 91, 0.1);
-    transform: translateY(-1px);
+    box-shadow: 0 8px 24px var(--primary-transparent-30);
 }
 
 .heroVisual {
@@ -208,18 +218,26 @@
     height: 400px;
 }
 
-.gradientOrb {
-    width: 400px;
-    height: 400px;
-    border-radius: 50%;
-    background: linear-gradient(-45deg, #814008, #C9B8AB, #26d75e);
-    filter: blur(10px);
-    animation: moveGradient 12s ease-in-out infinite;
+.heroLogoPulse {
+    width: 350px;
+    height: 350px;
+    animation: pulse 4s ease-in-out infinite;
+    filter: drop-shadow(0 10px 30px var(--primary-transparent-30)); 
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.8;
+    }
 }
 
 /* Features Section */
@@ -250,7 +268,7 @@
     -ms-overflow-style: none;
     
     /* Padding for centering first and last cards */
-    padding: 40px calc(50% - 180px);
+    padding: 40px calc(50% - 180px); /* Keep this for desktop/larger screens */
 }
 
 .featuresGrid::-webkit-scrollbar {
@@ -264,11 +282,12 @@
     
     transition: transform 0.4s ease-out, box-shadow 0.4s ease-out;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(139, 90, 60, 0.05);
     
     scroll-snap-align: center;
     
-    /* Card sizing */
-    flex: 0 0 360px;
+    /* Card sizing for larger screens: allow multiple to show */
+    flex: 0 0 360px; /* Fixed width, allows multiple cards to be visible */
     max-width: 360px;
     min-height: 300px;
     
@@ -279,14 +298,15 @@
 
 .featureCard.isCenter {
     transform: scale(1.08);
-    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 16px 32px rgba(139, 90, 60, 0.15);
     z-index: 10;
     position: relative;
+    border: 1px solid var(--primary-brown);
 }
 
 .featureCard:hover:not(.isCenter) {
     transform: translateY(-4px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 16px rgba(139, 90, 60, 0.1);
 }
 
 .featureIcon {
@@ -313,7 +333,7 @@
 /* How It Works Section */
 .howItWorks {
     padding: 80px 5%;
-    background-color: #fcfbf9;
+    background-color: var(--off-white);
 }
 
 .stepsContainer {
@@ -337,7 +357,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #EDE8E4;
+    background-color: var(--primary-transparent-10);
     border-radius: 50%;
     margin-bottom: 20px;
 }
@@ -350,13 +370,13 @@
 .stepTitle {
     font-size: 1.25rem;
     font-weight: 600;
-    color: #333;
+    color: var(--text-primary);
     margin-bottom: 10px;
 }
 
 .stepDescription {
     font-size: 0.95rem;
-    color: #555;
+    color: var(--text-secondary);
     line-height: 1.5;
 }
 
@@ -381,40 +401,104 @@
     display: none;
 }
 
-/* Technology Section */
+/* --- REVISED Technology Section --- */
 .technology {
-    padding: 64px 32px;
+    padding: 80px 32px;
     background: var(--light-beige);
 }
 
-.techGrid {
+.sectionSubtitle {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 600px;
+    margin: -24px auto 48px;
+    text-align: center;
+}
+
+.logoGrid {
     max-width: 1000px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 24px;
+    justify-items: center;
 }
 
-.techBadge {
+.logoCard {
     background: var(--white);
     padding: 24px;
     border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    justify-content: center;
+    gap: 16px;
+    width: 100%;
+    min-height: 140px;
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.05);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.techIcon {
-    font-size: 36px;
+.logoCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(139, 90, 60, 0.1);
 }
 
-.techName {
+.logoImage {
+    height: 50px;
+    width: auto;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.logoName {
     font-size: 14px;
     font-weight: 600;
     text-align: center;
     color: var(--text-primary);
+}
+
+/* New About Section */
+.aboutSection {
+    padding: 80px 32px;
+    background: var(--white);
+    text-align: center;
+}
+
+.aboutDescription {
+    font-size: 18px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto 32px;
+}
+
+.techStack {
+    max-width: 600px;
+    margin: 32px auto 0;
+    text-align: left;
+    background: var(--light-beige);
+    padding: 24px;
+    border-radius: 12px;
+}
+
+.techStack h3 {
+    text-align: center;
+    margin-top: 0;
+}
+
+.techStack p {
+    text-align: center;
+    font-size: 15px;
+    color: var(--text-secondary);
+}
+
+.techStack ul {
+    list-style-type: '✔️';
+    padding-left: 30px;
+    line-height: 1.8;
 }
 
 /* Final CTA Section */
@@ -450,10 +534,31 @@
 }
 
 .finalCtaButton:hover {
-    background: #6D2E10;
+    background: var(--primary-dark-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px rgba(139, 90, 60, 0.3);
+    box-shadow: 0 8px 24px var(--primary-transparent-30);
 }
+
+/* New Disclaimer Section */
+.disclaimer {
+    background: var(--off-white);
+    padding: 48px 32px;
+    text-align: center;
+    border-top: 1px solid rgba(139, 90, 60, 0.1);
+}
+
+.disclaimer p {
+    max-width: 800px;
+    margin: 0 auto;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.disclaimer strong {
+    color: var(--text-primary);
+}
+
 
 /* Footer */
 .footer {
@@ -522,7 +627,7 @@
 .footerBottom p {
     font-size: 14px;
     color: var(--text-secondary);
-    margin: 0;
+    margin: 0 0 8px 0;
 }
 
 /* Mobile Responsiveness */
@@ -559,45 +664,35 @@
         gap: 32px;
     }
 
-    .heroTitle {
-        font-size: 32px;
-    }
-
-    .heroSubtitle {
-        font-size: 16px;
-    }
-
     .heroText {
-    text-align: center;
+        text-align: center;
     }
     
-    .gradientOrb {
-        width: 280px;
-        height: 280px;
+    .badges {
+        justify-content: center;
     }
 
     .heroVisual {
         display: none;
     }
 
-    /* .heroLogoPulse {
-        width: 250px;
-        height: 250px;
-    } */
-
     .sectionTitle {
         font-size: 32px;
     }
 
     .featuresGrid {
-        padding: 40px 10vw;
+        /* Revert to showing more cards on mobile by making them slightly smaller */
+        padding: 40px 15vw; /* Adjusted padding to reveal more of side cards */
         gap: 24px;
     }
 
     .featureCard {
-        flex: 0 0 80vw;
-        max-width: 80vw;
+        /* Adjusted width for mobile to show multiple cards */
+        flex: 0 0 70vw; /* Take up 70% of viewport width */
+        max-width: 70vw;
         min-height: 280px;
+        padding: 24px;
+        margin: 0; /* Remove horizontal margin if present */
     }
 
     .stepsContainer {
@@ -628,8 +723,29 @@
         height: 48px;
     }
 
-    .techGrid {
-        grid-template-columns: repeat(2, 1fr);
+    .sectionSubtitle {
+        font-size: 16px;
+    }
+
+    .logoGrid {
+        grid-template-columns: repeat(2, 1fr); /* Ensure 2 columns on small screens */
+        gap: 16px;
+    }
+
+    .logoCard {
+        min-height: 120px;
+        padding: 16px;
+    }
+
+    .logoImage {
+        height: 40px;
+    }
+
+    .techStack {
+        text-align: center;
+    }
+    .techStack ul {
+        text-align: left;
     }
 
     .finalCtaTitle {
@@ -650,18 +766,44 @@
         flex-direction: column;
     }
 
-    .primaryCta,
-    .secondaryCta {
+    .primaryCta {
         width: 100%;
         justify-content: center;
+        padding: 18px 24px; /* Better touch target */
+        font-size: 18px; /* Better touch target */
+        min-height: 56px; /* Better touch target */
+        font-weight: 600;
     }
 }
 
-@media (max-width: 1024px) and (min-width: 769px) {
+/* Medium screens (e.g., tablets in landscape) to ensure 3 cards are visible if possible */
+@media (min-width: 769px) and (max-width: 1024px) {
     .featuresGrid {
-        padding: 40px calc(50% - 220px);
+        padding: 40px calc(50% - 220px); /* Adjust padding to center and show more */
+    }
+    .featureCard {
+        flex: 0 0 320px; /* Slightly smaller cards to fit more */
+        max-width: 320px;
+    }
+    .logoGrid {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* Large screens (desktop) */
+@media (min-width: 1025px) {
+    .featuresGrid {
+        padding: 40px calc(50% - 180px); /* Original desktop padding */
+    }
+    .featureCard {
+        flex: 0 0 360px; /* Original desktop card size */
+        max-width: 360px;
+    }
+    .logoGrid {
+        grid-template-columns: repeat(3, 1fr); /* 3 columns for desktop */
+    }
+}
+
 
 /* Accessibility */
 button:focus,
@@ -677,36 +819,76 @@ a:focus {
     }
 }
 
-@keyframes moveGradient {
-    0% {
-        background-position: 0% 50%;
-    }
-    50% {
-        background-position: 100% 50%;
-    }
-    100% {
-        background-position: 0% 50%;
-    }
+/* --- Additions for Header Buttons --- */
+
+.loginButton,
+.getStartedButton {
+    /* Add alignment for icon/spinner and text */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between icon/spinner and text */
+    min-width: 120px; /* Give buttons a minimum width for loading state */
+    position: relative; /* Needed for loading overlay potentially */
 }
 
-.heroLogoPulse {
-    width: 350px;
-    height: 350px;
-    animation: pulse 4s ease-in-out infinite;
-    filter: drop-shadow(0 10px 30px rgba(139, 90, 60, 0.2)); 
+.buttonIcon {
+    height: 16px; /* Adjust size as needed */
+    width: 16px;
 }
 
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 0.8;
-    }
-    50% {
-        transform: scale(1.05);
-        opacity: 1;
-    }
-    100% {
-        transform: scale(1);
-        opacity: 0.8;
-    }
+/* Loading State Styles */
+.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
 }
+
+/* Optional: Add a subtle transition */
+.loginButton,
+.getStartedButton {
+    transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Style for error message in nav */
+.navError {
+    position: absolute; /* Position it relative to the nav */
+    bottom: -25px; /* Place it below the nav */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ffcccc; /* Light red background */
+    color: #cc0000; /* Darker red text */
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    z-index: 999; /* Ensure it's above content */
+    white-space: nowrap; /* Prevent wrapping */
+}
+
+
+/* --- Modifications for Hero CTA --- */
+.primaryCta {
+    /* Ensure alignment works for the hero button too */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Slightly larger gap for primary CTA */
+    min-width: 200px; /* Adjust as needed */
+    position: relative;
+}
+
+/* --- Ensure other styles are present --- */
+/* Make sure you have the other styles from the previous responses */
+/* (Color vars, Nav, Hero, Features, HowItWorks, Technology Logos, About, CTA, Footer, Responsiveness etc.) */
+
+/* Example: Ensure .logoGrid styles are there */
+.logoGrid {
+    max-width: 1000px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    justify-items: center;
+}
+/* ... rest of your existing CSS ... */

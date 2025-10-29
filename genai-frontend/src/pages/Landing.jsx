@@ -1,9 +1,14 @@
-import { Link, useNavigate } from 'react-router-dom';
-import styles from './Landing.module.css';
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
+import { PulseLoader } from 'react-spinners'; // Import a spinner
+
+import styles from './Landing.module.css';
+import { signInWithGoogle, signInAsGuest } from '../lib/auth'; // Import auth functions
 
 // Throttle helper function (unchanged)
 function throttle(func, limit) {
+    // ... (throttle function code)
     let inThrottle;
     return function() {
         const args = arguments;
@@ -16,11 +21,56 @@ function throttle(func, limit) {
     }
 }
 
+
 export default function Landing() {
     const navigate = useNavigate();
     const scrollContainerRef = useRef(null);
     const intervalRef = useRef(null);
     const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
+
+    // --- NEW: State for Login Logic ---
+    const [loadingGoogle, setLoadingGoogle] = useState(false);
+    const [loadingGuest, setLoadingGuest] = useState(false);
+    const [error, setError] = useState(null);
+
+    // --- NEW: Login Handlers (moved from Login.jsx) ---
+    const handleGoogleLogin = async () => {
+        setLoadingGoogle(true);
+        setError(null);
+        try {
+            await signInWithGoogle();
+            navigate('/chat'); // Navigate to chat on success
+        } catch (err) {
+            console.error('Google login error:', err);
+            setError(
+                err.code === 'auth/popup-closed-by-user'
+                    ? 'Sign in was cancelled.'
+                    : err.code === 'auth/network-request-failed'
+                    ? 'Network error. Check connection.'
+                    : 'Failed to sign in with Google.'
+            );
+        } finally {
+            setLoadingGoogle(false);
+        }
+    };
+
+    const handleGuestLogin = async () => {
+        setLoadingGuest(true);
+        setError(null);
+        try {
+            await signInAsGuest();
+            navigate('/chat'); // Navigate to chat on success
+        } catch (err) {
+            console.error('Guest login error:', err);
+            setError(
+                err.code === 'auth/network-request-failed'
+                    ? 'Network error. Check connection.'
+                    : 'Failed to continue as guest.'
+            );
+        } finally {
+            setLoadingGuest(false);
+        }
+    };
 
     const scrollToSection = (id) => {
         const element = document.getElementById(id);
@@ -29,26 +79,23 @@ export default function Landing() {
         }
     };
 
-    // --- LOGIC 1: Find and "Pop" the Center Card (Unchanged) ---
+    // --- Carousel Logic (unchanged) ---
     const findAndSetCenterCard = useCallback(() => {
+        // ... (findAndSetCenterCard logic)
         const container = scrollContainerRef.current;
         if (!container) return;
-
         const containerCenter = container.getBoundingClientRect().left + container.offsetWidth / 2;
         let minDiff = Infinity;
         let centerCard = null;
-
         Array.from(container.children).forEach((card) => {
             const cardCenter = card.getBoundingClientRect().left + card.offsetWidth / 2;
             const diff = Math.abs(containerCenter - cardCenter);
-            
             if (diff < minDiff) {
                 minDiff = diff;
                 centerCard = card;
             }
             card.classList.remove(styles.isCenter);
         });
-
         if (centerCard) {
             centerCard.classList.add(styles.isCenter);
         }
@@ -56,57 +103,41 @@ export default function Landing() {
 
     const throttledFindCenter = throttle(findAndSetCenterCard, 100);
 
-    // --- LOGIC 2: NEW Autoplay Function (Simple Rewind) ---
     const startAutoplay = useCallback(() => {
+        // ... (startAutoplay logic)
         if (intervalRef.current) clearInterval(intervalRef.current);
-        
         intervalRef.current = setInterval(() => {
             const container = scrollContainerRef.current;
             if (!container || container.children.length === 0) return;
-            
             const firstCard = container.children[0];
             const gap = parseInt(window.getComputedStyle(container).gap) || 32;
             const scrollAmount = firstCard.offsetWidth + gap;
-
-            // Check if we are at (or very near) the end
             const atEnd = container.scrollLeft + container.offsetWidth >= container.scrollWidth - (scrollAmount / 2);
-
             if (atEnd) {
-                // --- THIS IS THE FIX ---
-                // Instantly jump to the start. No 'smooth' behavior.
-                container.scrollTo({ left: 0, behavior: 'instant' }); 
+                container.scrollTo({ left: 0, behavior: 'instant' });
             } else {
-                // Scroll by one card
                 container.scrollBy({ left: scrollAmount, behavior: 'smooth' });
             }
-
         }, 4000);
     }, []);
 
     const stopAutoplay = () => {
+        // ... (stopAutoplay logic)
         if (intervalRef.current) clearInterval(intervalRef.current);
     };
 
-    // --- LOGIC 3: Manage Listeners (Simplified) ---
     useEffect(() => {
+        // ... (carousel useEffect logic)
         const container = scrollContainerRef.current;
         if (!container) return;
-
-        // --- Event Handlers ---
         const handleMouseEnter = () => setIsAutoplayPaused(true);
         const handleMouseLeave = () => setIsAutoplayPaused(false);
         const handleTouchStart = () => setIsAutoplayPaused(true);
-
-        // --- Add Listeners ---
         container.addEventListener('mouseenter', handleMouseEnter);
         container.addEventListener('mouseleave', handleMouseLeave);
-        container.addEventListener('scroll', throttledFindCenter); // Just for popping
+        container.addEventListener('scroll', throttledFindCenter);
         container.addEventListener('touchstart', handleTouchStart, { passive: true });
-
-        // Set the initial center card on load
         findAndSetCenterCard();
-
-        // --- Cleanup ---
         return () => {
             stopAutoplay();
             container.removeEventListener('mouseenter', handleMouseEnter);
@@ -114,10 +145,10 @@ export default function Landing() {
             container.removeEventListener('scroll', throttledFindCenter);
             container.removeEventListener('touchstart', handleTouchStart);
         };
-    }, [findAndSetCenterCard, throttledFindCenter]); // Removed complex dependencies
+    }, [findAndSetCenterCard, throttledFindCenter]);
 
-    // --- LOGIC 4: Start/Stop Autoplay (Unchanged) ---
     useEffect(() => {
+        // ... (autoplay start/stop useEffect logic)
         if (!isAutoplayPaused) {
             startAutoplay();
         } else {
@@ -128,10 +159,36 @@ export default function Landing() {
 
 
     return (
-        <div className={styles.landingContainer}>
+        <main className={styles.landingContainer}>
+            <Helmet>
+                 {/* ... (Helmet content) ... */}
+                 <title>Serena AI - Mental Health Chatbot with Intelligent Memory | Student Research Project</title>
+                <meta name="description" content="Explore Serena, an AI mental health companion with intelligent memory. A student research project demonstrating advanced conversational AI and secure data handling." />
+                <meta name="keywords" content="AI therapy chatbot, mental health support, intelligent memory assistant, student AI project, conversational AI research" />
+                <meta property="og:title" content="Serena AI - Intelligent Mental Health Companion" />
+                <meta property="og:description" content="Student-built AI mental health chatbot with memory capabilities" />
+                <meta property="og:image" content="/logoS.png" />
+                <meta property="og:type" content="website" />
+                <meta name="twitter:card" content="summary" />
+                <meta name="twitter:title" content="Serena AI Mental Health Chatbot" />
+                <meta name="twitter:description" content="AI-powered mental health support with intelligent memory" />
+                <script type="application/ld+json">
+                {`
+                {
+                    "@context": "https://schema.org",
+                    "@type": "SoftwareApplication",
+                    "name": "Serena AI",
+                    "applicationCategory": "HealthApplication",
+                    "operatingSystem": "Web",
+                    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+                    "description": "AI-powered mental health chatbot with intelligent memory - a student research project demonstrating conversational AI technology"
+                }
+                `}
+                </script>
+            </Helmet>
             
             {/* Navigation */}
-            <nav className={styles.nav}>
+            <header className={styles.nav}>
                 <div className={styles.navContent}>
                     <div className={styles.navBrand}>
                         <img src="/logoS.png" alt="Serena Logo" className={styles.navLogo} />
@@ -146,35 +203,69 @@ export default function Landing() {
                         </button>
                     </div>
                     <div className={styles.navButtons}>
-                        <Link to="/login" className={styles.loginButton}>Login</Link>
-                        <Link to="/login" className={styles.getStartedButton}>Get Started</Link>
+                        {/* --- MODIFIED LOGIN BUTTON --- */}
+                        <button
+                            onClick={handleGoogleLogin}
+                            className={`${styles.loginButton} ${loadingGoogle ? styles.loading : ''}`}
+                            disabled={loadingGoogle || loadingGuest}
+                        >
+                            {loadingGoogle ? (
+                                <PulseLoader size={8} color={"var(--primary-brown-dark)"} />
+                            ) : (
+                                <>
+                                    <img src="/logos/google.svg" alt="Google" className={styles.buttonIcon} />
+                                    Login with Google
+                                </>
+                            )}
+                        </button>
+
+                        {/* --- MODIFIED GUEST/DEMO BUTTON --- */}
+                        <button
+                            onClick={handleGuestLogin}
+                            className={`${styles.getStartedButton} ${loadingGuest ? styles.loading : ''}`}
+                            disabled={loadingGoogle || loadingGuest}
+                        >
+                            {loadingGuest ? (
+                               <PulseLoader size={8} color={"var(--white)"} />
+                            ) : (
+                                "Continue as Guest" // Changed text for clarity
+                            )}
+                        </button>
                     </div>
                 </div>
-            </nav>
+                 {/* --- Error Display --- */}
+                 {error && <div className={styles.navError}>{error}</div>}
+            </header>
 
             {/* Hero Section */}
             <section className={styles.hero}>
-                <div className={styles.heroContent}>
+                <article className={styles.heroContent}>
                     <div className={styles.heroText}>
                         <h1 className={styles.heroTitle}>
-                            Your Mind Deserves a Friend Who Remembers
+                            Your AI Companion That Remembers Your Journey
                         </h1>
                         <p className={styles.heroSubtitle}>
-                            Serena combines advanced AI with intelligent memory to provide mental health support that truly understands your journey. Every conversation builds on the last, creating a personalized experience that grows with you.
+                            Experience a student-built mental health chatbot with intelligent memory. Private, encrypted conversations designed to demonstrate the potential of AI in mental wellness support.
                         </p>
+                        
+                        <div className={styles.credibilitySection}>
+                            <div className={styles.badges}>
+                                <span className={styles.badge}>Student Research Project</span>
+                                <span className={styles.badge}>End-to-End Encryption</span>
+                                <span className={styles.badge}>Built with Google Cloud AI</span>
+                            </div>
+                        </div>
+
                         <div className={styles.heroCtas}>
                             <Link to="/login" className={styles.primaryCta}>
-                                Start Your Journey
+                                Try Serena - Demo Available
                             </Link>
-                            <button onClick={() => scrollToSection('how-it-works')} className={styles.secondaryCta}>
-                                See How It Works
-                            </button>
                         </div>
                     </div>
                     <div className={styles.heroVisual}>
-                        <img src="/logoS.png" alt="Serena Logo" className={styles.heroLogoPulse} />
+                        <img src="/logoS.png" alt="Serena AI Logo" className={styles.heroLogoPulse} />
                     </div>
-                </div>
+                </article>
             </section>
 
             {/* Features Section */}
@@ -185,7 +276,7 @@ export default function Landing() {
                     className={styles.featuresGrid}
                     ref={scrollContainerRef}
                 >
-                    {/* NO CLONES. Just the original 6 cards. */}
+                    {/* Feature Cards */}
                     <div className={styles.featureCard}>
                         <div className={styles.featureIcon}>
                             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -267,6 +358,20 @@ export default function Landing() {
                         <h3 className={styles.featureTitle}>Multiple Access Points</h3>
                         <p className={styles.featureDescription}>
                             Access your support system anytime, anywhere through web, mobile, or desktop applications.
+                        </p>
+                    </div>
+                    <div className={styles.featureCard}>
+                        <div className={styles.featureIcon}>
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <path d="M10 8C10 6.89543 10.8954 6 12 6H36C37.1046 6 38 6.89543 38 8V40C38 41.1046 37.1046 42 36 42H12C10.8954 42 10 41.1046 10 40V8Z" stroke="#8B5A3C" strokeWidth="2.5" strokeLinejoin="round"/>
+                                <path d="M28 6V42" stroke="#8B5A3C" strokeWidth="2.5" strokeLinecap="round"/>
+                                <path d="M16 14H22" stroke="#8B5A3C" strokeWidth="2.5" strokeLinecap="round"/>
+                                <path d="M16 22H22" stroke="#8B5A3C" strokeWidth="2.5" strokeLinecap="round"/>
+                            </svg>
+                        </div>
+                        <h3 className={styles.featureTitle}>Student Research</h3>
+                        <p className={styles.featureDescription}>
+                            Developed to explore the potential and challenges of AI in mental wellness support. Open to feedback.
                         </p>
                     </div>
                 </div>
@@ -392,25 +497,58 @@ export default function Landing() {
             </section>
             
             {/* Technology Section */}
-            <section className={styles.technology}>
+            <section id="technology" className={styles.technology}>
                 <h2 className={styles.sectionTitle}>Powered by Advanced Technology</h2>
-                <div className={styles.techGrid}>
-                    <div className={styles.techBadge}>
-                        <span className={styles.techIcon}>🔐</span>
-                        <span className={styles.techName}>Firebase Authentication</span>
+                <p className={styles.sectionSubtitle}>
+                    Built with a production-grade, scalable, and secure technology stack.
+                </p>
+                <div className={styles.logoGrid}>
+                    <div className={styles.logoCard}>
+                        <img src="/logos/Vertex-AI.svg" alt="Google Cloud Vertex AI Logo" className={styles.logoImage} />
+                        <span className={styles.logoName}>Vertex AI</span>
                     </div>
-                    <div className={styles.techBadge}>
-                        <span className={styles.techIcon}>☁️</span>
-                        <span className={styles.techName}>Google Cloud Vertex AI</span>
+                    <div className={styles.logoCard}>
+                        <img src="/logos/google-gemini.svg" alt="Google Gemini Logo" className={styles.logoImage} />
+                        <span className={styles.logoName}>Gemini 1.5 Flash</span>
                     </div>
-                    <div className={styles.techBadge}>
-                        <span className={styles.techIcon}>✨</span>
-                        <span className={styles.techName}>Gemini 1.5 Flash</span>
+                    <div className={styles.logoCard}>
+                        <img src="/logos/firebase.svg" alt="Firebase Logo" className={styles.logoImage} />
+                        <span className={styles.logoName}>Firebase Auth</span>
                     </div>
-                    <div className={styles.techBadge}>
-                        <span className={styles.techIcon}>🗄️</span>
-                        <span className={styles.techName}>Firestore Vector DB</span>
+                    <div className={styles.logoCard}>
+                        <img src="/logos/Firestore.svg" alt="Google Firestore Logo" className={styles.logoImage} />
+                        <span className={styles.logoName}>Firestore</span>
                     </div>
+                    <div className={styles.logoCard}>
+                        <img src="/logos/reactjs.svg" alt="React Logo" className={styles.logoImage} />
+                        <span className={styles.logoName}>React</span>
+                    </div>
+                    <div className={styles.logoCard}>
+                        <img src="/logos/data-encryption.svg" alt="Data Encryption Icon" className={styles.logoImage} />
+                        <span className={styles.logoName}>KMS Encryption</span>
+                    </div>
+                </div>
+            </section>
+
+            {/* About Section */}
+            <section className={styles.aboutSection} id="about">
+                <h2 className={styles.sectionTitle}>A Student Research Project</h2>
+                <p className={styles.aboutDescription}>
+                    Serena was developed by computer science students to explore how AI can support 
+                    mental wellness through intelligent memory and personalized conversations.
+                </p>
+                <div className={styles.techStack}>
+                    <h3>Technology Stack Showcase</h3>
+                    <p>
+                        This project demonstrates skills in conversational AI design, secure cloud architecture,
+                        and modern web development.
+                    </p>
+                    <ul>
+                        <li>Google Cloud Vertex AI for intelligent responses</li>
+                        <li>Firestore for secure, encrypted storage</li>
+                        <li>End-to-end encryption for privacy</li>
+                        <li>React-based modern interface</li>
+                    </ul>
                 </div>
             </section>
 
@@ -420,28 +558,40 @@ export default function Landing() {
                     Ready to experience mental health support that remembers?
                 </h2>
                 <Link to="/login" className={styles.finalCtaButton}>
-                    Get Started
+                    Try the Demo
                 </Link>
+            </section>
+
+            {/* Disclaimer Section */}
+            <section className={styles.disclaimer}>
+                <p>
+                    <strong>Note:</strong> Serena is a research project and demonstration of AI technology. 
+                    It is <strong>not a substitute for professional mental health care</strong>. If you're experiencing a 
+                    mental health crisis, please contact a licensed professional or emergency services.
+                </p>
             </section>
 
             {/* Footer */}
             <footer className={styles.footer}>
                 <div className={styles.footerContent}>
                     <div className={styles.footerBrand}>
-                        <img src="/logoS.png" alt="Serena Logo" className={styles.footerLogo} />
+                        <img src="/logoS.png" alt="Serena Logo" className={styles.footerLogo} loading="lazy" />
                         <span className={styles.brandName}>Serena</span>
                         <p className={styles.footerTagline}>Mental health support that remembers</p>
                     </div>
+                    <div className={styles.footerContent}>
+                    {/* ... footerBrand div ... */}
                     <div className={styles.footerLinks}>
-                        <a href="#" className={styles.footerLink}>Privacy Policy</a>
-                        <a href="#" className={styles.footerLink}>Terms of Service</a>
+                        
                         <a href="#" className={styles.footerLink}>Contact Us</a>
                     </div>
                 </div>
+                </div>
                 <div className={styles.footerBottom}>
+                    <p>A Student Research Project</p>
                     <p>&copy; 2025 Serena. All rights reserved.</p>
                 </div>
             </footer>
-        </div>
+        </main>
     );
 }
