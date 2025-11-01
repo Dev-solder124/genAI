@@ -34,17 +34,19 @@ export default function Onboarding() {
 
     // The return is no longer conditional. This page's only job is to ask for consent.
     return (
-        <div className={styles.consentContainer}>
-            <h2>Privacy & Memory Settings</h2>
-            <p>Serena can remember important parts of our conversations to provide better, more personalized support over time.</p>
-            <p>Your privacy matters. You can delete your data anytime from the settings page.</p>
-            
-            {error && <p className={styles.errorMessage}>{error}</p>}
-            
-            <div className={styles.consentButtons}>
-                <button onClick={() => handleConsent(true)}>Remember Conversations</button>
-                <button onClick={() => handleConsent(false)}>Forget Conversations</button>
-            </div>
-        </div>
-    );
+  <div className={styles.container}>
+    <div className={styles.card}>   {/* <-- card wrapper */}
+      <h2>Privacy & Memory Settings</h2>
+      <p>Serena can remember important parts of our conversations to provide better, more personalized support over time.</p>
+      <p>Your privacy matters. You can delete your data anytime from the settings page.</p>
+
+      {error && <p className={styles.errorMessage}>{error}</p>}
+
+      <div className={styles.consentButtons}>
+        <button onClick={() => handleConsent(true)}>Remember Conversations</button>
+        <button onClick={() => handleConsent(false)}>Forget Conversations</button>
+      </div>
+    </div>
+  </div>
+);
 }

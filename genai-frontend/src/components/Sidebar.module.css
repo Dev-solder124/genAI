@@ -114,14 +114,15 @@
 }
 
 .deleteButton {
-    background-color: rgba(220, 53, 69, 0.1);
-    color: #dc3545;
+    background-color: rgba(150, 105, 65, 0.10); /* soft brown background */
+    color: #6F4E37; /* rich coffee brown */
 }
 
 .deleteButton:hover:not(:disabled) {
-    background-color: #dc3545;
+    background-color: #6F4E37; /* solid coffee brown on hover */
     color: white;
 }
+
 
 .error {
     color: #dc3545;

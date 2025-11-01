@@ -140,6 +140,7 @@ export default function Sidebar({ isOpen, onClose }) {
               onClick={handleResetInstructions}
               disabled={resetting}
               className={styles.navButton}
+              title="Restore default settings. This action cannot be undone!"
             >
               {resetting ? 'Resetting...' : 'Reset'}
             </button>
@@ -151,6 +152,7 @@ export default function Sidebar({ isOpen, onClose }) {
               onClick={handleDeleteMemories}
               disabled={deleting}
               className={`${styles.navButton} ${styles.deleteButton}`}
+              title="Delete all your saved memories permanently. This action cannot be undone!"
             >
               {deleting ? 'Deleting...' : 'Delete'}
             </button>
