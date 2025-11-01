@@ -273,3 +273,34 @@
   flex-direction: column;
   align-items: center;
 }
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;   /* fills the whole screen vertically */
+  width: 100vw;        /* fills the screen horizontally */
+  background: var(--bg, #F4F1E8);
+  padding: 40px;       /* extra space so the card never touches the edge */
+  box-sizing: border-box; /* prevents overflow issues */
+}
+
+
+/*remove .container from Chat.module.css if it conflicts*/
+
+@media (max-width: 600px) {
+  .container {
+    padding: 12px;           /* Reduce padding on small screens */
+    min-height: 100vh;       /* Keep full vertical coverage */
+    width: 100vw;            /* Full width, no overflow */
+    box-sizing: border-box;
+  }
+
+  .card {
+    max-width: 100vw;        /* Card stretches to device width */
+    width: 100%;
+    padding: 22px 12px;      /* Less padding = easier to tap */
+    border-radius: 10px;     /* Softer rounding for smaller screens */
+    margin: 12px 0;
+  }
+}
