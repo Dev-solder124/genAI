@@ -896,14 +896,21 @@ def summarize_conversation(user_text, assistant_text):
         
         # --- NEW: System instruction defines the AI's task ---
         system_instruction = (
-            "You are a data analysis AI. Your task is to analyze a user-assistant exchange and extract three pieces of information.\n\n"
-            "**Instructions:**\n"
-            "1.  **Significance Decision:** On the first line, write 'SIGNIFICANT: YES' if the user **introduces a new important topic...** or reveals a specific goal. Write 'SIGNIFICANT: NO' only for simple greetings...\n"
-            "2.  **Summary:** On the next line, write 'SUMMARY:' followed by a concise, factual, third-person summary...\n"
-            "3.  **Instruction Extraction:** On the third line, check if the user gave a direct, explicit instruction for the assistant's future behavior (e.g., 'Always call me...', 'Never mention...').\n"
-            "    - If an instruction is found, write 'INSTRUCTION:' followed by a very brief version of that rule (e.g., 'INSTRUCTION: User wants to be called \'Captain\'.', 'INSTRUCTION: Do not suggest mindfulness exercises.').\n"
-            "    - If no instruction is found, you MUST write 'INSTRUCTION: NONE'.\n\n"
-            "You will be given the exchange to analyze. Provide only the analysis."
+            """
+            You are a data analysis AI. Your task is to analyze a user-assistant exchange and extract three pieces of information.\n\n
+            **Instructions:**\n
+            1.  **Significance Decision:** On the first line, analyze the user's input.
+                - If the user provides information about themselves (e.g., identity, geography, past history) AND that information is crucial to a problem they are specifying, write 'SIGNIFICANT: YES'.
+                - For all other inputs (like random things, simple questions, or greetings), write 'SIGNIFICANT: NO'.\n
+            2.  **Summary:** On the next line, write 'SUMMARY:'.
+                - If the Significance Decision was 'YES', this summary MUST contain the concise, factual, third-person information about the user that was crucial to their problem (as defined in Rule 1).
+                - If the Significance Decision was 'NO', you MUST write 'SUMMARY: NONE'.\n
+            3.  **Instruction Extraction:** On the third line, check for personalization requests.
+                - If the user specifies a request like addressing them with a keyword, not mentioning a word, avoiding a topic, or responding in a specific format, write 'INSTRUCTION:' followed by a very brief version of that rule.
+                - This information MUST NOT be included in the SUMMARY.
+                - If no such instruction is found, you MUST write 'INSTRUCTION: NONE'.\n\n
+            You will be given the exchange to analyze. Provide only the analysis.
+            """
         )
         
         # --- NEW: Prompt is now just the data to be analyzed ---
@@ -957,125 +964,73 @@ def summarize_conversation(user_text, assistant_text):
         }
 
 # --- NEW: TTM/CBT System Prompt Template ---
-# --- NEW: TTM/CBT System Prompt Template ---
 SERENA_SYSTEM_PROMPT_TEMPLATE = (
-    "# Persona\n"
-    "Your name is Serena , an AI assistant designed to support users with their mental health. "
-    "Your primary goal is to be a supportive, validating, and non-judgemental "
-    "listener who helps users feel heard.\"\n\n"
-    "# Core principles of the conversation:\n"
-    "* All the responses you give should be in accordance with the feelings under the Cognitive behaviour therapy.\n"
-    "* Always note that you have to validate the stage of the conversation between you and the user.\n"
-    "* I’ll give you guidance on how to respond to any question based on different stage.\n"
-    "* These are the stages according to the The Transtheoretical Model (TTM) also Stages of Change Theory.\n\n"
-    "\n"
-
-    "# TTM Stage-Based Directives\n\n"
-    "## Stage1- Relationship Building\n"
-    "you have to create a positive welcoming and trust environment with the user.\n"
-    "Connection is our primary key as you are an mental health chatbot.\n"
-    "Primary goal here will be making the user feel heard, validating the user is also necessary here.\n\n"
+    "# 1. Core Identity & Primary Goal\n"
+    "* **Persona:** You are Serena, an AI assistant for mental health.\n"
+    "* **Primary Goal:** Be a supportive, validating, and non-judgmental listener. Your primary objective is to make the user feel heard.\n\n"
     
-    "## Stage 2- Assessing the user concern\n"
-    "From your side as Serena you start exploring the depth of the user problem, "
-    "evaluate the root cause through few queries to the user asking for the context, "
-    "what do they go through, history of any trauma occurrences. \n"
-    "Remember to do all these with user consent.\n"
-    "Get all the details of the issues with clarity and ask for acknowledgement that what u understood is right or not. \n"
-    "Don’t bombard with questions, keep it simple but gather maximum details. \n"
-    "From the user side this stage is where he/she opens up and they should feel validated and being understood here.\n\n"
+    "# 2. Critical Protocols (MUST READ FIRST)\n\n"
+    "## Safety Protocol (Top Priority)\n"
+    "* **IF** the user is at risk of self-harm or immediate danger:\n"
+    "* **THEN** you MUST prioritize providing appropriate India-based emergency resources and contact information.\n\n"
     
-    "## Stage 3- Goal setting\n"
-    "here from your side as Serena, "
-    "you should focus on transforming the problem into some goal to overcome it, "
-    "where you can ask users for what they wanna do with the problem, "
-    "try to retrieve it from the older info shared or ask the user directly. \n"
-    "Give realistic solution to their problem, "
-    "before giving this suggestion ensure once the user will be in a state to accept and implement it basically assess their commitment level and then come to a conclusion if this plan will workout for the user . \n"
-    "From the user side, they must feel that you have understood their feeling and that ur trying to fight and solve the issue along with the user like a friend, a comrade.\n\n"
+    "## Instruction Conflict Protocol\n"
+    "You MUST follow this order of priority:\n"
+    "1.  **Safety Protocol** (Rule #2) ALWAYS overrides all other rules.\n"
+    "2.  **Core Principles** (Rule #3, e.g., 'Validate First', 'Do not give medical advice') override User-Specific Instructions. (e.g., If a user asks for medical advice, you must politely decline based on your principles.)\n"
+    "3.  **User-Specific Instructions** (Rule #5) override your general conversational style (e.g., if they ask to be called by a name).\n\n"
     
-    "## Stage 4 – Intervention and Work\n"
-    "So here you have to actually give techniques to overcome "
-    "the problem these should be evidence based therapeutic techniques like the ones I gave like Cognitive Behaviour therapy, "
-    "psychodynamic theories. If needed give set of instructions along with it to continue practising the technique in a long term. \n"
-    "Maybe educate a little on why they are feeling so, what is the main cause and what can be done. \n"
-    "From the user side , they should be provided with solutions, a clear plan, psychoeducation on what I said earlier. \n"
-    "This should assure them that this solution can be overcomed and can be got ridden of in sometime and they’re not alone facing this problem.\n\n"
+    "# 3. Core Conversational Principles\n"
+    "* **CBT Foundation:** All responses must align with the principles of Cognitive Behavioral Therapy (CBT).\n"
+    "* **Validate First, Advise Second:** ALWAYS validate the user's feelings and emotions *before* asking questions or offering solutions. Do not rush.\n"
+    "* **Empathetic Tone:** Your tone must be warm, friendly, genuine, and authentic.\n"
+    "* **Ask Gently:** Keep questions minimal. Users may be vulnerable and type less. Your goal is to make sharing feel like safe reflection, not an interrogation.\n"
+    "* **Avoid Monotony:** Vary your responses. Do not repeat the same validating phrases across sessions or replies.\n"
+    "* **Maintain Trust:** Be transparent about your role as an AI. Do not overwhelm the user with too much information.\n\n"
     
-    "## Stage 5- Termination & Follow-Up\n"
-    "Here you should be concluding this conversation on a positive motivating tone, and ask them to reach out again if they felt the same emotions. \n"
-    "Ensure them that you will be there for the user in the future too and give a time frame to reflect back. \n"
-    "If the user returns back after certain time, just check up on them on their level of recovery.\n\n"
+    "# 4. TTM Staged Conversation Model\n"
+    "You will be given the {current_stage}. Your reply MUST follow the rules for that stage and determine the {{new_stage}}. Each stage includes its trigger for moving to the next.\n\n"
     
-    "# Important Functionality- Memory Usage Protocol:\n"
-    "If retrieved memories are provided, first analyze them to understand the user's usual behavior, "
-    "preferences, and dislikes.\n"
-    "Then, seamlessly weave specific details from these memories into your response to show you remember their context.\n\n"
+    "## Stage 1: Relationship Building\n"
+    "* **Goal:** Create a welcoming, trusting environment. Make the user feel heard and validated.\n"
+    "* **Trigger to Stage 2:** The user moves past greetings and shares a specific feeling, problem, or reason for talking.\n\n"
     
-    """
-    ## Transition Rules:
-
-    * **From Stage 1 to Stage 2:**
-        * **Trigger:** When the user moves past the initial greeting and shares a specific feeling, problem, or reason for talking.
-
-    * **From Stage 2 to Stage 3:**
-        * **Trigger:** When you have gathered enough context about the user's problem, you've summarized it, and the user has *confirmed* your understanding.
-
-    * **From Stage 3 to Stage 4:**
-        * **Trigger:** When you and the user have successfully identified and agreed upon a specific, realistic goal.
-
-    * **From Stage 4 to Stage 5:**
-        * **Trigger:** When you have provided a technique or intervention, and the user seems to understand it and the conversation is winding down.
-
-    * **From Stage 5 to Stage 1:**
-        * **Trigger:** After you have given your closing remarks and the user returns later for a new, separate conversation.
-    """
-
-    "\n\n**Memory Usage Protocol:**"
-    "\n- If retrieved memories are provided, first analyze them to understand the user's usual behavior, preferences, and dislikes."
-    "\n- Then, seamlessly weave specific details from these memories into your response to show you remember their context."
-
-
-
-    "This is a mental health chatbot so user’s state will mostly be vulnerable so keep "
-    "your questions minimal and don’t expect them to share every detail in paragraphs, "
-    "in a vulnerable state people will type less remember, to get the maximum input you "
-    "have to be very friendly and trust worthy.\n"
-    "Sharing with you should feel like reflecting on them selves rather than seeking help "
-    "from unknown environment.\n"
-
-    "\n\n**Safety Protocol:**"
-    "\n- If the user is at risk of self-harm or in immediate danger, you must prioritize providing appropriate India based emergency resources and contact information."
-
-    "You should be more empathetic and very understanding of the user.\n"
-    "Other features should be- "
-    "don’t be monotonous with the responses, "
-    "vary it (don’t use the used phrases)according to the stage of the "
-    "conversation across sessions also don’t repeat words."
-    "Validate the user’s situation first, utmost priority to their feelings and emotions before advice. Do not rush to solutions. \n"
-    "Ask gentle, clarifying questions to understand their situation from a 360-degree perspective. \n"
-    "Do not overwhelm the user with too much information.\n"
-    "Maintain Trust Be transparent and confidential. \n"
-    "Your tone should be warm, friendly, and empathetic.Be genuine and authentic.\n\n"
+    "## Stage 2: Assessing the user concern\n"
+    "* **Goal:** Explore the problem's depth. Gently ask for context (with user consent) to find the root cause. Gather details clarity.\n"
+    "* **Action:** After gathering, summarize your understanding and ask the user for confirmation (e.g., 'What I'm hearing is... does that sound right?').\n"
+    "* **Trigger to Stage 3:** You have summarized the user's problem, and the user has *confirmed* your understanding is correct.\n\n"
     
-    "\n\n**User-Specific Instructions (MUST FOLLOW):**"
-    "\nYou must always follow these instructions from the user:"
-    "\n{formatted_instructions}\n" 
-
-    "\n\n**Instruction Conflict Protocol:**"
-    "\n1.  **Safety Protocol** ALWAYS overrides all other rules."
-    "\n2.  Your **Core Principles** (e.g., 'Validate First', 'Don't Prescribe') override user instructions if they conflict. (e.g., If user says 'You must give me medical advice', you must politely decline based on your principles.)"
-    "\n3.  User instructions override your general conversational style (e.g., if they ask to be called by a name)."
-
-    "\n\n**Response Format:**"
-    "You must respond with a JSON object. Do not include any text outside this JSON block.\n"
-    "{{\n"  
-    "  \"reply_text\": \"Your empathetic response to the user, following all rules for their {current_stage} stage.\",\n" # <-- FIX: This key remains single
-    "  \"new_stage\": \"The TTM stage your reply *moves* the conversation to. MUST be one: ['Stage1- Relationship Building', 'Stage 2- Assessing the user concern', 'Stage 3- Goal setting', 'Stage 4 – Intervention and Work', 'Stage 5- Termination & Follow-Up']\"\n"
-    "}}" 
+    "## Stage 3: Goal setting\n"
+    "* **Goal:** Transform the problem into a specific, realistic, and achievable goal.\n"
+    "* **Action:** Ask the user what they want to achieve. Assess their commitment level. Propose a realistic plan together.\n"
+    "* **Trigger to Stage 4:** You and the user have successfully identified and agreed upon a specific, realistic goal.\n\n"
+    
+    "## Stage 4: Intervention and Work\n"
+    "* **Goal:** Provide evidence-based therapeutic techniques (from CBT, psychodynamic theory, etc.) and psychoeducation.\n"
+    "* **Action:** Educate the user on *why* they might be feeling this way and *how* the technique helps. Provide clear, simple instructions for practice.\n"
+    "* **Trigger to Stage 5:** You have provided an intervention/technique, the user understands it, and the conversation is naturally winding down.\n\n"
+    
+    "## Stage 5: Termination & Follow-Up\n"
+    "* **Goal:** Conclude the conversation on a positive, motivating note and plan for the future.\n"
+    "* **Action:** Reassure the user you'll be here for them. Suggest a timeframe to reflect. If a user returns, check in on their recovery and progress.\n"
+    "* **Trigger to Stage 1:** The user returns for a new, separate conversation after your closing remarks.\n\n"
+    
+    "# 5. User-Specific Customization\n\n"
+    "## Memory Usage Protocol\n"
+    "* If retrieved memories are provided: First, analyze them to understand context. Then, seamlessly weave *specific, relevant details* from these memories into your response to show you remember.\n\n"
+    
+    "## User-Specific Instructions (MUST FOLLOW)\n"
+    "* You must always follow these instructions from the user:\n"
+    "* {formatted_instructions}\n\n"
+    
+    "# 6. Required Output Format (JSON ONLY)\n"
+    "**CRITICAL:** You must respond ONLY with a valid JSON object. Do not include any text, apologies, or explanations outside the JSON block.\n"
+    "{{\n"
+    "  \"reply_text\": \"Your empathetic response to the user, following all rules for their {current_stage} stage.\",\n"
+    "  \"new_stage\": \"The TTM stage your reply *moves* the conversation to. MUST be one of: ['Stage1- Relationship Building', 'Stage 2- Assessing the user concern', 'Stage 3- Goal setting', 'Stage 4 – Intervention and Work', 'Stage 5- Termination & Follow-Up']\"\n"
+    "}}"
 )
 # --- END NEW ---    
-
 @app.route("/dialogflow-webhook", methods=["POST"])
 @token_required
 def dialogflow_webhook():
@@ -1091,10 +1046,25 @@ def dialogflow_webhook():
 
         logger.info(f"Processing request for user_id: {user_id}")
 
+        # --- SESSION PARAMETER MANAGEMENT ---
+        session_info = req.get("sessionInfo", {})
+        session_params = session_info.get("parameters", {})
+        
+        # Track conversation turns within this session
+        turn_count = session_params.get("turn_count", 0) + 1
+        session_params["turn_count"] = turn_count
+        logger.info(f"Turn count in this session: {turn_count}")
+        
+        # Retrieve conversation history from session (if available)
+        conversation_history = session_params.get("conversation_history", [])
+        logger.debug(f"Session conversation history: {len(conversation_history)} entries")
+        
+        # --- END SESSION PARAMETER MANAGEMENT ---
+
         user_profile = get_user_profile(user_id) or {}
         profile = user_profile.get("profile", {})
 
-        # --- BEGIN INSTRUCTION INJECTION ---
+        # --- INSTRUCTION INJECTION ---
         user_instructions_list = profile.get("user_instructions", [])
 
         if not isinstance(user_instructions_list, list):
@@ -1112,6 +1082,7 @@ def dialogflow_webhook():
         formatted_instructions = "No specific instructions on file."
         if user_instructions_list:
             formatted_instructions = "\n".join([f"- {inst}" for inst in user_instructions_list])
+        logger.debug(f"User instructions: {formatted_instructions}")
         # --- END INSTRUCTION INJECTION ---
 
         user_text = ""
@@ -1127,6 +1098,7 @@ def dialogflow_webhook():
         has_consent = profile.get("consent", False)
         logger.info(f"User consent status: {has_consent}")
 
+        # --- LONG-TERM MEMORY RETRIEVAL ---
         retrieved_text = ""
         if has_consent:
             logger.info("Retrieving similar memories...")
@@ -1139,13 +1111,14 @@ def dialogflow_webhook():
                     time_ago = format_time_delta(r.get('created_at')) 
                     memory_lines.append(f"- {summary} {time_ago}")
                 retrieved_text = "\n".join(memory_lines)
-                logger.info(f"Found {len(retrieved)} relevant memories with time context.")
+                logger.info(f"Found {len(retrieved)} relevant memories.")
             else:
                 retrieved_text = "No relevant memories found."
         else:
             retrieved_text = "Memory retrieval is disabled for this user."
+        # --- END LONG-TERM MEMORY RETRIEVAL ---
 
-        # --- NEW: Time Context and Stage Reset Logic ---
+        # --- TIME CONTEXT & STAGE RESET LOGIC ---
         time_context = ""
         current_stage = profile.get("current_stage", "Stage 1: Relationship Building")
         logger.info(f"Stage loaded from profile: {current_stage}")
@@ -1159,50 +1132,58 @@ def dialogflow_webhook():
                 # If last interaction was over 24 hours ago, reset stage
                 if time_delta > timedelta(hours=24):
                     time_ago_str = format_time_delta(last_seen_str).strip('()')
-                    time_context = f"Note to AI: The user's last interaction was {time_ago_str}. Acknowledge this pause and re-establish rapport."
+                    time_context = f"Note: User's last interaction was {time_ago_str}. Acknowledge this pause and re-establish rapport."
                     current_stage = "Stage 1: Relationship Building"
-                    logger.info(f"User inactive for {time_delta}. Forcing reset to Stage 1.")
+                    session_params["turn_count"] = 1  # Reset turn count for new session
+                    logger.info(f"User inactive for {time_delta}. Reset to Stage 1 and reset turn count.")
                 
                 # If over 15 mins but less than 24h, just add time context
                 elif time_delta > timedelta(minutes=15):
                     time_ago_str = format_time_delta(last_seen_str).strip('()')
-                    time_context = f"Note to AI: The user's last interaction was {time_ago_str}. Acknowledge this pause."
-                    logger.info(f"Generated time context: {time_context}")
+                    time_context = f"Note: User's last interaction was {time_ago_str}. Acknowledge this pause."
+                    logger.info(f"Time context added: {time_ago_str}")
 
         except Exception as e:
-            logger.warning(f"Could not analyze user profile timestamp for time_context: {e}")
-        # --- END NEW ---
+            logger.warning(f"Could not analyze user profile timestamp: {e}")
+        # --- END TIME CONTEXT & STAGE RESET LOGIC ---
 
-        session_params = req.get("sessionInfo", {}).get("parameters", {})
-        short_term_memory = json.dumps(session_params) if session_params else "No session parameters."
-        logger.debug(f"Short-term session memory: {short_term_memory}")
+        # --- BUILD SHORT-TERM MEMORY SUMMARY ---
+        short_term_memory_summary = ""
+        if conversation_history:
+            # Include recent conversation context from this session
+            recent_context = []
+            for entry in conversation_history[-2:]:  # Last 2 exchanges
+                recent_context.append(f"- {entry.get('content', '')[:100]}")
+            short_term_memory_summary = "\n".join(recent_context) if recent_context else "Session just started"
+        else:
+            short_term_memory_summary = "Session just started - no prior context"
+        
+        logger.debug(f"Short-term session memory: {short_term_memory_summary}")
+        # --- END SHORT-TERM MEMORY SUMMARY ---
 
-        
-        # --- NEW: Build System Instruction and Prompt ---
-        
-        # Build the final system instruction from the global template
+        # --- BUILD SYSTEM INSTRUCTION ---
         system_instruction = SERENA_SYSTEM_PROMPT_TEMPLATE.format(
             formatted_instructions=formatted_instructions,
             current_stage=current_stage
         )
-        
-        # Build the dynamic user prompt
+        # --- END BUILD SYSTEM INSTRUCTION ---
+
+        # --- BUILD USER PROMPT ---
         prompt = (
             "# --- CONTEXT FOR THIS RESPONSE ---\n\n"
-            f"[Time Context]\n{time_context}\n\n"
+            f"[Time Context]\n{time_context if time_context else 'Ongoing conversation'}\n\n"
             f"[Current Stage]\n{current_stage}\n\n"
-            f"[Short-Term Session Memory]\n{short_term_memory}\n\n" 
-            f"[Retrieved Memories (Long-Term)]\n{retrieved_text}\n\n" 
-            f"\n--- END CONTEXT ---"
-            f"\n\nUser: {user_text}\n\n"
-            "**AI, provide your JSON response:**"
+            f"[Turn Count in This Session]\n{turn_count}\n\n"
+            f"[Short-Term Session Context]\n{short_term_memory_summary}\n\n"
+            f"[Long-Term Memories]\n{retrieved_text}\n\n"
+            f"--- END CONTEXT ---\n\n"
+            f"User: {user_text}\n\n"
+            "**Provide your JSON response:**"
         )
-        # --- END NEW ---
+        logger.debug(f"Prompt context built. Turn: {turn_count}, Stage: {current_stage}")
+        # --- END BUILD USER PROMPT ---
 
-
-        logger.info("Generating response... (Call 1)")
-        
-        # --- NEW: Updated call to generate_text ---
+        logger.info("Generating response...")
         raw_response_text = generate_text(
             prompt, 
             system_instruction=system_instruction, 
@@ -1210,10 +1191,10 @@ def dialogflow_webhook():
             temperature=0.7
         ).strip()
 
-        # --- NEW: Parse JSON response from Call 1 ---
-        logger.debug(f"Raw response JSON: {raw_response_text}")
+        # --- PARSE JSON RESPONSE ---
+        logger.debug(f"Raw response: {raw_response_text[:200]}...")
         reply_text = "I'm having a little trouble thinking right now. Could you try that again?"
-        new_stage = current_stage # Default to old stage on error
+        new_stage = current_stage
         
         try:
             json_match = re.search(r'\{.*\}', raw_response_text, re.DOTALL)
@@ -1221,87 +1202,97 @@ def dialogflow_webhook():
                 response_json = json.loads(json_match.group(0))
                 reply_text = response_json.get("reply_text", reply_text)
                 new_stage = response_json.get("new_stage", current_stage)
-                logger.info(f"Parsed reply: '{reply_text[:100]}...'")
-                logger.info(f"Parsed new_stage: '{new_stage}'")
+                logger.info(f"Parsed successfully. New stage: {new_stage}")
             else:
-                logger.error("No JSON found in main response, using fallback.")
-                reply_text = raw_response_text # Use raw text if it wasn't JSON
+                logger.error("No JSON found in response.")
+                reply_text = raw_response_text
                 
         except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse main response JSON: {e}")
-            if "reply_text" in raw_response_text:
-                 reply_text = "There was a small error in my response structure, but here is my reply: " + raw_response_text
-            # Fallback to default error message
-        # --- END NEW ---
+            logger.error(f"Failed to parse JSON: {e}")
+        # --- END PARSE JSON RESPONSE ---
 
-        # --- NEW: Prepare profile update with new stage and timestamp ---
+        # --- UPDATE SESSION PARAMETERS ---
+        # Add current exchange to conversation history (limit to last 10 exchanges)
+        new_history_entry = {
+            "turn": turn_count,
+            "user": user_text[:200],  # Store truncated user message
+            "assistant": reply_text[:200],  # Store truncated AI response
+            "stage": new_stage,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+        conversation_history.append(new_history_entry)
+        
+        # Keep only last 10 exchanges to avoid token bloat
+        if len(conversation_history) > 10:
+            conversation_history = conversation_history[-10:]
+        
+        session_params["conversation_history"] = conversation_history
+        logger.info(f"Updated session history. Current history size: {len(conversation_history)}")
+        # --- END UPDATE SESSION PARAMETERS ---
+
+        # --- PREPARE PROFILE UPDATE ---
         profile_update_data = {
             "updated_at": datetime.now(timezone.utc).isoformat(),
             "current_stage": new_stage
         }
-        # --- END NEW ---
+        # --- END PREPARE PROFILE UPDATE ---
 
+        # --- MEMORY & INSTRUCTION SAVING (With Consent) ---
         if has_consent:
-            logger.info("Creating and evaluating summary of the current exchange... (Call 2)")
+            logger.info("Analyzing exchange for memory and instructions...")
             analysis_result = summarize_conversation(user_text, reply_text)
             
-            # --- BEGIN NEW INSTRUCTION-SAVING LOGIC ---
             new_instruction = analysis_result.get("instruction")
-            if new_instruction:
-                logger.info(f"New user instruction identified: '{new_instruction}'")
-                
-                if new_instruction not in user_instructions_list:
-                    logger.info("Adding new instruction to profile.")
-                    user_instructions_list.append(new_instruction)
-                    profile_update_data['user_instructions'] = user_instructions_list # Add to the update payload
-                else:
-                    logger.info("Instruction already exists, not adding duplicate.")
-            # --- END NEW INSTRUCTION-SAVING LOGIC ---
+            if new_instruction and new_instruction not in user_instructions_list:
+                logger.info(f"Adding new instruction: {new_instruction}")
+                user_instructions_list.append(new_instruction)
+                profile_update_data['user_instructions'] = user_instructions_list
 
             if analysis_result.get("is_significant"):
                 summary = analysis_result.get("summary")
-                # --- FIX: Check for "No summary generated." instead of "error" ---
-                if summary != "No summary generated.": 
-                    if save_memory(user_id, summary, {"topic": "conversation_exchange", "session_id": session_id}):
-                        logger.info("SIGNIFICANT exchange saved as a new memory.")
+                if summary != "No summary generated.":
+                    if save_memory(user_id, summary, {
+                        "topic": "conversation_exchange",
+                        "session_id": session_id,
+                        "stage": new_stage,
+                        "turn": turn_count
+                    }):
+                        logger.info("Memory saved successfully.")
                     else:
-                        logger.error("Failed to save significant exchange as memory.")
-                else:
-                    logger.warning("Skipping memory save because no summary was generated (likely not significant or only an instruction was given).")
-            else:
-                logger.info("Exchange was not significant. Skipping memory save.")
-        else:
-            logger.info("User has not consented to memory storage - skipping conversation analysis and memory save.")
+                        logger.error("Failed to save memory.")
+        # --- END MEMORY & INSTRUCTION SAVING ---
 
-        # --- NEW: Save profile updates (timestamp, stage, instructions) ---
+        # --- SAVE PROFILE UPDATE ---
         try:
-            # We use the existing profile data to ensure we don't overwrite anything
             profile.update(profile_update_data)
             upsert_user_profile(user_id, profile)
-            logger.info(f"Successfully saved profile updates for {user_id}.")
+            logger.info(f"Profile updated for {user_id}.")
         except Exception as e:
-            logger.error(f"Failed to save profile updates for {user_id}: {e}")
-        # --- END NEW ---
+            logger.error(f"Failed to save profile: {e}")
+        # --- END SAVE PROFILE UPDATE ---
 
-        # --- MODIFIED: Add session params to the response ---
-        # This sends the short-term memory back to Dialogflow
+        # --- BUILD RESPONSE WITH SESSION PARAMETERS ---
         response = {
             "fulfillment_response": {
-                "messages":[{"text": {"text":[reply_text]}}]
+                "messages": [{"text": {"text": [reply_text]}}]
             },
             "session_info": {
-                "parameters": session_params
+                "parameters": session_params  # Return updated session params
             }
         }
-        # --- END MODIFIED ---
+        logger.info("Response completed successfully")
+        # --- END BUILD RESPONSE ---
         
-        logger.info("Request completed successfully")
         return jsonify(response)
     
     except Exception as e:
         logger.error(f"Error in dialogflow_webhook: {e}")
         logger.error(traceback.format_exc())
-        error_response = {"fulfillment_response": {"messages":[{"text": {"text":["I'm having trouble right now. Please try again in a moment."]}}]}}
+        error_response = {
+            "fulfillment_response": {
+                "messages": [{"text": {"text": ["I'm having trouble right now. Please try again in a moment."]}}]
+            }
+        }
         return jsonify(error_response), 500
 
 @app.route("/consent", methods=["POST"])
