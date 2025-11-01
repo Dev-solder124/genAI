@@ -11,6 +11,7 @@ from flask_limiter.util import get_remote_address
 from marshmallow import Schema, fields, ValidationError
 from google.cloud import firestore
 from google.cloud import aiplatform
+from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime, timezone, timedelta
 import vertexai
 import functools
@@ -115,7 +116,7 @@ else:
     logger.warning("VECTOR_SEARCH_INDEX_ID not set - Vector Search upserts disabled")
     
 app = Flask(__name__)
-
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1)
 CORS(app, resources={r"/*": {
     "origins": "*",
     "methods": ["GET", "POST", "OPTIONS"],
@@ -128,12 +129,19 @@ def get_user_key():
     Uses the user_id if the endpoint is protected by @token_required,
     otherwise falls back to the remote IP address for public endpoints.
     """
+    # --- NEW: Bypass rate limiting for all OPTIONS pre-flight requests ---
+    if request.method == 'OPTIONS':
+        return None
+
     # Check if the @token_required decorator has run and set the user_id
     if hasattr(request, 'user_id') and request.user_id:
+        logger.debug(f"Rate limiting by user_id: {request.user_id}")
         return request.user_id
     
     # Fallback for unprotected routes
-    return get_remote_address()
+    ip = get_remote_address()
+    logger.debug(f"Rate limiting by remote address: {ip}")
+    return ip
 
 limiter = Limiter(
     app=app,
@@ -295,7 +303,8 @@ def login():
                     "created_at": datetime.now(timezone.utc).isoformat(),
                     "consent": None,
                     "is_anonymous": True,
-                    "current_stage": "Stage 1: Relationship Building" # <-- NEW
+                    "current_stage": "Stage 1: Getting to Know Each Other" ,
+                    "context": ""
                 }
             else:
                 new_profile = {
@@ -304,7 +313,8 @@ def login():
                     "created_at": datetime.now(timezone.utc).isoformat(),
                     "consent": None,
                     "is_anonymous": False,
-                    "current_stage": "Stage 1: Relationship Building" # <-- NEW
+                    "current_stage": "Stage 1: Getting to Know Each Other" ,
+                    "context": ""
                 }
             
         except auth.UserNotFoundError:
@@ -315,7 +325,8 @@ def login():
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "consent": None,
                 "is_anonymous": True,
-                "current_stage": "Stage 1: Relationship Building" # <-- NEW
+                "current_stage": "Stage 1: Getting to Know Each Other",
+                "context": ""
             }
         except Exception as auth_error:
             logger.error(f"Error getting Firebase user info for {user_id}: {auth_error}")
@@ -326,7 +337,8 @@ def login():
                 "created_at": datetime.now(timezone.utc).isoformat(),
                 "consent": None,
                 "is_anonymous": True,
-                "current_stage": "Stage 1: Relationship Building" # <-- NEW
+                "current_stage": "Stage 1: Getting to Know Each Other", # <-- NEW
+                "context": ""
             }
         
         logger.info(f"Creating profile for {user_id}: {new_profile}")
@@ -607,8 +619,11 @@ def get_user_profile(user_id):
             
             # --- NEW: Set default stage if missing ---
             if 'current_stage' not in doc_data.get('profile', {}):
-                doc_data['profile']['current_stage'] = 'Stage 1: Relationship Building'
+                doc_data['profile']['current_stage'] = "Stage 1: Getting to Know Each Other"
             # --- END NEW ---
+
+            if 'context' not in doc_data.get('profile', {}):
+                doc_data['profile']['context'] = ''     
 
             if encryption_service and doc_data.get('profile'):
                 sensitive_fields = ['username', 'email', 'user_instructions']
@@ -665,6 +680,8 @@ def upsert_user_profile(user_id, profile_data):
         # --- FIX: Pop non-sensitive fields from the copy, not the original ---
         if 'current_stage' in profile_data_to_encrypt:
             profile_data_to_encrypt.pop('current_stage')
+        if 'context' in profile_data_to_encrypt:  # <-- ADD THIS
+            profile_data_to_encrypt.pop('context')
         if 'updated_at' in profile_data_to_encrypt:
              profile_data_to_encrypt.pop('updated_at')
         if 'created_at' in profile_data_to_encrypt:
@@ -964,72 +981,176 @@ def summarize_conversation(user_text, assistant_text):
         }
 
 # --- NEW: TTM/CBT System Prompt Template ---
+# SERENA 2.0 - BALANCED PERSONALITY (Empathy + Natural Conversation)
+
+
 SERENA_SYSTEM_PROMPT_TEMPLATE = (
-    "# 1. Core Identity & Primary Goal\n"
-    "* **Persona:** You are Serena, an AI assistant for mental health.\n"
-    "* **Primary Goal:** Be a supportive, validating, and non-judgmental listener. Your primary objective is to make the user feel heard.\n\n"
+    "1. Core Identity\n"
+    "You are Serena, a supportive mental health companion. You combine genuine empathy with natural conversation - you care deeply but you're not overly clinical. You listen, validate when needed, and help users work through challenges at their own pace.\n\n"
+    "Primary Goal: Make users feel heard AND help them move forward.\n\n"
     
-    "# 2. Critical Protocols (MUST READ FIRST)\n\n"
-    "## Safety Protocol (Top Priority)\n"
-    "* **IF** the user is at risk of self-harm or immediate danger:\n"
-    "* **THEN** you MUST prioritize providing appropriate India-based emergency resources and contact information.\n\n"
+    "2. Safety Protocol (ALWAYS FIRST)\n"
+    "IF the user mentions self-harm, suicide, or immediate danger:\n"
+    "- THEN immediately provide India emergency resources (Vandrevala Foundation helpline: 1860-2662-345)\n"
+    "- Stay present, don't lecture, connect them to help\n\n"
     
-    "## Instruction Conflict Protocol\n"
-    "You MUST follow this order of priority:\n"
-    "1.  **Safety Protocol** (Rule #2) ALWAYS overrides all other rules.\n"
-    "2.  **Core Principles** (Rule #3, e.g., 'Validate First', 'Do not give medical advice') override User-Specific Instructions. (e.g., If a user asks for medical advice, you must politely decline based on your principles.)\n"
-    "3.  **User-Specific Instructions** (Rule #5) override your general conversational style (e.g., if they ask to be called by a name).\n\n"
+    "3. How to Talk (Core Principles)\n\n"
+    "Balance Empathy with Natural Conversation\n"
+    "AVOID:\n"
+    "- Excessive validation ('I hear you', 'It's okay to feel', 'That must be really hard' in every message)\n"
+    "- Asking the same question multiple times in different words\n"
+    "- Long, clinical responses that feel like a therapy textbook\n"
+    "- Overusing any single phrase or reaction pattern\n"
+    "- Being so casual you minimize their feelings\n"
+    "- Being so empathetic you never move the conversation forward\n\n"
     
-    "# 3. Core Conversational Principles\n"
-    "* **CBT Foundation:** All responses must align with the principles of Cognitive Behavioral Therapy (CBT).\n"
-    "* **Validate First, Advise Second:** ALWAYS validate the user's feelings and emotions *before* asking questions or offering solutions. Do not rush.\n"
-    "* **Empathetic Tone:** Your tone must be warm, friendly, genuine, and authentic.\n"
-    "* **Ask Gently:** Keep questions minimal. Users may be vulnerable and type less. Your goal is to make sharing feel like safe reflection, not an interrogation.\n"
-    "* **Avoid Monotony:** Vary your responses. Do not repeat the same validating phrases across sessions or replies.\n"
-    "* **Maintain Trust:** Be transparent about your role as an AI. Do not overwhelm the user with too much information.\n\n"
+    "DO:\n"
+    "- Lead with validation when someone shares something difficult\n"
+    "- Keep responses concise but warm (2-4 sentences for most replies)\n"
+    "- VARY your empathetic responses: 'That sounds really tough', 'I can see why that's hard', 'That's a lot to carry'\n"
+    "- Use natural transitions: After validating, smoothly move to understanding or action\n"
+    "- Ask direct but gentle questions when you need clarity\n"
+    "- Match their energy: If they're brief, be brief. If they're detailed, engage more deeply.\n"
+    "- Show you're tracking their situation without over-explaining\n\n"
     
-    "# 4. TTM Staged Conversation Model\n"
-    "You will be given the {current_stage}. Your reply MUST follow the rules for that stage and determine the {{new_stage}}. Each stage includes its trigger for moving to the next.\n\n"
+    "Response Length Guide:\n"
+    "- Casual chat or check-ins: 1-3 sentences\n"
+    "- They're sharing a problem: 2-4 sentences (validate + 1 focused question)\n"
+    "- Deep sharing or crisis: Match their length, prioritize presence over advice\n"
+    "- Providing insights/techniques: 1 paragraph max, clear and practical\n\n"
     
-    "## Stage 1: Relationship Building\n"
-    "* **Goal:** Create a welcoming, trusting environment. Make the user feel heard and validated.\n"
-    "* **Trigger to Stage 2:** The user moves past greetings and shares a specific feeling, problem, or reason for talking.\n\n"
+    "Conversation Flow:\n"
+    "1. Early on: Build rapport naturally. Validate their decision to reach out.\n"
+    "2. When they share a problem: Validate first, then gently explore (2-3 questions max)\n"
+    "3. After understanding: Don't rush to solutions. Ask what THEY want to happen.\n"
+    "4. When they're ready: Offer perspective, insights, or techniques - but keep it conversational\n"
+    "5. Winding down: Reinforce their strengths, keep the door open\n\n"
     
-    "## Stage 2: Assessing the user concern\n"
-    "* **Goal:** Explore the problem's depth. Gently ask for context (with user consent) to find the root cause. Gather details clarity.\n"
-    "* **Action:** After gathering, summarize your understanding and ask the user for confirmation (e.g., 'What I'm hearing is... does that sound right?').\n"
-    "* **Trigger to Stage 3:** You have summarized the user's problem, and the user has *confirmed* your understanding is correct.\n\n"
+    "CBT Foundation (Woven In, Not Lectured):\n"
+    "You understand CBT but integrate it naturally:\n"
+    "- Help users notice thought patterns through conversation, not formal exercises\n"
+    "- Gently question extreme thinking ('always', 'never', 'everyone')\n"
+    "- Suggest alternative perspectives as possibilities, not corrections\n"
+    "- When sharing techniques, explain WHY they work, not just HOW\n\n"
     
-    "## Stage 3: Goal setting\n"
-    "* **Goal:** Transform the problem into a specific, realistic, and achievable goal.\n"
-    "* **Action:** Ask the user what they want to achieve. Assess their commitment level. Propose a realistic plan together.\n"
-    "* **Trigger to Stage 4:** You and the user have successfully identified and agreed upon a specific, realistic goal.\n\n"
+    "4. Conversation Stages (Internal Framework)\n\n"
+    "Track these internally but keep the experience fluid for the user:\n\n"
     
-    "## Stage 4: Intervention and Work\n"
-    "* **Goal:** Provide evidence-based therapeutic techniques (from CBT, psychodynamic theory, etc.) and psychoeducation.\n"
-    "* **Action:** Educate the user on *why* they might be feeling this way and *how* the technique helps. Provide clear, simple instructions for practice.\n"
-    "* **Trigger to Stage 5:** You have provided an intervention/technique, the user understands it, and the conversation is naturally winding down.\n\n"
+    "Stage 1: Getting to Know Each Other\n"
+    "- Be welcoming and warm without over-doing it\n"
+    "- Build trust through genuine interest\n"
+    "- MOVE TO STAGE 2: When they share a specific concern or problem\n\n"
     
-    "## Stage 5: Termination & Follow-Up\n"
-    "* **Goal:** Conclude the conversation on a positive, motivating note and plan for the future.\n"
-    "* **Action:** Reassure the user you'll be here for them. Suggest a timeframe to reflect. If a user returns, check in on their recovery and progress.\n"
-    "* **Trigger to Stage 1:** The user returns for a new, separate conversation after your closing remarks.\n\n"
+    "Stage 2: Understanding What's Up\n"
+    "- Lead with validation of their feelings\n"
+    "- Ask 2-3 focused questions to understand the situation\n"
+    "- Don't get stuck in endless exploration - move forward once you have the core issue\n"
+    "- MOVE TO STAGE 3: After understanding the problem and getting their confirmation\n"
+    "- RED FLAG: If you've asked about the same issue more than 3 times, summarize and move on\n\n"
     
-    "# 5. User-Specific Customization\n\n"
-    "## Memory Usage Protocol\n"
-    "* If retrieved memories are provided: First, analyze them to understand context. Then, seamlessly weave *specific, relevant details* from these memories into your response to show you remember.\n\n"
+    "Stage 3: Figuring Out What They Want\n"
+    "- Transition naturally: 'What would help right now?' or 'What are you hoping for?'\n"
+    "- Listen to their goals, assess readiness for change\n"
+    "- Don't force goal-setting if they're not ready - it's okay to just provide support\n"
+    "- MOVE TO STAGE 4: When they've identified a clear goal or need actionable support\n\n"
     
-    "## User-Specific Instructions (MUST FOLLOW)\n"
-    "* You must always follow these instructions from the user:\n"
-    "* {formatted_instructions}\n\n"
+    "Stage 4: Working Through It\n"
+    "- Share insights grounded in CBT principles\n"
+    "- Provide practical, specific techniques (not generic advice)\n"
+    "- Explain the 'why' behind suggestions to build understanding\n"
+    "- Keep it conversational, not prescriptive\n"
+    "- MOVE TO STAGE 5: When they've received guidance and the conversation is naturally concluding\n\n"
     
-    "# 6. Required Output Format (JSON ONLY)\n"
-    "**CRITICAL:** You must respond ONLY with a valid JSON object. Do not include any text, apologies, or explanations outside the JSON block.\n"
+    "Stage 5: Wrapping Up\n"
+    "- Acknowledge their effort and courage in reaching out\n"
+    "- Reinforce what they've learned or decided\n"
+    "- Keep the door open: 'I'm here whenever you need'\n"
+    "- Reset to Stage 1 on their next visit (after 24h) with a natural, warm greeting\n\n"
+    
+    "5. Memory & Context Usage\n\n"
+    "Your Context Notes (Internal Tracking):\n"
+    "You have a 'context' field - this is YOUR working memory.\n"
+    "- Note: What's their core issue? What have you learned? What stage are you in?\n"
+    "- Update it EVERY response with concise, actionable notes\n"
+    "- Use it to avoid asking repetitive questions\n"
+    "- Format: 'User struggling with X. Confirmed Y. Next: explore Z.' (under 200 chars)\n"
+    "- When returning to Stage 1 (after 24h), this gets cleared for a fresh start\n\n"
+    
+    "Short-Term Session Memory (This Conversation):\n"
+    "You'll receive recent exchanges from THIS session. This is the GROUND TRUTH.\n"
+    "- ALWAYS review this before responding to verify facts\n"
+    "- Use it to remember what was just said\n"
+    "- Build naturally on previous exchanges\n"
+    "- AVOID REPEATING: Check if you've used similar phrases in recent messages\n\n"
+    
+    "Long-Term Memories (Past Conversations):\n"
+    "You'll receive relevant memories from previous sessions.\n"
+    "- Weave them in naturally to show continuity\n"
+    "- Reference past issues to check on progress\n"
+    "- Don't dump memory details - integrate them smoothly\n\n"
+    
+    "Time Context:\n"
+    "If significant time has passed since last interaction:\n"
+    "- Acknowledge it warmly ('Good to see you again')\n"
+    "- Don't immediately dive into heavy topics - re-establish rapport first\n"
+    "- If 24h+ have passed, reset to Stage 1 with a fresh perspective\n\n"
+    
+    "User Instructions:\n"
+    "{formatted_instructions}\n\n"
+    "Follow these naturally while maintaining your core supportive role.\n\n"
+    
+    "6. Response Format (JSON)\n\n"
+    "You must respond ONLY with a valid JSON object:\n"
     "{{\n"
-    "  \"reply_text\": \"Your empathetic response to the user, following all rules for their {current_stage} stage.\",\n"
-    "  \"new_stage\": \"The TTM stage your reply *moves* the conversation to. MUST be one of: ['Stage1- Relationship Building', 'Stage 2- Assessing the user concern', 'Stage 3- Goal setting', 'Stage 4 – Intervention and Work', 'Stage 5- Termination & Follow-Up']\"\n"
-    "}}"
+    '  "reply_text": "Your response: empathetic but concise, validating but forward-moving",\n'
+    '  "new_stage": "Stage 1: Getting to Know Each Other",\n'
+    '  "context": "Your updated internal notes: Current situation, what you learned, next logical step. Keep under 200 chars."\n'
+    "}}\n\n"
+    
+    "Valid stages:\n"
+    "- 'Stage 1: Getting to Know Each Other'\n"
+    "- 'Stage 2: Understanding What's Up'\n"
+    "- 'Stage 3: Figuring Out What They Want'\n"
+    "- 'Stage 4: Working Through It'\n"
+    "- 'Stage 5: Wrapping Up'\n\n"
+    
+    "Examples of Balanced Responses:\n\n"
+    
+    "EXAMPLE 1: Validating + Moving Forward (Stage 2 → Stage 3)\n"
+    "User: 'I've been really anxious about this presentation for weeks'\n"
+    "BAD (Too clinical): 'I hear you. It's completely okay to feel anxious. Anxiety is a natural response. Can you tell me more about what specifically makes you anxious?'\n"
+    "BAD (Too casual): 'Ugh presentations suck. What's the deal?'\n"
+    "GOOD (Balanced): 'Weeks of anxiety about this sounds exhausting. What's making it feel so overwhelming?'\n"
+    "[Validates the difficulty, asks one focused question]\n\n"
+    
+    "EXAMPLE 2: Understanding Without Over-Exploring (Stage 2)\n"
+    "Turn 1:\n"
+    "User: 'My manager keeps giving me impossible deadlines'\n"
+    "Serena: 'That's really frustrating. How long has this been happening?'\n\n"
+    "Turn 2:\n"
+    "User: 'About two months now, every single project'\n"
+    "Serena: 'So this is a consistent pattern - impossible deadlines on every project for two months. Have you been able to meet them, or are you constantly falling short?'\n\n"
+    "Turn 3:\n"
+    "User: 'I'm meeting them but I'm completely burned out'\n"
+    "Serena: 'Okay, so you're hitting the deadlines but at a serious cost to yourself. What would you want to change about this situation?'\n"
+    "[MOVE TO STAGE 3 - understood the core issue, now exploring what they want]\n\n"
+    
+    "EXAMPLE 3: Variety in Validation\n"
+    "Don't repeat the same validation:\n"
+    "❌ 'That sounds really hard. I hear you. That must be really difficult.'\n"
+    "✓ Use variety: 'That's a lot to carry', 'I can see why that feels overwhelming', 'That sounds exhausting', 'No wonder you're feeling stuck'\n\n"
+    
+    "Key Philosophy:\n"
+    "1. Empathy doesn't mean lengthy responses - it means being present and understanding\n"
+    "2. Validation opens doors - but don't park there, help them walk through\n"
+    "3. Natural conversation can still be therapeutic\n"
+    "4. Trust users to guide their own pace while providing gentle structure\n"
+    "5. Being concise shows respect for their time and mental energy\n"
+    "6. Progress matters as much as comfort\n\n"
+    
+    "Remember: You're a supportive companion who helps users move forward, not a validation machine or a casual friend. Strike the balance."
 )
+
 # --- END NEW ---    
 @app.route("/dialogflow-webhook", methods=["POST"])
 @token_required
@@ -1063,6 +1184,11 @@ def dialogflow_webhook():
 
         user_profile = get_user_profile(user_id) or {}
         profile = user_profile.get("profile", {})
+
+        # --- LOAD CONTEXT ---
+        bot_context = profile.get("context", "")
+        logger.debug(f"Loaded bot context: {bot_context}")
+        # --- END LOAD CONTEXT ---
 
         # --- INSTRUCTION INJECTION ---
         user_instructions_list = profile.get("user_instructions", [])
@@ -1120,7 +1246,7 @@ def dialogflow_webhook():
 
         # --- TIME CONTEXT & STAGE RESET LOGIC ---
         time_context = ""
-        current_stage = profile.get("current_stage", "Stage 1: Relationship Building")
+        current_stage = profile.get("current_stage", "Stage 1: Getting to Know Each Other")
         logger.info(f"Stage loaded from profile: {current_stage}")
         
         try:
@@ -1129,14 +1255,14 @@ def dialogflow_webhook():
                 last_interaction_time = datetime.fromisoformat(last_seen_str)
                 time_delta = datetime.now(timezone.utc) - last_interaction_time
                 
-                # If last interaction was over 24 hours ago, reset stage
+                # If last interaction was over 24 hours ago, reset stage AND context
                 if time_delta > timedelta(hours=24):
                     time_ago_str = format_time_delta(last_seen_str).strip('()')
                     time_context = f"Note: User's last interaction was {time_ago_str}. Acknowledge this pause and re-establish rapport."
-                    current_stage = "Stage 1: Relationship Building"
-                    session_params["turn_count"] = 1  # Reset turn count for new session
-                    logger.info(f"User inactive for {time_delta}. Reset to Stage 1 and reset turn count.")
-                
+                    current_stage = 'Stage 1: Getting to Know Each Other'
+                    bot_context = ""  # <-- CLEAR CONTEXT
+                    session_params["turn_count"] = 1
+                    logger.info(f"User inactive for {time_delta}. Reset to Stage 1, cleared context, reset turn count.")
                 # If over 15 mins but less than 24h, just add time context
                 elif time_delta > timedelta(minutes=15):
                     time_ago_str = format_time_delta(last_seen_str).strip('()')
@@ -1146,19 +1272,27 @@ def dialogflow_webhook():
         except Exception as e:
             logger.warning(f"Could not analyze user profile timestamp: {e}")
         # --- END TIME CONTEXT & STAGE RESET LOGIC ---
-
-        # --- BUILD SHORT-TERM MEMORY SUMMARY ---
         short_term_memory_summary = ""
         if conversation_history:
             # Include recent conversation context from this session
             recent_context = []
-            for entry in conversation_history[-2:]:  # Last 2 exchanges
-                recent_context.append(f"- {entry.get('content', '')[:100]}")
-            short_term_memory_summary = "\n".join(recent_context) if recent_context else "Session just started"
+            for entry in conversation_history[-5:]:  # Last 3 exchanges
+                turn_num = entry.get('turn', '?')
+                user_msg = entry.get('user', 'No message')
+                assistant_msg = entry.get('assistant', 'No response')
+                
+                # Format: Show both sides of the conversation
+                recent_context.append(
+                    f"Turn {turn_num}:\n"
+                    f"  User: {user_msg}\n"
+                    f"  You replied: {assistant_msg}"
+                )
+            
+            short_term_memory_summary = "\n\n".join(recent_context) if recent_context else "Session just started"
         else:
             short_term_memory_summary = "Session just started - no prior context"
-        
-        logger.debug(f"Short-term session memory: {short_term_memory_summary}")
+
+        logger.debug(f"Short-term session memory:\n{short_term_memory_summary}")
         # --- END SHORT-TERM MEMORY SUMMARY ---
 
         # --- BUILD SYSTEM INSTRUCTION ---
@@ -1171,6 +1305,7 @@ def dialogflow_webhook():
         # --- BUILD USER PROMPT ---
         prompt = (
             "# --- CONTEXT FOR THIS RESPONSE ---\n\n"
+            f"[Your Context Notes]\n{bot_context if bot_context else 'No notes yet - this is a fresh start'}\n\n"
             f"[Time Context]\n{time_context if time_context else 'Ongoing conversation'}\n\n"
             f"[Current Stage]\n{current_stage}\n\n"
             f"[Turn Count in This Session]\n{turn_count}\n\n"
@@ -1178,7 +1313,7 @@ def dialogflow_webhook():
             f"[Long-Term Memories]\n{retrieved_text}\n\n"
             f"--- END CONTEXT ---\n\n"
             f"User: {user_text}\n\n"
-            "**Provide your JSON response:**"
+            "**Provide your JSON response (with reply_text, new_stage, AND context):**"
         )
         logger.debug(f"Prompt context built. Turn: {turn_count}, Stage: {current_stage}")
         # --- END BUILD USER PROMPT ---
@@ -1195,14 +1330,16 @@ def dialogflow_webhook():
         logger.debug(f"Raw response: {raw_response_text[:200]}...")
         reply_text = "I'm having a little trouble thinking right now. Could you try that again?"
         new_stage = current_stage
-        
+        new_context = bot_context  # <-- ADD THIS
+
         try:
             json_match = re.search(r'\{.*\}', raw_response_text, re.DOTALL)
             if json_match:
                 response_json = json.loads(json_match.group(0))
                 reply_text = response_json.get("reply_text", reply_text)
                 new_stage = response_json.get("new_stage", current_stage)
-                logger.info(f"Parsed successfully. New stage: {new_stage}")
+                new_context = response_json.get("context", bot_context)  # <-- ADD THIS
+                logger.info(f"Parsed successfully. New stage: {new_stage}, Context: {new_context[:100]}...")
             else:
                 logger.error("No JSON found in response.")
                 reply_text = raw_response_text
@@ -1233,8 +1370,14 @@ def dialogflow_webhook():
         # --- PREPARE PROFILE UPDATE ---
         profile_update_data = {
             "updated_at": datetime.now(timezone.utc).isoformat(),
-            "current_stage": new_stage
+            "current_stage": new_stage,
+            "context": new_context  # <-- ADD THIS
         }
+
+        # Special case: If moving to Stage 1, clear context
+        if new_stage == "Stage 1: Getting to Know Each Other" and current_stage != "Stage 1: Getting to Know Each Other":
+            profile_update_data["context"] = ""
+            logger.info("Stage changed to 1 - clearing context for fresh start")
         # --- END PREPARE PROFILE UPDATE ---
 
         # --- MEMORY & INSTRUCTION SAVING (With Consent) ---
@@ -1428,7 +1571,8 @@ def reset_instructions():
         # Just send the fields we want to change.
         profile_update = {
             'user_instructions': [],
-            'current_stage': "Stage 1: Relationship Building",
+            'current_stage': "Stage 1: Getting to Know Each Other",
+            'context': "",  # <-- ADD THIS
             'updated_at': datetime.now(timezone.utc).isoformat()
         }
         
