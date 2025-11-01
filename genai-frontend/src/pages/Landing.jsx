@@ -28,12 +28,12 @@ export default function Landing() {
     const intervalRef = useRef(null);
     const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
-    // --- NEW: State for Login Logic ---
+    // --- State for Login Logic (unchanged) ---
     const [loadingGoogle, setLoadingGoogle] = useState(false);
     const [loadingGuest, setLoadingGuest] = useState(false);
     const [error, setError] = useState(null);
 
-    // --- NEW: Login Handlers (moved from Login.jsx) ---
+    // --- Login Handlers (unchanged) ---
     const handleGoogleLogin = async () => {
         setLoadingGoogle(true);
         setError(null);
@@ -202,39 +202,15 @@ export default function Landing() {
                             How It Works
                         </button>
                     </div>
+                    {/* --- MODIFIED HEADER BUTTONS --- */}
                     <div className={styles.navButtons}>
-                        {/* --- MODIFIED LOGIN BUTTON --- */}
-                        <button
-                            onClick={handleGoogleLogin}
-                            className={`${styles.loginButton} ${loadingGoogle ? styles.loading : ''}`}
-                            disabled={loadingGoogle || loadingGuest}
-                        >
-                            {loadingGoogle ? (
-                                <PulseLoader size={8} color={"var(--primary-brown-dark)"} />
-                            ) : (
-                                <>
-                                    <img src="/logos/google.svg" alt="Google" className={styles.buttonIcon} />
-                                    Login with Google
-                                </>
-                            )}
-                        </button>
-
-                        {/* --- MODIFIED GUEST/DEMO BUTTON --- */}
-                        <button
-                            onClick={handleGuestLogin}
-                            className={`${styles.getStartedButton} ${loadingGuest ? styles.loading : ''}`}
-                            disabled={loadingGoogle || loadingGuest}
-                        >
-                            {loadingGuest ? (
-                               <PulseLoader size={8} color={"var(--white)"} />
-                            ) : (
-                                "Continue as Guest" // Changed text for clarity
-                            )}
-                        </button>
+                        {/* New "Sign In" button linking to /login */}
+                        <Link to="/login" className={styles.getStartedButton}>
+                            Sign In
+                        </Link>
                     </div>
                 </div>
-                 {/* --- Error Display --- */}
-                 {error && <div className={styles.navError}>{error}</div>}
+                 {/* --- Error Display Removed from Nav --- */}
             </header>
 
             {/* Hero Section */}
@@ -256,18 +232,43 @@ export default function Landing() {
                             </div>
                         </div>
 
+                        {/* --- MODIFIED HERO CTAS (MOVED FROM HEADER) --- */}
                         <div className={styles.heroCtas}>
-                            <Link to="/login" className={styles.primaryCta}>
-                                Try Serena - Demo Available
-                            </Link>
+                            <button
+                                onClick={handleGoogleLogin}
+                                className={`${styles.heroGoogleButton} ${loadingGoogle ? styles.loading : ''}`}
+                                disabled={loadingGoogle || loadingGuest}
+                            >
+                                {loadingGoogle ? (
+                                    <PulseLoader size={8} color={"var(--primary-brown-dark)"} />
+                                ) : (
+                                    <>
+                                        <img src="/logos/google.svg" alt="Google" className={styles.buttonIcon} />
+                                        <span>Login with Google</span>
+                                    </>
+                                )}
+                            </button>
+                            <button
+                                onClick={handleGuestLogin}
+                                className={`${styles.heroGuestButton} ${loadingGuest ? styles.loading : ''}`}
+                                disabled={loadingGoogle || loadingGuest}
+                            >
+                                {loadingGuest ? (
+                                   <PulseLoader size={8} color={"var(--white)"} />
+                                ) : (
+                                    <span>Continue as Guest</span>
+                                )}
+                            </button>
                         </div>
+                        {/* --- Error Display Moved Here --- */}
+                        {error && <div className={styles.heroError}>{error}</div>}
                     </div>
                     <div className={styles.heroVisual}>
                         <img src="/logoS.png" alt="Serena AI Logo" className={styles.heroLogoPulse} />
                     </div>
                 </article>
             </section>
-
+            
             {/* Features Section */}
             <section id="features" className={styles.features}>
                 <h2 className={styles.sectionTitle}>Intelligent Support That Remembers</h2>
@@ -537,39 +538,10 @@ export default function Landing() {
                     Serena was developed by computer science students to explore how AI can support 
                     mental wellness through intelligent memory and personalized conversations.
                 </p>
-                <div className={styles.techStack}>
-                    <h3>Technology Stack Showcase</h3>
-                    <p>
-                        This project demonstrates skills in conversational AI design, secure cloud architecture,
-                        and modern web development.
-                    </p>
-                    <ul>
-                        <li>Google Cloud Vertex AI for intelligent responses</li>
-                        <li>Firestore for secure, encrypted storage</li>
-                        <li>End-to-end encryption for privacy</li>
-                        <li>React-based modern interface</li>
-                    </ul>
-                </div>
+                
             </section>
 
-            {/* Final CTA */}
-            <section className={styles.finalCta}>
-                <h2 className={styles.finalCtaTitle}>
-                    Ready to experience mental health support that remembers?
-                </h2>
-                <Link to="/login" className={styles.finalCtaButton}>
-                    Try the Demo
-                </Link>
-            </section>
-
-            {/* Disclaimer Section */}
-            <section className={styles.disclaimer}>
-                <p>
-                    <strong>Note:</strong> Serena is a research project and demonstration of AI technology. 
-                    It is <strong>not a substitute for professional mental health care</strong>. If you're experiencing a 
-                    mental health crisis, please contact a licensed professional or emergency services.
-                </p>
-            </section>
+            
 
             {/* Footer */}
             <footer className={styles.footer}>

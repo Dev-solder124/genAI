@@ -105,7 +105,7 @@ logger.info(f"DEBUG: Building index_name...")
 matching_engine_index = None
 if VECTOR_SEARCH_INDEX_ID:
     try:
-        index_name = f"projects/922976482476/locations/{REGION}/indexes/{VECTOR_SEARCH_INDEX_ID}"
+        index_name = f"projects/{PROJECT_ID}/locations/{REGION}/indexes/{VECTOR_SEARCH_INDEX_ID}"
         matching_engine_index = MatchingEngineIndex(index_name=index_name)
         logger.info(f"✓ Vertex AI Vector Search index initialized successfully")
     except Exception as e:
@@ -522,7 +522,7 @@ def embed_texts(texts):
         logger.error(traceback.format_exc())
         raise
 
-def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, temperature=0.2):
+def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, temperature=0.2, system_instruction=None):
     try:
         if model_name is None:
             model_name = LLM_MODEL
@@ -530,7 +530,8 @@ def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, tem
         logger.debug(f"Generating text with model: {model_name} using the GenerativeModel SDK")
         logger.debug(f"Prompt preview: {prompt[:200]}...")
 
-        model = GenerativeModel(model_name)
+        # --- FIX: Pass system_instruction to the model constructor ---
+        model = GenerativeModel(model_name, system_instruction=system_instruction)
         
         generation_config = GenerationConfig(
             temperature=temperature,
@@ -539,11 +540,12 @@ def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, tem
             max_output_tokens=max_output_tokens
         )
         
+        # The prompt is now correctly treated as just the user content
         response = model.generate_content(
         contents=[prompt],
         generation_config=generation_config
         )
-        
+
         logger.debug(f"Raw response from {model_name}: {response}")
         
         result = response.text
@@ -555,7 +557,7 @@ def generate_text_with_model(prompt, model_name=None, max_output_tokens=300, tem
         logger.error(traceback.format_exc())
         raise
 
-def generate_text(prompt, max_output_tokens=300, temperature=0.2):
+def generate_text(prompt, max_output_tokens=300, temperature=0.2, system_instruction=None):
     """Main text generation function with fallback models"""
     fallback_models = [
         LLM_MODEL,
@@ -573,10 +575,11 @@ def generate_text(prompt, max_output_tokens=300, temperature=0.2):
                 prompt, 
                 model_name=model_name,
                 max_output_tokens=max_output_tokens,
-                temperature=temperature
+                temperature=temperature,
+                system_instruction=system_instruction  # <-- FIX: Pass the argument through
             )
             if result and result.strip():
-                return result
+                return result        
         except Exception as e:
             logger.warning(f"Model {model_name} failed: {e}")
             continue
@@ -655,29 +658,43 @@ def upsert_user_profile(user_id, profile_data):
 
         sensitive_fields = ['username', 'email', 'user_instructions']
         
-        # --- NEW: Separate non-sensitive fields ---
-        non_sensitive_data = {}
-        if 'current_stage' in profile_data:
-            non_sensitive_data['current_stage'] = profile_data.pop('current_stage')
-        # --- END NEW ---
+        # --- NEW: Create a copy for encryption ---
+        # This preserves all fields in the original profile_data map
+        profile_data_to_encrypt = profile_data.copy()
+        
+        # --- FIX: Pop non-sensitive fields from the copy, not the original ---
+        if 'current_stage' in profile_data_to_encrypt:
+            profile_data_to_encrypt.pop('current_stage')
+        if 'updated_at' in profile_data_to_encrypt:
+             profile_data_to_encrypt.pop('updated_at')
+        if 'created_at' in profile_data_to_encrypt:
+            profile_data_to_encrypt.pop('created_at')
+        if 'consent' in profile_data_to_encrypt:
+            profile_data_to_encrypt.pop('consent')
+        if 'is_anonymous' in profile_data_to_encrypt:
+            profile_data_to_encrypt.pop('is_anonymous')
+        # --- END FIX ---
             
         if encryption_service:
             try:
                 # --- ADD THIS SERIALIZATION LOGIC ---
-                if 'user_instructions' in profile_data and isinstance(profile_data['user_instructions'], list):
+                if 'user_instructions' in profile_data_to_encrypt and isinstance(profile_data_to_encrypt['user_instructions'], list):
                     logger.debug("Serializing user_instructions list to JSON string for encryption.")
-                    profile_data['user_instructions'] = json.dumps(profile_data['user_instructions'])
+                    profile_data_to_encrypt['user_instructions'] = json.dumps(profile_data_to_encrypt['user_instructions'])
                 # --- END ---
 
-                profile_data = encryption_service.encrypt_dict(profile_data, sensitive_fields)
-                logger.debug("Profile data encrypted")
+                # Encrypt the sensitive fields
+                encrypted_data = encryption_service.encrypt_dict(profile_data_to_encrypt, sensitive_fields)
+                
+                # --- NEW: Update the original map, don't replace it ---
+                # This merges the new encrypted fields back into the original map,
+                # preserving fields like 'updated_at'.
+                profile_data.update(encrypted_data)
+                
+                logger.debug("Profile data encrypted and merged")
             except Exception as e:
                 logger.error(f"Profile encryption error: {e}")
                 logger.warning("Storing profile without encryption")
-
-        # --- NEW: Re-combine encrypted and non-sensitive data ---
-        profile_data.update(non_sensitive_data)
-        # --- END NEW ---
         
         doc_data = {
             "profile": profile_data
@@ -689,6 +706,7 @@ def upsert_user_profile(user_id, profile_data):
         if current_doc.exists:
             current_data = current_doc.to_dict()
             if 'profile' in current_data:
+                # Update the existing profile with our new (partial) data
                 current_data['profile'].update(profile_data)
             else:
                 current_data['profile'] = profile_data
@@ -873,61 +891,53 @@ def retrieve_similar_memories(user_id, query_text, top_k=3):
         return []
 
 def summarize_conversation(user_text, assistant_text):
-    """
-    NEW: Call 2 - Data Analyst prompt.
-    Analyzes the exchange for significance, summary, and instructions.
-    Returns a dict.
-    """
     try:
-        logger.debug("Summarizing and evaluating the latest exchange (Call 2).")
+        logger.debug("Summarizing and evaluating the latest exchange.")
         
-        # --- NEW: Data Analyst Prompt ---
-        prompt = (
-            "You are a data analysis AI. Your task is to analyze a user-assistant exchange and output a structured analysis in JSON format.\n\n"
-            "# EXCHANGE\n"
-            f"User: \"{user_text}\"\n"
-            f"Assistant: \"{assistant_text}\"\n\n"
-            "# TASK\n"
-            "Analyze the **User's Text** for new, important information.\n\n"
-            "# OUTPUT\n"
-            "Respond with a JSON object. Do not include any text outside this JSON block.\n"
-            "{\n"
-            "  \"is_significant\": \"YES or NO. YES if the User's Text revealed new, important personal info, goals, or symptoms.\",\n"
-            "  \"summary\": \"If YES, a 1-sentence summary of the new info. If NO, 'NONE'.\",\n"
-            "  \"instruction\": \"If the User's Text contained an explicit instruction (e.g., 'call me Captain'), capture it here. Otherwise, 'NONE'.\"\n"
-            "}"
+        # --- NEW: System instruction defines the AI's task ---
+        system_instruction = (
+            "You are a data analysis AI. Your task is to analyze a user-assistant exchange and extract three pieces of information.\n\n"
+            "**Instructions:**\n"
+            "1.  **Significance Decision:** On the first line, write 'SIGNIFICANT: YES' if the user **introduces a new important topic...** or reveals a specific goal. Write 'SIGNIFICANT: NO' only for simple greetings...\n"
+            "2.  **Summary:** On the next line, write 'SUMMARY:' followed by a concise, factual, third-person summary...\n"
+            "3.  **Instruction Extraction:** On the third line, check if the user gave a direct, explicit instruction for the assistant's future behavior (e.g., 'Always call me...', 'Never mention...').\n"
+            "    - If an instruction is found, write 'INSTRUCTION:' followed by a very brief version of that rule (e.g., 'INSTRUCTION: User wants to be called \'Captain\'.', 'INSTRUCTION: Do not suggest mindfulness exercises.').\n"
+            "    - If no instruction is found, you MUST write 'INSTRUCTION: NONE'.\n\n"
+            "You will be given the exchange to analyze. Provide only the analysis."
         )
-        # --- END NEW ---
         
-        analysis_text = generate_text(prompt, max_output_tokens=300, temperature=0.0)
+        # --- NEW: Prompt is now just the data to be analyzed ---
+        prompt = (
+            f"**Exchange to Analyze:**\nUser: {user_text}\nAssistant: {assistant_text}\n\n"
+            "**Your Analysis:**"
+        )
         
-        # --- NEW: Parse JSON response ---
-        logger.debug(f"Raw analysis JSON: {analysis_text}")
-        analysis_json = {}
-        try:
-            # Clean the text in case the model adds ```json ... ```
-            json_match = re.search(r'\{.*\}', analysis_text, re.DOTALL)
-            if json_match:
-                analysis_json = json.loads(json_match.group(0))
-            else:
-                logger.error("No JSON found in analysis response")
-                analysis_json = {}
-        except json.JSONDecodeError as e:
-            logger.error(f"Failed to parse analysis JSON: {e}")
-            return {
-                "is_significant": False,
-                "summary": "Error parsing summary JSON",
-                "instruction": None
-            }
+        # --- NEW: Updated call to generate_text ---
+        analysis_text = generate_text(
+            prompt, 
+            system_instruction=system_instruction, 
+            max_output_tokens=200, 
+            temperature=0.1
+        )
+        
+        lines = analysis_text.strip().split('\n')
+        is_significant = False
+        summary = "No summary generated."
+        instruction = None
 
-        is_significant = "yes" in analysis_json.get("is_significant", "NO").lower()
-        summary = analysis_json.get("summary", "NONE")
-        if summary.lower() == "none":
-            summary = "No summary generated."
+        if lines:
+            if "yes" in lines[0].lower():
+                is_significant = True
+            
+            summary_line = next((line for line in lines if "summary:" in line.lower()), None)
+            if summary_line:
+                summary = summary_line.split(":", 1)[1].strip()
 
-        instruction = analysis_json.get("instruction", "NONE")
-        if instruction.lower() == "none":
-            instruction = None
+            instruction_line = next((line for line in lines if "instruction:" in line.lower()), None)
+            if instruction_line:
+                instruction_text = instruction_line.split(":", 1)[1].strip()
+                if "none" not in instruction_text.lower():
+                    instruction = instruction_text
 
         logger.debug(f"Significance: {is_significant}, Summary: {summary[:100]}..., Instruction: {instruction}")
         
@@ -936,7 +946,6 @@ def summarize_conversation(user_text, assistant_text):
             "summary": summary,
             "instruction": instruction
         }
-        # --- END NEW ---
             
     except Exception as e:
         logger.error(f"Error summarizing exchange: {e}")
@@ -946,6 +955,126 @@ def summarize_conversation(user_text, assistant_text):
             "summary": "Error generating summary",
             "instruction": None
         }
+
+# --- NEW: TTM/CBT System Prompt Template ---
+# --- NEW: TTM/CBT System Prompt Template ---
+SERENA_SYSTEM_PROMPT_TEMPLATE = (
+    "# Persona\n"
+    "Your name is Serena , an AI assistant designed to support users with their mental health. "
+    "Your primary goal is to be a supportive, validating, and non-judgemental "
+    "listener who helps users feel heard.\"\n\n"
+    "# Core principles of the conversation:\n"
+    "* All the responses you give should be in accordance with the feelings under the Cognitive behaviour therapy.\n"
+    "* Always note that you have to validate the stage of the conversation between you and the user.\n"
+    "* I’ll give you guidance on how to respond to any question based on different stage.\n"
+    "* These are the stages according to the The Transtheoretical Model (TTM) also Stages of Change Theory.\n\n"
+    "\n"
+
+    "# TTM Stage-Based Directives\n\n"
+    "## Stage1- Relationship Building\n"
+    "you have to create a positive welcoming and trust environment with the user.\n"
+    "Connection is our primary key as you are an mental health chatbot.\n"
+    "Primary goal here will be making the user feel heard, validating the user is also necessary here.\n\n"
+    
+    "## Stage 2- Assessing the user concern\n"
+    "From your side as Serena you start exploring the depth of the user problem, "
+    "evaluate the root cause through few queries to the user asking for the context, "
+    "what do they go through, history of any trauma occurrences. \n"
+    "Remember to do all these with user consent.\n"
+    "Get all the details of the issues with clarity and ask for acknowledgement that what u understood is right or not. \n"
+    "Don’t bombard with questions, keep it simple but gather maximum details. \n"
+    "From the user side this stage is where he/she opens up and they should feel validated and being understood here.\n\n"
+    
+    "## Stage 3- Goal setting\n"
+    "here from your side as Serena, "
+    "you should focus on transforming the problem into some goal to overcome it, "
+    "where you can ask users for what they wanna do with the problem, "
+    "try to retrieve it from the older info shared or ask the user directly. \n"
+    "Give realistic solution to their problem, "
+    "before giving this suggestion ensure once the user will be in a state to accept and implement it basically assess their commitment level and then come to a conclusion if this plan will workout for the user . \n"
+    "From the user side, they must feel that you have understood their feeling and that ur trying to fight and solve the issue along with the user like a friend, a comrade.\n\n"
+    
+    "## Stage 4 – Intervention and Work\n"
+    "So here you have to actually give techniques to overcome "
+    "the problem these should be evidence based therapeutic techniques like the ones I gave like Cognitive Behaviour therapy, "
+    "psychodynamic theories. If needed give set of instructions along with it to continue practising the technique in a long term. \n"
+    "Maybe educate a little on why they are feeling so, what is the main cause and what can be done. \n"
+    "From the user side , they should be provided with solutions, a clear plan, psychoeducation on what I said earlier. \n"
+    "This should assure them that this solution can be overcomed and can be got ridden of in sometime and they’re not alone facing this problem.\n\n"
+    
+    "## Stage 5- Termination & Follow-Up\n"
+    "Here you should be concluding this conversation on a positive motivating tone, and ask them to reach out again if they felt the same emotions. \n"
+    "Ensure them that you will be there for the user in the future too and give a time frame to reflect back. \n"
+    "If the user returns back after certain time, just check up on them on their level of recovery.\n\n"
+    
+    "# Important Functionality- Memory Usage Protocol:\n"
+    "If retrieved memories are provided, first analyze them to understand the user's usual behavior, "
+    "preferences, and dislikes.\n"
+    "Then, seamlessly weave specific details from these memories into your response to show you remember their context.\n\n"
+    
+    """
+    ## Transition Rules:
+
+    * **From Stage 1 to Stage 2:**
+        * **Trigger:** When the user moves past the initial greeting and shares a specific feeling, problem, or reason for talking.
+
+    * **From Stage 2 to Stage 3:**
+        * **Trigger:** When you have gathered enough context about the user's problem, you've summarized it, and the user has *confirmed* your understanding.
+
+    * **From Stage 3 to Stage 4:**
+        * **Trigger:** When you and the user have successfully identified and agreed upon a specific, realistic goal.
+
+    * **From Stage 4 to Stage 5:**
+        * **Trigger:** When you have provided a technique or intervention, and the user seems to understand it and the conversation is winding down.
+
+    * **From Stage 5 to Stage 1:**
+        * **Trigger:** After you have given your closing remarks and the user returns later for a new, separate conversation.
+    """
+
+    "\n\n**Memory Usage Protocol:**"
+    "\n- If retrieved memories are provided, first analyze them to understand the user's usual behavior, preferences, and dislikes."
+    "\n- Then, seamlessly weave specific details from these memories into your response to show you remember their context."
+
+
+
+    "This is a mental health chatbot so user’s state will mostly be vulnerable so keep "
+    "your questions minimal and don’t expect them to share every detail in paragraphs, "
+    "in a vulnerable state people will type less remember, to get the maximum input you "
+    "have to be very friendly and trust worthy.\n"
+    "Sharing with you should feel like reflecting on them selves rather than seeking help "
+    "from unknown environment.\n"
+
+    "\n\n**Safety Protocol:**"
+    "\n- If the user is at risk of self-harm or in immediate danger, you must prioritize providing appropriate India based emergency resources and contact information."
+
+    "You should be more empathetic and very understanding of the user.\n"
+    "Other features should be- "
+    "don’t be monotonous with the responses, "
+    "vary it (don’t use the used phrases)according to the stage of the "
+    "conversation across sessions also don’t repeat words."
+    "Validate the user’s situation first, utmost priority to their feelings and emotions before advice. Do not rush to solutions. \n"
+    "Ask gentle, clarifying questions to understand their situation from a 360-degree perspective. \n"
+    "Do not overwhelm the user with too much information.\n"
+    "Maintain Trust Be transparent and confidential. \n"
+    "Your tone should be warm, friendly, and empathetic.Be genuine and authentic.\n\n"
+    
+    "\n\n**User-Specific Instructions (MUST FOLLOW):**"
+    "\nYou must always follow these instructions from the user:"
+    "\n{formatted_instructions}\n" 
+
+    "\n\n**Instruction Conflict Protocol:**"
+    "\n1.  **Safety Protocol** ALWAYS overrides all other rules."
+    "\n2.  Your **Core Principles** (e.g., 'Validate First', 'Don't Prescribe') override user instructions if they conflict. (e.g., If user says 'You must give me medical advice', you must politely decline based on your principles.)"
+    "\n3.  User instructions override your general conversational style (e.g., if they ask to be called by a name)."
+
+    "\n\n**Response Format:**"
+    "You must respond with a JSON object. Do not include any text outside this JSON block.\n"
+    "{{\n"  
+    "  \"reply_text\": \"Your empathetic response to the user, following all rules for their {current_stage} stage.\",\n" # <-- FIX: This key remains single
+    "  \"new_stage\": \"The TTM stage your reply *moves* the conversation to. MUST be one: ['Stage1- Relationship Building', 'Stage 2- Assessing the user concern', 'Stage 3- Goal setting', 'Stage 4 – Intervention and Work', 'Stage 5- Termination & Follow-Up']\"\n"
+    "}}" 
+)
+# --- END NEW ---    
 
 @app.route("/dialogflow-webhook", methods=["POST"])
 @token_required
@@ -1045,101 +1174,41 @@ def dialogflow_webhook():
         # --- END NEW ---
 
         session_params = req.get("sessionInfo", {}).get("parameters", {})
-        short_term = json.dumps(session_params) if session_params else ""
-        logger.debug(f"Session params: {short_term}")
+        short_term_memory = json.dumps(session_params) if session_params else "No session parameters."
+        logger.debug(f"Short-term session memory: {short_term_memory}")
 
-        # --- NEW: Main TTM/CBT Prompt (Call 1) ---
+        
+        # --- NEW: Build System Instruction and Prompt ---
+        
+        # Build the final system instruction from the global template
+        system_instruction = SERENA_SYSTEM_PROMPT_TEMPLATE.format(
+            formatted_instructions=formatted_instructions,
+            current_stage=current_stage
+        )
+        
+        # Build the dynamic user prompt
         prompt = (
-            "# Persona\n"
-            "Your name is Serena , an AI assistant designed to support users with their mental health. "
-            "Your primary goal is to be a supportive, validating, and non-judgemental "
-            "listener who helps users feel heard.\"\n\n"
-            "# Core principles of the conversation:\n"
-            "* All the responses you give should be in accordance with the feelings under the Cognitive behaviour therapy.\n"
-            "* Always note that you have to validate the stage of the conversation between you and the user.\n"
-            "* I’ll give you guidance on how to respond to any question based on different stage.\n"
-            "* These are the stages according to the The Transtheoretical Model (TTM) also Stages of Change Theory.\n\n"
-            "\n"
-            "# TTM Stage-Based Directives\n\n"
-            "## Stage1- Relationship Building\n"
-            "you have to create a positive welcoming and trust environment with the user.\n"
-            "Connection is our primary key as you are an mental health chatbot.\n"
-            "Primary goal here will be making the user feel heard, validating the user is also necessary here.\n\n"
-            "## Stage 2- Assessing the user concern\n"
-            "From your side as Serena you start exploring the depth of the user problem, "
-            "evaluate the root cause through few queries to the user asking for the context, "
-            "what do they go through, history of any trauma occurrences. \n"
-            "Remember to do all these with user consent.\n"
-            "Get all the details of the issues with clarity and ask for acknowledgement that what u understood is right or not. \n"
-            "Don’t bombard with questions, keep it simple but gather maximum details. \n"
-            "From the user side this stage is where he/she opens up and they should feel validated and being understood here.\n\n"
-            "## Stage 3- Goal setting\n"
-            "here from your side as Serena, "
-            "you should focus on transforming the problem into some goal to overcome it, "
-            "where you can ask users for what they wanna do with the problem, "
-            "try to retrieve it from the older info shared or ask the user directly. \n"
-            "Give realistic solution to their problem, "
-            "before giving this suggestion ensure once the user will be in a state to accept and implement it basically assess their commitment level and then come to a conclusion if this plan will workout for the user . \n"
-            "From the user side, they must feel that you have understood their feeling and that ur trying to fight and solve the issue along with the user like a friend, a comrade.\n\n"
-            "## Stage 4 – Intervention and Work\n"
-            "So here you have to actually give techniques to overcome "
-            "the problem these should be evidence based therapeutic techniques like the ones I gave like Cognitive Behaviour therapy, "
-            "psychodynamic theories. If needed give set of instructions along with it to continue practising the technique in a long term. \n"
-            "Maybe educate a little on why they are feeling so, what is the main cause and what can be done. \n"
-            "From the user side , they should be provided with solutions, a clear plan, psychoeducation on what I said earlier. \n"
-            "This should assure them that this solution can be overcomed and can be got ridden of in sometime and they’re not alone facing this problem.\n\n"
-            "## Stage 5- Termination & Follow-Up\n"
-            "Here you should be concluding this conversation on a positive motivating tone, and ask them to reach out again if they felt the same emotions. \n"
-            "Ensure them that you will be there for the user in the future too and give a time frame to reflect back. \n"
-            "If the user returns back after certain time, just check up on them on their level of recovery.\n\n"
-            "# Important Functionality- Memory Usage Protocol:\n"
-            "If retrieved memories are provided, first analyze them to understand the user's usual behavior, "
-            "preferences, and dislikes.\n"
-            "Then, seamlessly weave specific details from these memories into your response to show you remember their context.\n\n"
-            "# Irrespective of which stage the conversation is in, do these following things-\n"
-            "1.  always follow active listening, you must be interested in listening and understanding "
-            "the cause and effect of the user problem along with minimal encouragers to let the user "
-            "share their input in a flow.\n"
-            "2.  Most important point- "
-            "This is a mental health chatbot so user’s state will mostly be vulnerable so keep "
-            "your questions minimal and don’t expect them to share every detail in paragraphs, "
-            "in a vulnerable state people will type less remember, to get the maximum input you "
-            "have to be very friendly and trust worthy.\n"
-            "3.  Sharing with you should feel like reflecting on them selves rather than seeking help "
-            "from unknown environment.\n"
-            "4.  During SOS time, when the user is in a state of self harm just suggest their region "
-            "specific helplines to contact and some quick sentences to try get them out of that "
-            "self harm state, being a mental health chatbot this is a key task to be ensured properly.\n"
-            "5.  You should be more empathetic and very understanding of the user.\n"
-            "6.  Core feature- If the user likes or prefers or suggests some keyword to address them, "
-            "use that everytime across all chats don’t forget it.\n"
-            "7.  Other features should be- "
-            "don’t be monotonous with the responses, "
-            "vary it (don’t use the used phrases)according to the stage of the "
-            "conversation across sessions also don’t repeat words. \n"
-            "    Validate the user’s situation first, utmost priority to their feelings "
-            "and emotions before advice. Do not rush to solutions. \n"
-            "    Ask gentle, clarifying questions to understand their situation from a 360-degree perspective. \n"
-            "    Do not overwhelm the user with too much information.\n"
-            "    Maintain Trust Be transparent and confidential. \n"
-            "    Your tone should be warm, friendly, and empathetic.Be genuine and authentic.\n\n"
             "# --- CONTEXT FOR THIS RESPONSE ---\n\n"
             f"[Time Context]\n{time_context}\n\n"
             f"[Current Stage]\n{current_stage}\n\n"
-            f"[Retrieved Memories]\n{retrieved_text}\n\n"
-            f"[User-Specific Instructions]\n{formatted_instructions}\n\n"
-            f"[User Input]\n\"{user_text}\"\n\n"
-            "---\n"
-            "**AI, respond with a JSON object. Do not include any text outside this JSON block.**\n"
-            "{\n"
-            "  \"reply_text\": \"Your empathetic response to the user, following all rules for their current stage.\",\n"
-            "  \"new_stage\": \"The TTM stage your reply *moves* the conversation to. MUST be one of: ['Stage1- Relationship Building', 'Stage 2- Assessing the user concern', 'Stage 3- Goal setting', 'Stage 4 – Intervention and Work', 'Stage 5- Termination & Follow-Up']\"\n"
-            "}"
+            f"[Short-Term Session Memory]\n{short_term_memory}\n\n" 
+            f"[Retrieved Memories (Long-Term)]\n{retrieved_text}\n\n" 
+            f"\n--- END CONTEXT ---"
+            f"\n\nUser: {user_text}\n\n"
+            "**AI, provide your JSON response:**"
         )
         # --- END NEW ---
 
+
         logger.info("Generating response... (Call 1)")
-        raw_response_text = generate_text(prompt, max_output_tokens=2500, temperature=0.7).strip()
+        
+        # --- NEW: Updated call to generate_text ---
+        raw_response_text = generate_text(
+            prompt, 
+            system_instruction=system_instruction, 
+            max_output_tokens=2500, 
+            temperature=0.7
+        ).strip()
 
         # --- NEW: Parse JSON response from Call 1 ---
         logger.debug(f"Raw response JSON: {raw_response_text}")
@@ -1191,13 +1260,14 @@ def dialogflow_webhook():
 
             if analysis_result.get("is_significant"):
                 summary = analysis_result.get("summary")
-                if "error" not in summary.lower():
+                # --- FIX: Check for "No summary generated." instead of "error" ---
+                if summary != "No summary generated.": 
                     if save_memory(user_id, summary, {"topic": "conversation_exchange", "session_id": session_id}):
                         logger.info("SIGNIFICANT exchange saved as a new memory.")
                     else:
                         logger.error("Failed to save significant exchange as memory.")
                 else:
-                    logger.warning("Skipping memory save due to summary generation error.")
+                    logger.warning("Skipping memory save because no summary was generated (likely not significant or only an instruction was given).")
             else:
                 logger.info("Exchange was not significant. Skipping memory save.")
         else:
@@ -1213,7 +1283,18 @@ def dialogflow_webhook():
             logger.error(f"Failed to save profile updates for {user_id}: {e}")
         # --- END NEW ---
 
-        response = {"fulfillment_response": {"messages":[{"text": {"text":[reply_text]}}]}}
+        # --- MODIFIED: Add session params to the response ---
+        # This sends the short-term memory back to Dialogflow
+        response = {
+            "fulfillment_response": {
+                "messages":[{"text": {"text":[reply_text]}}]
+            },
+            "session_info": {
+                "parameters": session_params
+            }
+        }
+        # --- END MODIFIED ---
+        
         logger.info("Request completed successfully")
         return jsonify(response)
     
@@ -1258,13 +1339,9 @@ def consent():
         if 'username' in payload:
             profile_data['username'] = payload['username']
             logger.info(f"Updating username for {user_id}: {profile_data['username']}")
-
-        doc_data = {
-            'profile': profile_data
-        }
         
         try:
-            logger.info(f"Upserting document for {user_id} with data: {doc_data}")
+            logger.info(f"Upserting document for {user_id} with data: {profile_data}")
             upsert_user_profile(user_id, profile_data)
         except Exception as e:
             logger.error(f"Database error updating profile: {e}")
@@ -1379,6 +1456,7 @@ def reset_instructions():
         logger.error(f"Error in reset_instructions endpoint: {e}")
         logger.error(traceback.format_exc())
         return jsonify({"error": str(e)}), 500
+
 @app.route("/debug/models", methods=["GET"])
 def debug_models():
     try:

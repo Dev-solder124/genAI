@@ -114,15 +114,14 @@ All commands should be run from the root `genAI/` directory.
     ```
 3.  **Deploy to Cloud Run with Environment Variables:**
     This launches the container and sets the required variables. **Replace placeholders if your IDs/names differ.**
-    ```bash
-    gcloud run deploy genai-chatbot \
+    ```gcloud run deploy genai-chatbot \
   --image gcr.io/genai-bot-kdf/genai-chatbot \
   --region=asia-south1 \
   --project=genai-bot-kdf \
   --platform managed \
   --allow-unauthenticated \
   --service-account="firebase-adminsdk-fbsvc@genai-bot-kdf.iam.gserviceaccount.com" \
-  --set-env-vars=VECTOR_SEARCH_ENDPOINT_ID=projects/922976482476/locations/asia-south1/indexEndpoints/2041203754547544064,VECTOR_SEARCH_INDEX_ID=6474496210391531520,DEPLOYED_INDEX_ID=serena_memory_deployedv2,GOOGLE_CLOUD_PROJECT=genai-bot-kdf,REGION=asia-south1,KMS_LOCATION=asia-south1,KMS_KEYRING=chatbot-encryption,KMS_KEY=memory-encryption-key
+  --set-env-vars=VECTOR_SEARCH_ENDPOINT_ID=projects/922976482476/locations/asia-south1/indexEndpoints/2041203754547544064,VECTOR_SEARCH_INDEX_ID=8641572056086872064,DEPLOYED_INDEX_ID=serena_memory_deployed,GOOGLE_CLOUD_PROJECT=genai-bot-kdf,REGION=asia-south1,KMS_LOCATION=asia-south1,KMS_KEYRING=chatbot-encryption,KMS_KEY=memory-encryption-key
     ```
     After this step, you will receive a **Service URL** (e.g., `https://genai-chatbot-....run.app`). **Copy this URL.**
 

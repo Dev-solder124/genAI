@@ -183,19 +183,23 @@
     font-weight: 600;
 }
 
+/* --- MODIFIED HERO CTAS --- */
 .heroCtas {
     display: flex;
+    flex-direction: column; /* Stacked vertically */
     gap: 16px;
-    flex-wrap: wrap;
+    flex-wrap: nowrap; /* No wrapping */
     margin-top: 32px;
+    max-width: 320px; /* Constrain width on desktop */
 }
 
-.primaryCta {
-    padding: 16px 32px;
-    background: var(--primary-brown-dark);
-    color: var(--white);
-    border: none;
-    border-radius: 10px;
+/* --- ADDED: New Hero Button Styles --- */
+.heroGoogleButton {
+    padding: 14px 24px;
+    background: transparent;
+    border: 1px solid var(--primary-brown);
+    color: var(--text-primary);
+    border-radius: 8px;
     font-size: 17px;
     font-weight: 600;
     cursor: pointer;
@@ -203,13 +207,58 @@
     transition: all 0.2s;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
-.primaryCta:hover {
+.heroGoogleButton:hover {
+    background: var(--primary-transparent-10);
+    transform: translateY(-1px);
+}
+
+.heroGuestButton {
+    padding: 14px 24px;
+    background: var(--primary-brown-dark);
+    border: none;
+    color: var(--white);
+    border-radius: 8px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.heroGuestButton:hover {
     background: var(--primary-dark-hover);
     transform: translateY(-2px);
-    box-shadow: 0 8px 24px var(--primary-transparent-30);
+    box-shadow: 0 6px 20px var(--primary-transparent-30);
 }
+
+/* --- ADDED: Loading state for new hero buttons --- */
+.heroGoogleButton.loading,
+.heroGuestButton.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* --- ADDED: Style for new hero error message --- */
+.heroError {
+    background-color: #ffcccc;
+    color: #cc0000;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 16px;
+    text-align: center;
+}
+/* --- End Hero Changes --- */
+
 
 .heroVisual {
     display: flex;
@@ -420,7 +469,8 @@
     max-width: 1000px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    /* --- MODIFIED: Mobile-first 2 columns --- */
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     justify-items: center;
 }
@@ -636,20 +686,39 @@
         display: none;
     }
 
+    /* --- Header Buttons --- */
     .navButtons {
+        display: flex;
+        flex-direction: row; /* Ensure buttons are side-by-side */
+        align-items: center; /* Align vertically */
         gap: 8px;
     }
 
-    .loginButton,
+    /* --- MODIFIED: Single button style in header --- */
     .getStartedButton {
-        padding: 8px 16px;
+        padding: 8px 16px; /* A bit more padding for "Sign In" */
         font-size: 14px;
     }
 
-    .navLogo {
-        height: 28px;
-        width: 28px;
+    /* --- REMOVED: loginButton mobile styles (no longer in header) --- */
+
+    /* --- Swap text visibility on mobile --- */
+    .desktopText {
+        display: none;
     }
+    .mobileText {
+        display: inline;
+    }
+    /* --- End Button Update --- */
+
+
+    /* --- CHANGE: Bigger Logo + Animation --- */
+    .navLogo {
+        height: 36px; /* Increased from 28px */
+        width: 36px;  /* Increased from 28px */
+        animation: pulse 4s ease-in-out infinite; /* Added animation */
+    }
+    /* --- End Change --- */
 
     .brandName {
         font-size: 18px;
@@ -695,10 +764,11 @@
         margin: 0; /* Remove horizontal margin if present */
     }
 
+    /* --- "How It Works" Spacing Fix --- */
     .stepsContainer {
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 0; /* Remove gap, control spacing with connector */
     }
 
     .step {
@@ -708,9 +778,9 @@
 
     .stepConnector {
         flex-grow: 0;
-        margin: 16px 0;
+        margin: 12px 0; /* Reduced vertical margin */
         width: 24px;
-        height: 48px;
+        height: 32px; /* Reduced height */
     }
 
     .arrowDesktop {
@@ -720,15 +790,16 @@
     .arrowMobile {
         display: block;
         width: 24px;
-        height: 48px;
+        height: 32px; /* Reduced height to match container */
     }
+    /* --- End "How It Works" Fix --- */
 
     .sectionSubtitle {
         font-size: 16px;
     }
 
+    /* --- MODIFIED: logoGrid already 2-col, just adjust gap --- */
     .logoGrid {
-        grid-template-columns: repeat(2, 1fr); /* Ensure 2 columns on small screens */
         gap: 16px;
     }
 
@@ -762,21 +833,18 @@
         gap: 16px;
     }
 
+    /* --- MODIFIED: Hero CTAs on mobile --- */
     .heroCtas {
         flex-direction: column;
+        align-items: stretch; /* Make buttons full width */
+        max-width: none; /* Remove desktop max-width */
+        width: 100%;
     }
 
-    .primaryCta {
-        width: 100%;
-        justify-content: center;
-        padding: 18px 24px; /* Better touch target */
-        font-size: 18px; /* Better touch target */
-        min-height: 56px; /* Better touch target */
-        font-weight: 600;
-    }
+    /* --- REMOVED: .primaryCta styles (now .hero...Button) --- */
 }
 
-/* Medium screens (e.g., tablets in landscape) to ensure 3 cards are visible if possible */
+/* Medium screens (e.g., tablets in landscape) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .featuresGrid {
         padding: 40px calc(50% - 220px); /* Adjust padding to center and show more */
@@ -785,9 +853,7 @@
         flex: 0 0 320px; /* Slightly smaller cards to fit more */
         max-width: 320px;
     }
-    .logoGrid {
-        grid-template-columns: repeat(3, 1fr);
-    }
+    /* --- REMOVED: .logoGrid (inherits 2-col default) --- */
 }
 
 /* Large screens (desktop) */
@@ -799,6 +865,7 @@
         flex: 0 0 360px; /* Original desktop card size */
         max-width: 360px;
     }
+    /* --- MODIFIED: logoGrid 3 columns only on desktop --- */
     .logoGrid {
         grid-template-columns: repeat(3, 1fr); /* 3 columns for desktop */
     }
@@ -819,7 +886,17 @@ a:focus {
     }
 }
 
-/* --- Additions for Header Buttons --- */
+/* --- Text visibility classes (unchanged) --- */
+.desktopText {
+    display: inline;
+}
+.mobileText {
+    display: none;
+}
+/* --- End new classes --- */
+
+
+/* --- Additions for Header Buttons (unchanged) --- */
 
 .loginButton,
 .getStartedButton {
@@ -827,7 +904,7 @@ a:focus {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px; /* Space between icon/spinner and text */
+    gap: 6px; /* Reduced gap for icon */
     min-width: 120px; /* Give buttons a minimum width for loading state */
     position: relative; /* Needed for loading overlay potentially */
 }
@@ -849,46 +926,9 @@ a:focus {
     transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
 }
 
-/* Style for error message in nav */
-.navError {
-    position: absolute; /* Position it relative to the nav */
-    bottom: -25px; /* Place it below the nav */
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ffcccc; /* Light red background */
-    color: #cc0000; /* Darker red text */
-    padding: 5px 15px;
-    border-radius: 4px;
-    font-size: 13px;
-    font-weight: 500;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    z-index: 999; /* Ensure it's above content */
-    white-space: nowrap; /* Prevent wrapping */
-}
+/* --- REMOVED: .navError (moved to .heroError) --- */
 
 
-/* --- Modifications for Hero CTA --- */
-.primaryCta {
-    /* Ensure alignment works for the hero button too */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px; /* Slightly larger gap for primary CTA */
-    min-width: 200px; /* Adjust as needed */
-    position: relative;
-}
+/* --- MODIFIED: .primaryCta styles now part of .heroGuestButton etc. --- */
 
-/* --- Ensure other styles are present --- */
-/* Make sure you have the other styles from the previous responses */
-/* (Color vars, Nav, Hero, Features, HowItWorks, Technology Logos, About, CTA, Footer, Responsiveness etc.) */
-
-/* Example: Ensure .logoGrid styles are there */
-.logoGrid {
-    max-width: 1000px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    justify-items: center;
-}
 /* ... rest of your existing CSS ... */

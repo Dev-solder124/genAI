@@ -51,16 +51,18 @@ The result is a chatbot that provides personalized, continuous mental health sup
   - **HIPAA-Grade Security:** Enterprise-level encryption for mental health data protection.
   - **Complete User Isolation:** Users can only access their own memories via namespace filtering.
 
-### 4\. Intelligent Memory & Conversation System
+### 4. Intelligent Memory & Conversation System
 
-  - **Clinically-Grounded Conversation (TTM & CBT):** The AI actively manages the conversation's flow based on the Transtheoretical Model (TTM) / Stages of Change. It tracks the user's `current_stage` (saved in their profile) and adapts its goals, from **Stage 1 (Relationship Building)** to **Stage 4 (Intervention)**, ensuring all responses are appropriate and therapeutically aligned with CBT principles.
-  - **Intelligent Memory:** Only saves conversations with significant therapeutic value (determined by a separate AI analysis call) to prevent memory clutter.
-  - **Semantic Memory Retrieval:** Uses 768-dimensional vector embeddings (text-embedding-004) for accurate similarity matching.
-  - **Global User Instructions:** Users can provide direct instructions (e.g., "Always call me 'Captain'") that the chatbot will remember and follow in all future conversations.
-  - **Encrypted Storage:** Conversation summaries and PII are encrypted before storage.
-  - **Plaintext Processing:** Vector embeddings generated from plaintext for accurate similarity matching.
-  - **Granular Memory Timestamps:** Each retrieved memory includes precise temporal context (e.g., "2 days ago", "5 minutes ago").
-  - **Temporal Conversation Flow:** Recognizes time patterns and provides contextually appropriate responses. If a user is inactive for over 24 hours, the bot automatically resets to "Stage 1: Relationship Building" to re-establish rapport.
+* **Clinically-Grounded Conversation (TTM & CBT):** The AI actively manages the conversation's flow based on the Transtheoretical Model (TTM) / Stages of Change. It tracks the user's `current_stage` (saved in their profile) and adapts its goals, from **Stage 1 (Relationship Building)** to **Stage 4 (Intervention)**, ensuring all responses are appropriate and therapeutically aligned with CBT principles.
+* **Multilingual Support:** Serena is multilingual and will automatically respond in whatever language the user is using, allowing for natural conversation in the user's preferred language.
+* **Intelligent Memory:** Only saves conversations with significant therapeutic value (determined by a separate AI analysis call) to prevent memory clutter.
+* **Semantic Memory Retrieval:** Uses 768-dimensional vector embeddings (text-embedding-004) for accurate similarity matching.
+* **Global User Instructions:** Users can provide direct instructions (e.g., "Always call me 'Captain'") that the chatbot will remember and follow in all future conversations.
+* **Encrypted Storage:** Conversation summaries and PII are encrypted before storage.
+* **Plaintext Processing:** Vector embeddings generated from plaintext for accurate similarity matching.
+* **Granular Memory Timestamps:** Each retrieved memory includes precise temporal context (e.g., "2 days ago", "5 minutes ago").
+* **Temporal Conversation Flow:** Recognizes time patterns and provides contextually appropriate responses. If a user is inactive for over 24 hours, the bot automatically resets to "Stage 1: Relationship Building" to re-establish rapport.
+
 
 ### 5\. Security Architecture
 
