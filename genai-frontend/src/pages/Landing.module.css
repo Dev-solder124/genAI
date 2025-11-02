@@ -163,7 +163,7 @@
     margin: 0 0 32px 0;
 }
 
-/* New Credibility Section */
+/* Credibility Section */
 .credibilitySection {
     margin-top: 32px;
 }
@@ -183,7 +183,7 @@
     font-weight: 600;
 }
 
-/* --- MODIFIED HERO CTAS --- */
+/* Hero CTAs */
 .heroCtas {
     display: flex;
     flex-direction: column; /* Stacked vertically */
@@ -193,7 +193,7 @@
     max-width: 320px; /* Constrain width on desktop */
 }
 
-/* --- ADDED: New Hero Button Styles --- */
+/* Hero Button Styles */
 .heroGoogleButton {
     padding: 14px 24px;
     background: transparent;
@@ -239,14 +239,14 @@
     box-shadow: 0 6px 20px var(--primary-transparent-30);
 }
 
-/* --- ADDED: Loading state for new hero buttons --- */
+/* Loading state for hero buttons */
 .heroGoogleButton.loading,
 .heroGuestButton.loading {
     opacity: 0.7;
     cursor: not-allowed;
 }
 
-/* --- ADDED: Style for new hero error message --- */
+/* Hero error message */
 .heroError {
     background-color: #ffcccc;
     color: #cc0000;
@@ -257,8 +257,6 @@
     margin-top: 16px;
     text-align: center;
 }
-/* --- End Hero Changes --- */
-
 
 .heroVisual {
     display: flex;
@@ -317,7 +315,7 @@
     -ms-overflow-style: none;
     
     /* Padding for centering first and last cards */
-    padding: 40px calc(50% - 180px); /* Keep this for desktop/larger screens */
+    padding: 40px calc(50% - 180px);
 }
 
 .featuresGrid::-webkit-scrollbar {
@@ -336,7 +334,7 @@
     scroll-snap-align: center;
     
     /* Card sizing for larger screens: allow multiple to show */
-    flex: 0 0 360px; /* Fixed width, allows multiple cards to be visible */
+    flex: 0 0 360px;
     max-width: 360px;
     min-height: 300px;
     
@@ -450,7 +448,7 @@
     display: none;
 }
 
-/* --- REVISED Technology Section --- */
+/* Technology Section */
 .technology {
     padding: 80px 32px;
     background: var(--light-beige);
@@ -469,7 +467,6 @@
     max-width: 1000px;
     margin: 0 auto;
     display: grid;
-    /* --- MODIFIED: Mobile-first 2 columns --- */
     grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     justify-items: center;
@@ -510,46 +507,275 @@
     color: var(--text-primary);
 }
 
-/* New About Section */
+/* About Section */
 .aboutSection {
     padding: 80px 32px;
     background: var(--white);
+}
+
+.aboutHeading {
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    max-width: 600px;
+    margin: -24px auto 64px; /* More space below */
     text-align: center;
 }
 
-.aboutDescription {
-    font-size: 18px;
+.aboutListContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 64px; /* Space between each item */
+    max-width: 900px; /* Constrain the width */
+    margin: 0 auto 64px;
+}
+
+.aboutItem {
+    display: grid;
+    /* Fixed icon column, flexible text column */
+    grid-template-columns: 200px 1fr; 
+    gap: 48px;
+    align-items: center;
+}
+
+.aboutItemReverse {
+    /* Flexible text column, fixed icon column */
+    grid-template-columns: 1fr 200px;
+}
+
+.aboutIconWrapper {
+    width: 150px;
+    height: 150px;
+    background: var(--light-beige);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto; /* Centers the circle in its grid column */
+    color: var(--primary-brown-dark);
+}
+
+.aboutTextWrapper {
+    text-align: left;
+}
+
+.aboutItemReverse .aboutTextWrapper {
+    text-align: right; /* Align text to the right for reversed items */
+}
+
+.aboutItemTitle {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 12px 0;
+}
+
+.aboutItemText {
+    font-size: 16px;
     line-height: 1.6;
     color: var(--text-secondary);
-    max-width: 700px;
-    margin: 0 auto 32px;
+    margin: 0;
 }
 
-.techStack {
-    max-width: 600px;
-    margin: 32px auto 0;
-    text-align: left;
+.aboutDisclaimer {
+    max-width: 800px;
+    margin: 0 auto;
     background: var(--light-beige);
+    border: 1px solid var(--primary-transparent-10);
+    border-left: 4px solid var(--primary-brown);
     padding: 24px;
-    border-radius: 12px;
+    border-radius: 8px;
+    text-align: left;
 }
 
-.techStack h3 {
-    text-align: center;
-    margin-top: 0;
+.aboutDisclaimerTitle {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
 }
 
-.techStack p {
-    text-align: center;
+.aboutDisclaimerText {
     font-size: 15px;
+    line-height: 1.6;
     color: var(--text-secondary);
+    margin: 0;
 }
 
-.techStack ul {
-    list-style-type: '✔️';
-    padding-left: 30px;
-    line-height: 1.8;
+/* FAQ Section */
+.faqSection {
+    padding: 80px 32px;
+    background: var(--white);
 }
+
+.faqContainer {
+    max-width: 800px;
+    margin: 48px auto 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.faqItem {
+    background: var(--white);
+    border: 1px solid rgba(139, 90, 60, 0.15);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.faqItem:hover {
+    border-color: var(--primary-brown);
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.1);
+}
+
+.faqItem[open] {
+    border-color: var(--primary-brown);
+    background: var(--light-beige);
+}
+
+.faqQuestion {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 20px 24px;
+    cursor: pointer;
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: color 0.3s ease;
+    user-select: none;
+}
+
+.faqQuestion::-webkit-details-marker {
+    display: none;
+}
+
+.faqQuestion:hover {
+    color: var(--primary-brown-dark);
+}
+
+.faqIcon {
+    font-size: 24px;
+    font-weight: 300;
+    color: var(--primary-brown);
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+    margin-left: 16px;
+}
+
+.faqItem[open] .faqIcon {
+    transform: rotate(45deg);
+}
+
+.faqAnswer {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    padding: 0 24px 20px 24px;
+    margin: 0;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Comparison Table Section */
+.comparisonSection {
+    padding: 80px 32px;
+    background: var(--light-beige);
+}
+
+.comparisonTable {
+    max-width: 900px;
+    margin: 48px auto 0;
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.1);
+}
+
+.comparisonTable table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+    padding: 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(139, 90, 60, 0.1);
+}
+
+.comparisonTable th {
+    background: var(--primary-transparent-10);
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.comparisonTable td {
+    color: var(--text-secondary);
+    font-size: 15px;
+}
+
+.comparisonTable tr:last-child td {
+    border-bottom: none;
+}
+
+.comparisonTable td:first-child {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* Highlight Serena column */
+.comparisonTable td:last-child {
+    background: rgba(166, 123, 91, 0.05);
+    font-weight: 500;
+}
+
+/* Crisis Resources Section */
+.crisisSection {
+    background: var(--white);
+    /* border-top: 4px solid var(--primary-brown-dark); */
+    padding: 24px 32px;
+    /* Change margin to remove the top 32px, but keep bottom 32px */
+    margin: 0 auto 32px; /* Was: 32px auto; */
+    max-width: 1000px;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(139, 90, 60, 0.1);
+}
+
+.crisisTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--primary-brown-dark); /* Matched to new border color */
+    margin: 0 0 12px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.crisisText {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    margin: 0;
+}
+
+.crisisText strong {
+    color: var(--text-primary); /* Keeps "strong" text the darkest */
+}
+
 
 /* Final CTA Section */
 .finalCta {
@@ -589,7 +815,7 @@
     box-shadow: 0 8px 24px var(--primary-transparent-30);
 }
 
-/* New Disclaimer Section */
+/* Disclaimer Section */
 .disclaimer {
     background: var(--off-white);
     padding: 48px 32px;
@@ -609,12 +835,12 @@
     color: var(--text-primary);
 }
 
-
 /* Footer */
 .footer {
     background: var(--light-beige);
     border-top: 1px solid rgba(166, 123, 91, 0.2);
-    padding: 48px 32px 24px;
+    /* Change the first value (top padding) from 48px to 24px */
+    padding: 24px 32px 24px; /* Was: 48px 32px 24px; */
 }
 
 .footerContent {
@@ -680,45 +906,70 @@
     margin: 0 0 8px 0;
 }
 
+/* Button utilities */
+.loginButton,
+.getStartedButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-width: 120px;
+    position: relative;
+}
+
+.buttonIcon {
+    height: 16px;
+    width: 16px;
+}
+
+.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.loginButton,
+.getStartedButton {
+    transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Text visibility classes */
+.desktopText {
+    display: inline;
+}
+.mobileText {
+    display: none;
+}
+
 /* Mobile Responsiveness */
 @media (max-width: 768px) {
     .navLinks {
         display: none;
     }
 
-    /* --- Header Buttons --- */
     .navButtons {
         display: flex;
-        flex-direction: row; /* Ensure buttons are side-by-side */
-        align-items: center; /* Align vertically */
+        flex-direction: row;
+        align-items: center;
         gap: 8px;
     }
 
-    /* --- MODIFIED: Single button style in header --- */
     .getStartedButton {
-        padding: 8px 16px; /* A bit more padding for "Sign In" */
+        padding: 8px 16px;
         font-size: 14px;
     }
 
-    /* --- REMOVED: loginButton mobile styles (no longer in header) --- */
-
-    /* --- Swap text visibility on mobile --- */
     .desktopText {
         display: none;
     }
     .mobileText {
         display: inline;
     }
-    /* --- End Button Update --- */
 
-
-    /* --- CHANGE: Bigger Logo + Animation --- */
     .navLogo {
-        height: 36px; /* Increased from 28px */
-        width: 36px;  /* Increased from 28px */
-        animation: pulse 4s ease-in-out infinite; /* Added animation */
+        height: 36px;
+        width: 36px;
+        animation: pulse 4s ease-in-out infinite;
     }
-    /* --- End Change --- */
 
     .brandName {
         font-size: 18px;
@@ -750,25 +1001,22 @@
     }
 
     .featuresGrid {
-        /* Revert to showing more cards on mobile by making them slightly smaller */
-        padding: 40px 15vw; /* Adjusted padding to reveal more of side cards */
+        padding: 40px 15vw;
         gap: 24px;
     }
 
     .featureCard {
-        /* Adjusted width for mobile to show multiple cards */
-        flex: 0 0 70vw; /* Take up 70% of viewport width */
+        flex: 0 0 70vw;
         max-width: 70vw;
         min-height: 280px;
         padding: 24px;
-        margin: 0; /* Remove horizontal margin if present */
+        margin: 0;
     }
 
-    /* --- "How It Works" Spacing Fix --- */
     .stepsContainer {
         flex-direction: column;
         align-items: center;
-        gap: 0; /* Remove gap, control spacing with connector */
+        gap: 0;
     }
 
     .step {
@@ -778,9 +1026,9 @@
 
     .stepConnector {
         flex-grow: 0;
-        margin: 12px 0; /* Reduced vertical margin */
+        margin: 12px 0;
         width: 24px;
-        height: 32px; /* Reduced height */
+        height: 32px;
     }
 
     .arrowDesktop {
@@ -790,15 +1038,13 @@
     .arrowMobile {
         display: block;
         width: 24px;
-        height: 32px; /* Reduced height to match container */
+        height: 32px;
     }
-    /* --- End "How It Works" Fix --- */
 
     .sectionSubtitle {
         font-size: 16px;
     }
 
-    /* --- MODIFIED: logoGrid already 2-col, just adjust gap --- */
     .logoGrid {
         gap: 16px;
     }
@@ -833,44 +1079,164 @@
         gap: 16px;
     }
 
-    /* --- MODIFIED: Hero CTAs on mobile --- */
     .heroCtas {
         flex-direction: column;
-        align-items: stretch; /* Make buttons full width */
-        max-width: none; /* Remove desktop max-width */
+        align-items: stretch;
+        max-width: none;
         width: 100%;
     }
 
-    /* --- REMOVED: .primaryCta styles (now .hero...Button) --- */
+    /* FAQ Mobile */
+    .faqContainer {
+        margin: 32px auto 0;
+    }
+
+    .faqQuestion {
+        font-size: 16px;
+        padding: 16px 20px;
+    }
+
+    .faqAnswer {
+        font-size: 14px;
+        padding: 0 20px 16px 20px;
+    }
+
+    .faqIcon {
+        font-size: 20px;
+    }
+
+    /* Comparison Table Mobile */
+    .comparisonTable {
+        margin: 32px 16px;
+        /* We remove overflow-x: auto; */
+    }
+
+    /* Hide the table header, we will create new labels */
+    .comparisonTable thead {
+        display: none;
+    }
+
+    /* Make the table and body full width */
+    .comparisonTable table,
+    .comparisonTable tbody {
+        display: block;
+        width: 100%;
+    }
+
+    /* Each <tr> becomes a "card" */
+    .comparisonTable tr {
+        display: block;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(139, 90, 60, 0.05);
+        border: 1px solid var(--primary-transparent-10);
+        margin-bottom: 24px;
+        overflow: hidden; /* Ensures border-radius applies to children */
+    }
+
+    /* All <td> cells stack vertically */
+    .comparisonTable td {
+        display: block;
+        padding: 12px 16px;
+        border-bottom: none; /* Remove old table borders */
+        text-align: left; /* Reset text alignment */
+    }
+
+    /* Style the "Aspect" cell as a header */
+    .comparisonTable td:first-child {
+        background: var(--primary-transparent-10);
+        font-weight: 700;
+        color: var(--text-primary);
+        font-size: 16px;
+        padding: 16px;
+    }
+
+    /* Add "Generic Chatbots:" label */
+    .comparisonTable td:nth-of-type(2)::before {
+        content: "Generic Chatbots: ";
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-right: 8px;
+    }
+
+    /* Add "Serena:" label */
+    .comparisonTable td:nth-of-type(3)::before {
+        content: "Serena: ";
+        font-weight: 600;
+        color: var(--text-primary); /* Make Serena's label stand out */
+        margin-right: 8px;
+    }
+
+    /* Keep Serena's background highlight */
+    .comparisonTable td:last-child {
+        background: rgba(166, 123, 91, 0.05);
+    }
+
+    /* Crisis Section Mobile */
+    .crisisSection {
+        margin: 24px 16px;
+        padding: 20px;
+    }
+
+    .crisisTitle {
+        font-size: 16px;
+    }
+
+    .crisisText {
+        font-size: 14px;
+    }
+    /* --- About Section Mobile --- */
+    .aboutHeading {
+        font-size: 20px;
+        margin-bottom: 32px;
+    }
+    
+    .aboutListContainer {
+        gap: 48px;
+    }
+
+    .aboutItem,
+    .aboutItemReverse {
+        grid-template-columns: 1fr; /* Stack to a single column */
+        gap: 24px;
+    }
+
+    .aboutIconWrapper {
+        width: 120px;
+        height: 120px;
+        grid-row: 1; /* Ensure icon is always first */
+    }
+
+    .aboutTextWrapper,
+    .aboutItemReverse .aboutTextWrapper {
+        grid-row: 2; /* Ensure text is always second */
+        text-align: center; /* Center all text on mobile */
+    }
 }
 
-/* Medium screens (e.g., tablets in landscape) */
+/* Medium screens (tablets in landscape) */
 @media (min-width: 769px) and (max-width: 1024px) {
     .featuresGrid {
-        padding: 40px calc(50% - 220px); /* Adjust padding to center and show more */
+        padding: 40px calc(50% - 220px);
     }
     .featureCard {
-        flex: 0 0 320px; /* Slightly smaller cards to fit more */
+        flex: 0 0 320px;
         max-width: 320px;
     }
-    /* --- REMOVED: .logoGrid (inherits 2-col default) --- */
 }
 
 /* Large screens (desktop) */
 @media (min-width: 1025px) {
     .featuresGrid {
-        padding: 40px calc(50% - 180px); /* Original desktop padding */
+        padding: 40px calc(50% - 180px);
     }
     .featureCard {
-        flex: 0 0 360px; /* Original desktop card size */
+        flex: 0 0 360px;
         max-width: 360px;
     }
-    /* --- MODIFIED: logoGrid 3 columns only on desktop --- */
     .logoGrid {
-        grid-template-columns: repeat(3, 1fr); /* 3 columns for desktop */
+        grid-template-columns: repeat(3, 1fr);
     }
 }
-
 
 /* Accessibility */
 button:focus,
@@ -885,50 +1251,3 @@ a:focus {
         transition-duration: 0.01ms !important;
     }
 }
-
-/* --- Text visibility classes (unchanged) --- */
-.desktopText {
-    display: inline;
-}
-.mobileText {
-    display: none;
-}
-/* --- End new classes --- */
-
-
-/* --- Additions for Header Buttons (unchanged) --- */
-
-.loginButton,
-.getStartedButton {
-    /* Add alignment for icon/spinner and text */
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px; /* Reduced gap for icon */
-    min-width: 120px; /* Give buttons a minimum width for loading state */
-    position: relative; /* Needed for loading overlay potentially */
-}
-
-.buttonIcon {
-    height: 16px; /* Adjust size as needed */
-    width: 16px;
-}
-
-/* Loading State Styles */
-.loading {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-/* Optional: Add a subtle transition */
-.loginButton,
-.getStartedButton {
-    transition: background-color 0.2s ease, opacity 0.2s ease, transform 0.2s ease;
-}
-
-/* --- REMOVED: .navError (moved to .heroError) --- */
-
-
-/* --- MODIFIED: .primaryCta styles now part of .heroGuestButton etc. --- */
-
-/* ... rest of your existing CSS ... */

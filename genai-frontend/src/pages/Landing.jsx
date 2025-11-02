@@ -1,14 +1,13 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { PulseLoader } from 'react-spinners'; // Import a spinner
+import { PulseLoader } from 'react-spinners';
 
 import styles from './Landing.module.css';
-import { signInWithGoogle, signInAsGuest } from '../lib/auth'; // Import auth functions
+import { signInWithGoogle, signInAsGuest } from '../lib/auth';
 
-// Throttle helper function (unchanged)
+// Throttle helper function
 function throttle(func, limit) {
-    // ... (throttle function code)
     let inThrottle;
     return function() {
         const args = arguments;
@@ -21,25 +20,24 @@ function throttle(func, limit) {
     }
 }
 
-
 export default function Landing() {
     const navigate = useNavigate();
     const scrollContainerRef = useRef(null);
     const intervalRef = useRef(null);
     const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
 
-    // --- State for Login Logic (unchanged) ---
+    // State for Login Logic
     const [loadingGoogle, setLoadingGoogle] = useState(false);
     const [loadingGuest, setLoadingGuest] = useState(false);
     const [error, setError] = useState(null);
 
-    // --- Login Handlers (unchanged) ---
+    // Login Handlers
     const handleGoogleLogin = async () => {
         setLoadingGoogle(true);
         setError(null);
         try {
             await signInWithGoogle();
-            navigate('/chat'); // Navigate to chat on success
+            navigate('/chat');
         } catch (err) {
             console.error('Google login error:', err);
             setError(
@@ -59,7 +57,7 @@ export default function Landing() {
         setError(null);
         try {
             await signInAsGuest();
-            navigate('/chat'); // Navigate to chat on success
+            navigate('/chat');
         } catch (err) {
             console.error('Guest login error:', err);
             setError(
@@ -79,9 +77,8 @@ export default function Landing() {
         }
     };
 
-    // --- Carousel Logic (unchanged) ---
+    // Carousel Logic
     const findAndSetCenterCard = useCallback(() => {
-        // ... (findAndSetCenterCard logic)
         const container = scrollContainerRef.current;
         if (!container) return;
         const containerCenter = container.getBoundingClientRect().left + container.offsetWidth / 2;
@@ -104,7 +101,6 @@ export default function Landing() {
     const throttledFindCenter = throttle(findAndSetCenterCard, 100);
 
     const startAutoplay = useCallback(() => {
-        // ... (startAutoplay logic)
         if (intervalRef.current) clearInterval(intervalRef.current);
         intervalRef.current = setInterval(() => {
             const container = scrollContainerRef.current;
@@ -122,12 +118,10 @@ export default function Landing() {
     }, []);
 
     const stopAutoplay = () => {
-        // ... (stopAutoplay logic)
         if (intervalRef.current) clearInterval(intervalRef.current);
     };
 
     useEffect(() => {
-        // ... (carousel useEffect logic)
         const container = scrollContainerRef.current;
         if (!container) return;
         const handleMouseEnter = () => setIsAutoplayPaused(true);
@@ -148,7 +142,6 @@ export default function Landing() {
     }, [findAndSetCenterCard, throttledFindCenter]);
 
     useEffect(() => {
-        // ... (autoplay start/stop useEffect logic)
         if (!isAutoplayPaused) {
             startAutoplay();
         } else {
@@ -157,12 +150,10 @@ export default function Landing() {
         return () => stopAutoplay();
     }, [isAutoplayPaused, startAutoplay]);
 
-
     return (
         <main className={styles.landingContainer}>
             <Helmet>
-                 {/* ... (Helmet content) ... */}
-                 <title>Serena AI - Mental Health Chatbot with Intelligent Memory | Student Research Project</title>
+                <title>Serena AI - Mental Health Chatbot with Intelligent Memory | Student Research Project</title>
                 <meta name="description" content="Explore Serena, an AI mental health companion with intelligent memory. A student research project demonstrating advanced conversational AI and secure data handling." />
                 <meta name="keywords" content="AI therapy chatbot, mental health support, intelligent memory assistant, student AI project, conversational AI research" />
                 <meta property="og:title" content="Serena AI - Intelligent Mental Health Companion" />
@@ -201,16 +192,21 @@ export default function Landing() {
                         <button onClick={() => scrollToSection('how-it-works')} className={styles.navLink}>
                             How It Works
                         </button>
+                        {/* --- NEWLY ADDED LINKS --- */}
+                        <button onClick={() => scrollToSection('about')} className={styles.navLink}>
+                            Who It's For
+                        </button>
+                        <button onClick={() => scrollToSection('faq')} className={styles.navLink}>
+                            FAQ
+                        </button>
+                         {/* --- END NEWLY ADDED LINKS --- */}
                     </div>
-                    {/* --- MODIFIED HEADER BUTTONS --- */}
                     <div className={styles.navButtons}>
-                        {/* New "Sign In" button linking to /login */}
                         <Link to="/login" className={styles.getStartedButton}>
                             Sign In
                         </Link>
                     </div>
                 </div>
-                 {/* --- Error Display Removed from Nav --- */}
             </header>
 
             {/* Hero Section */}
@@ -218,21 +214,20 @@ export default function Landing() {
                 <article className={styles.heroContent}>
                     <div className={styles.heroText}>
                         <h1 className={styles.heroTitle}>
-                            Your AI Companion That Remembers Your Journey
+                            Meet Serena - Your Intelligent Mental Health Companion
                         </h1>
                         <p className={styles.heroSubtitle}>
-                            Experience a student-built mental health chatbot with intelligent memory. Private, encrypted conversations designed to demonstrate the potential of AI in mental wellness support.
+                            Talk. Be heard. Figure it out. Powered by clinically-grounded support that listens without judgment, remembers what matters, and empowers YOU to find your own answers.
                         </p>
                         
                         <div className={styles.credibilitySection}>
                             <div className={styles.badges}>
-                                <span className={styles.badge}>Student Research Project</span>
-                                <span className={styles.badge}>End-to-End Encryption</span>
-                                <span className={styles.badge}>Built with Google Cloud AI</span>
+                                <span className={styles.badge}>24/7 Support</span>
+                                <span className={styles.badge}>Clinically Grounded</span>
+                                <span className={styles.badge}>Your Data, Encrypted & Private</span>
                             </div>
                         </div>
 
-                        {/* --- MODIFIED HERO CTAS (MOVED FROM HEADER) --- */}
                         <div className={styles.heroCtas}>
                             <button
                                 onClick={handleGoogleLogin}
@@ -260,7 +255,6 @@ export default function Landing() {
                                 )}
                             </button>
                         </div>
-                        {/* --- Error Display Moved Here --- */}
                         {error && <div className={styles.heroError}>{error}</div>}
                     </div>
                     <div className={styles.heroVisual}>
@@ -277,7 +271,6 @@ export default function Landing() {
                     className={styles.featuresGrid}
                     ref={scrollContainerRef}
                 >
-                    {/* Feature Cards */}
                     <div className={styles.featureCard}>
                         <div className={styles.featureIcon}>
                             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
@@ -533,31 +526,222 @@ export default function Landing() {
 
             {/* About Section */}
             <section className={styles.aboutSection} id="about">
-                <h2 className={styles.sectionTitle}>A Student Research Project</h2>
-                <p className={styles.aboutDescription}>
-                    Serena was developed by computer science students to explore how AI can support 
-                    mental wellness through intelligent memory and personalized conversations.
-                </p>
+                <h2 className={styles.sectionTitle}>Who Is Serena For?</h2>
+                <h3 className={styles.aboutHeading}>
+                    For People Who Want to Be Heard, Not Fixed
+                </h3>
                 
+                <div className={styles.aboutListContainer}>
+                    {/* Item 1: Vent */}
+                    <article className={styles.aboutItem}>
+                        <div className={styles.aboutIconWrapper}>
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <div className={styles.aboutTextWrapper}>
+                            <h4 className={styles.aboutItemTitle}>The Person Who Needs to Vent</h4>
+                            <p className={styles.aboutItemText}>Sometimes you just need someone to listen. Serena does that without making it weird.</p>
+                        </div>
+                    </article>
+
+                    {/* Item 2: Figuring Things Out */}
+                    <article className={`${styles.aboutItem} ${styles.aboutItemReverse}`}>
+                        <div className={styles.aboutTextWrapper}>
+                            <h4 className={styles.aboutItemTitle}>The Person Figuring Things Out</h4>
+                            <p className={styles.aboutItemText}>You don't need advice. You need clarity. Serena helps you see your own thoughts more clearly.</p>
+                        </div>
+                        <div className={styles.aboutIconWrapper}>
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M9.5 2.2a2.5 2.5 0 0 1 5 0v1.7a0.5 0.5 0 0 0 .5.5h1.7a2.5 2.5 0 0 1 0 5h-1.7a0.5 0.5 0 0 0-.5.5v1.7a2.5 2.5 0 0 1-5 0v-1.7a0.5 0.5 0 0 0-.5-.5h-1.7a2.5 2.5 0 0 1 0-5h1.7a0.5 0.5 0 0 0 .5-.5v-1.7z" />
+                                <path d="M6 16.5a2.5 2.5 0 0 1 5 0v1.7a0.5 0.5 0 0 0 .5.5h1.7a2.5 2.5 0 0 1 0 5h-1.7a0.5 0.5 0 0 0-.5.5v1.7a2.5 2.5 0 0 1-5 0v-1.7a0.5 0.5 0 0 0-.5-.5h-1.7a2.5 2.5 0 0 1 0-5h1.7a0.5 0.5 0 0 0 .5-.5v-1.7z" />
+                            </svg>
+                        </div>
+                    </article>
+
+                    {/* Item 3: Privacy */}
+                    <article className={styles.aboutItem}>
+                        <div className={styles.aboutIconWrapper}>
+                            <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                            </svg>
+                        </div>
+                        <div className={styles.aboutTextWrapper}>
+                            <h4 className={styles.aboutItemTitle}>The Person Who Values Privacy</h4>
+                            <p className={styles.aboutItemText}>You're not ready for a therapist. You're not comfortable with generic AI. You need something human-centered and secure.</p>
+                        </div>
+                    </article>
+                    
+                    {/* Item 4: Resilience */}
+                    <article className={`${styles.aboutItem} ${styles.aboutItemReverse}`}>
+                        <div className={styles.aboutTextWrapper}>
+                            <h4 className={styles.aboutItemTitle}>The Person Building Mental Resilience</h4>
+                            <p className={styles.aboutItemText}>You want continuous support that actually remembers you and meets you where you are.</p>
+                        </div>
+                        <div className={styles.aboutIconWrapper}>
+                             <svg width="60" height="60" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </div>
+                    </article>
+                </div>
+
+                <div className={styles.aboutDisclaimer}>
+                    <h4 className={styles.aboutDisclaimerTitle}>Not a Replacement For:</h4>
+                    <p className={styles.aboutDisclaimerText}>
+                        Professional therapy, crisis intervention, or medical diagnosis. Serena is a supportive companion designed to complement—not replace—human care. If you're in crisis, please reach out to a mental health professional.
+                    </p>
+                </div>
+            </section>
+
+            {/* Comparison Section */}
+            <section className={styles.comparisonSection} id="comparison">
+                <h2 className={styles.sectionTitle}>Why Choose Serena?</h2>
+                
+                <div className={styles.comparisonTable}>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Aspect</th>
+                                <th>Generic Chatbots</th>
+                                <th>Serena</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Conversation Style</td>
+                                <td>Interrogation</td>
+                                <td>Supportive listening</td>
+                            </tr>
+                            <tr>
+                                <td>Memory</td>
+                                <td>Forgets or remembers everything</td>
+                                <td>Intelligently curates</td>
+                            </tr>
+                            <tr>
+                                <td>Speed</td>
+                                <td>Slow with large memory</td>
+                                <td>Sub-100ms retrieval</td>
+                            </tr>
+                            <tr>
+                                <td>Privacy</td>
+                                <td>Often unclear</td>
+                                <td>Explicit, encrypted, user-controlled</td>
+                            </tr>
+                            <tr>
+                                <td>Therapeutic Approach</td>
+                                <td>Generic responses</td>
+                                <td>TTM/CBT framework</td>
+                            </tr>
+                            <tr>
+                                <td>Goal</td>
+                                <td>Appear helpful</td>
+                                <td>Help YOU be helpful to yourself</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            {/* FAQ Section */}
+            <section className={styles.faqSection} id="faq">
+                <h2 className={styles.sectionTitle}>FAQs</h2>
+                
+                <div className={styles.faqContainer}>
+                    <details className={styles.faqItem}>
+                        <summary className={styles.faqQuestion}>
+                            Is My Data Really Private?
+                            <span className={styles.faqIcon}>+</span>
+                        </summary>
+                        <p className={styles.faqAnswer}>
+                            Yes. All conversations are encrypted with military-grade security. Serena only stores summaries of meaningful moments—not a transcript of everything you say. You control what gets saved.
+                        </p>
+                    </details>
+                    
+                    <details className={styles.faqItem}>
+                        <summary className={styles.faqQuestion}>
+                            Can Serena Replace My Therapist?
+                            <span className={styles.faqIcon}>+</span>
+                        </summary>
+                        <p className={styles.faqAnswer}>
+                            No. Serena is a supportive companion designed to complement—not replace—professional mental health care. She's there for the moments between therapy, the late-night thoughts, or when you just need to be heard.
+                        </p>
+                    </details>
+                    
+                    <details className={styles.faqItem}>
+                        <summary className={styles.faqQuestion}>
+                            What Makes the Memory System Different?
+                            <span className={styles.faqIcon}>+</span>
+                        </summary>
+                        <p className={styles.faqAnswer}>
+                            Most chatbots either forget everything or remember everything indiscriminately. Serena intelligently curates what matters using Vertex AI Vector Search. She remembers the significant moments—the breakthroughs, the challenges, the patterns. Not the noise.
+                        </p>
+                    </details>
+                    
+                    <details className={styles.faqItem}>
+                        <summary className={styles.faqQuestion}>
+                            Will Serena Judge Me?
+                            <span className={styles.faqIcon}>+</span>
+                        </summary>
+                        <p className={styles.faqAnswer}>
+                            Never. Serena is designed to listen without judgment using CBT principles. Your thoughts, feelings, and experiences are valid. She's here to help you process them—not criticize them.
+                        </p>
+                    </details>
+                    
+                    <details className={styles.faqItem}>
+                        <summary className={styles.faqQuestion}>
+                            Can I Delete Everything?
+                            <span className={styles.faqIcon}>+</span>
+                        </summary>
+                        <p className={styles.faqAnswer}>
+                            Absolutely. You can delete all memories with one click, reset your instructions, and start fresh anytime. Your data is yours to control.
+                        </p>
+                    </details>
+                    
+                    <details className={styles.faqItem}>
+                        <summary className={styles.faqQuestion}>
+                            Is Serena Available in My Language?
+                            <span className={styles.faqIcon}>+</span>
+                        </summary>
+                        <p className={styles.faqAnswer}>
+                            Yes! Serena is multilingual and automatically responds in whatever language you use. Your conversation should feel natural in your preferred language.
+                        </p>
+                    </details>
+                </div>
             </section>
 
             
 
             {/* Footer */}
             <footer className={styles.footer}>
+                {/* Crisis Resources */}
+                <div className={styles.crisisSection}>
+                    <h3 className={styles.crisisTitle}>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" style={{flexShrink: 0}}>
+                            <circle cx="10" cy="10" r="9" stroke="currentColor" strokeWidth="2"/>
+                            <path d="M10 6V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                            <circle cx="10" cy="14" r="1" fill="currentColor"/>
+                        </svg>
+                        Important
+                    </h3>
+                    <p className={styles.crisisText}>
+                        Serena is a supportive companion for mental health conversations, not a crisis service. 
+                        If you're in crisis or having thoughts of self-harm, please contact <strong>your local crisis hotline</strong> or 
+                        text <strong>HOME to 741741</strong> (Crisis Text Line).
+                    </p>
+                </div>
+
                 <div className={styles.footerContent}>
                     <div className={styles.footerBrand}>
                         <img src="/logoS.png" alt="Serena Logo" className={styles.footerLogo} loading="lazy" />
                         <span className={styles.brandName}>Serena</span>
                         <p className={styles.footerTagline}>Mental health support that remembers</p>
                     </div>
-                    <div className={styles.footerContent}>
-                    {/* ... footerBrand div ... */}
                     <div className={styles.footerLinks}>
-                        
                         <a href="#" className={styles.footerLink}>Contact Us</a>
                     </div>
-                </div>
                 </div>
                 <div className={styles.footerBottom}>
                     <p>A Student Research Project</p>
