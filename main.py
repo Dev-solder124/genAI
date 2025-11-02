@@ -622,11 +622,8 @@ def get_user_profile(user_id):
                 doc_data['profile']['current_stage'] = "Stage 1: Getting to Know Each Other"
             # --- END NEW ---
 
-            if 'context' not in doc_data.get('profile', {}):
-                doc_data['profile']['context'] = ''     
-
             if encryption_service and doc_data.get('profile'):
-                sensitive_fields = ['username', 'email', 'user_instructions']
+                sensitive_fields = ['username', 'email', 'user_instructions', 'context']
                 try:
                     doc_data['profile'] = encryption_service.decrypt_dict(
                         doc_data['profile'], 
@@ -651,6 +648,11 @@ def get_user_profile(user_id):
                             doc_data['profile']['user_instructions'] = []
                     # --- END ---
 
+                    # --- NEW: Set default for context AFTER decryption ---
+                    if 'context' not in doc_data['profile'] or doc_data['profile']['context'] is None:
+                        doc_data['profile']['context'] = ''
+                    # --- END NEW ---
+                    
                 except Exception as e:
                     logger.error(f"Profile decryption error: {e}")
             
@@ -671,7 +673,7 @@ def upsert_user_profile(user_id, profile_data):
         sanitized_user_id = sanitize_collection_name(user_id)
         logger.debug(f"Upserting profile for {user_id}: {profile_data}")
 
-        sensitive_fields = ['username', 'email', 'user_instructions']
+        sensitive_fields = ['username', 'email', 'user_instructions', 'context']
         
         # --- NEW: Create a copy for encryption ---
         # This preserves all fields in the original profile_data map
@@ -680,8 +682,6 @@ def upsert_user_profile(user_id, profile_data):
         # --- FIX: Pop non-sensitive fields from the copy, not the original ---
         if 'current_stage' in profile_data_to_encrypt:
             profile_data_to_encrypt.pop('current_stage')
-        if 'context' in profile_data_to_encrypt:  # <-- ADD THIS
-            profile_data_to_encrypt.pop('context')
         if 'updated_at' in profile_data_to_encrypt:
              profile_data_to_encrypt.pop('updated_at')
         if 'created_at' in profile_data_to_encrypt:
