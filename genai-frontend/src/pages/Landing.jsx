@@ -20,11 +20,84 @@ function throttle(func, limit) {
     }
 }
 
+// --- NEW: FAQ Data Array ---
+const faqData = [
+    {
+        question: "Is My Data Really Private?",
+        answer: "Yes. All conversations are encrypted with military-grade security. Serena only stores summaries of meaningful moments—not a transcript of everything you say. You control what gets saved."
+    },
+    {
+        question: "Can Serena Replace My Therapist?",
+        answer: "No. Serena is a supportive companion designed to complement—not replace—professional mental health care. She's there for the moments between therapy, the late-night thoughts, or when you just need to be heard."
+    },
+    {
+        question: "What Makes the Memory System Different?",
+        answer: "Most chatbots either forget everything or remember everything indiscriminately. Serena intelligently curates what matters using Vertex AI Vector Search. She remembers the significant moments—the breakthroughs, the challenges, the patterns. Not the noise."
+    },
+    {
+        question: "Will Serena Judge Me?",
+        answer: "Never. Serena is designed to listen without judgment using CBT principles. Your thoughts, feelings, and experiences are valid. She's here to help you process them—not criticize them."
+    },
+    {
+        question: "Can I Delete Everything?",
+        answer: "Absolutely. You can delete all memories with one click, reset your instructions, and start fresh anytime. Your data is yours to control."
+    },
+    {
+        question: "Is Serena Available in My Language?",
+        answer: "Yes! Serena is multilingual and automatically responds in whatever language you use. Your conversation should feel natural in your preferred language."
+    }
+];
+
+// --- NEW: Reusable FaqItem Component ---
+function FaqItem({ question, answer }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const contentRef = useRef(null);
+
+    const toggleOpen = () => {
+        setIsOpen(!isOpen);
+    };
+
+    return (
+        <div className={styles.faqItem}>
+            <button
+                className={styles.faqQuestion}
+                onClick={toggleOpen}
+                aria-expanded={isOpen}
+                aria-controls={`faq-answer-${question.replace(/\s+/g, '-')}`}
+            >
+                <span className={styles.faqQuestionText}>{question}</span>
+                <span className={`${styles.faqIcon} ${isOpen ? styles.isOpen : ''}`}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 5V19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M5 12H19" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </span>
+            </button>
+            <div
+                ref={contentRef}
+                className={styles.faqAnswerContainer}
+                style={{
+                    maxHeight: isOpen ? `${contentRef.current.scrollHeight}px` : '0px'
+                }}
+                id={`faq-answer-${question.replace(/\s+/g, '-')}`}
+            >
+                <p className={styles.faqAnswer}>
+                    {answer}
+                </p>
+            </div>
+        </div>
+    );
+}
+
+
 export default function Landing() {
     const navigate = useNavigate();
     const scrollContainerRef = useRef(null);
     const intervalRef = useRef(null);
     const [isAutoplayPaused, setIsAutoplayPaused] = useState(false);
+    
+    // --- NEW STATE FOR DROPDOWN ---
+    const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
     // State for Login Logic
     const [loadingGoogle, setLoadingGoogle] = useState(false);
@@ -75,6 +148,8 @@ export default function Landing() {
         if (element) {
             element.scrollIntoView({ behavior: 'smooth' });
         }
+        // Close dropdown after clicking a link
+        setIsDropdownOpen(false);
     };
 
     // Carousel Logic
@@ -153,38 +228,17 @@ export default function Landing() {
     return (
         <main className={styles.landingContainer}>
             <Helmet>
-                <title>Serena AI - Mental Health Chatbot with Intelligent Memory | Student Research Project</title>
-                <meta name="description" content="Explore Serena, an AI mental health companion with intelligent memory. A student research project demonstrating advanced conversational AI and secure data handling." />
-                <meta name="keywords" content="AI therapy chatbot, mental health support, intelligent memory assistant, student AI project, conversational AI research" />
-                <meta property="og:title" content="Serena AI - Intelligent Mental Health Companion" />
-                <meta property="og:description" content="Student-built AI mental health chatbot with memory capabilities" />
-                <meta property="og:image" content="/logoS.png" />
-                <meta property="og:type" content="website" />
-                <meta name="twitter:card" content="summary" />
-                <meta name="twitter:title" content="Serena AI Mental Health Chatbot" />
-                <meta name="twitter:description" content="AI-powered mental health support with intelligent memory" />
-                <script type="application/ld+json">
-                {`
-                {
-                    "@context": "https://schema.org",
-                    "@type": "SoftwareApplication",
-                    "name": "Serena AI",
-                    "applicationCategory": "HealthApplication",
-                    "operatingSystem": "Web",
-                    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-                    "description": "AI-powered mental health chatbot with intelligent memory - a student research project demonstrating conversational AI technology"
-                }
-                `}
-                </script>
+                 {/* ... Helmet content ... */}
             </Helmet>
             
-            {/* Navigation */}
+            {/* --- UPDATED NAVIGATION --- */}
             <header className={styles.nav}>
                 <div className={styles.navContent}>
                     <div className={styles.navBrand}>
                         <img src="/logoS.png" alt="Serena Logo" className={styles.navLogo} />
                         <span className={styles.brandName}>Serena</span>
                     </div>
+                    
                     <div className={styles.navLinks}>
                         <button onClick={() => scrollToSection('features')} className={styles.navLink}>
                             Features
@@ -192,15 +246,41 @@ export default function Landing() {
                         <button onClick={() => scrollToSection('how-it-works')} className={styles.navLink}>
                             How It Works
                         </button>
-                        {/* --- NEWLY ADDED LINKS --- */}
-                        <button onClick={() => scrollToSection('about')} className={styles.navLink}>
-                            Who It's For
-                        </button>
                         <button onClick={() => scrollToSection('faq')} className={styles.navLink}>
                             FAQ
                         </button>
-                         {/* --- END NEWLY ADDED LINKS --- */}
+                        
+                        {/* "More" Dropdown */}
+                        <div 
+                            className={styles.navDropdownContainer}
+                            onMouseEnter={() => setIsDropdownOpen(true)}
+                            onMouseLeave={() => setIsDropdownOpen(false)}
+                        >
+                            <button className={styles.navLink}>
+                                More 
+                                <span className={`${styles.dropdownArrow} ${isDropdownOpen ? styles.isOpen : ''}`}>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </span>
+                            </button>
+                            
+                            {isDropdownOpen && (
+                               <div className={styles.dropdownMenu}>
+                                    <button onClick={() => scrollToSection('technology')} className={styles.dropdownItem}>
+                                        Technology
+                                    </button>
+                                    <button onClick={() => scrollToSection('how-it-feels')} className={styles.dropdownItem}>
+                                        How It Feels
+                                    </button>
+                                    <button onClick={() => scrollToSection('about')} className={styles.dropdownItem}>
+                                        Who It's For
+                                    </button>
+                               </div>
+                            )}
+                        </div>
                     </div>
+
                     <div className={styles.navButtons}>
                         <Link to="/login" className={styles.getStartedButton}>
                             Sign In
@@ -208,6 +288,7 @@ export default function Landing() {
                     </div>
                 </div>
             </header>
+            {/* --- END UPDATED NAVIGATION --- */}
 
             {/* Hero Section */}
             <section className={styles.hero}>
@@ -528,7 +609,7 @@ export default function Landing() {
             <section className={styles.aboutSection} id="about">
                 <h2 className={styles.sectionTitle}>Who Is Serena For?</h2>
                 <h3 className={styles.aboutHeading}>
-                    For People Who Want to Be Heard, Not Fixed
+                    For People Who Want to Be Heard
                 </h3>
                 
                 <div className={styles.aboutListContainer}>
@@ -596,52 +677,70 @@ export default function Landing() {
                 </div>
             </section>
 
-            {/* Comparison Section */}
-            <section className={styles.comparisonSection} id="comparison">
-                <h2 className={styles.sectionTitle}>Why Choose Serena?</h2>
+            {/* How It Feels Section */}
+            <section className={styles.howItFeelsSection} id="how-it-feels">
+                <h2 className={styles.sectionTitle}>How Conversations with Serena Feel</h2>
+                <h3 className={styles.sectionSubtitle}> {/* Using subtitle style for this */}
+                    More Like a Friend, Less Like a Therapist
+                </h3>
                 
-                <div className={styles.comparisonTable}>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Aspect</th>
-                                <th>Generic Chatbots</th>
-                                <th>Serena</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Conversation Style</td>
-                                <td>Interrogation</td>
-                                <td>Supportive listening</td>
-                            </tr>
-                            <tr>
-                                <td>Memory</td>
-                                <td>Forgets or remembers everything</td>
-                                <td>Intelligently curates</td>
-                            </tr>
-                            <tr>
-                                <td>Speed</td>
-                                <td>Slow with large memory</td>
-                                <td>Sub-100ms retrieval</td>
-                            </tr>
-                            <tr>
-                                <td>Privacy</td>
-                                <td>Often unclear</td>
-                                <td>Explicit, encrypted, user-controlled</td>
-                            </tr>
-                            <tr>
-                                <td>Therapeutic Approach</td>
-                                <td>Generic responses</td>
-                                <td>TTM/CBT framework</td>
-                            </tr>
-                            <tr>
-                                <td>Goal</td>
-                                <td>Appear helpful</td>
-                                <td>Help YOU be helpful to yourself</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div className={styles.stepperContainer}>
+                    {/* The visual line that connects the steps */}
+                    <div className={styles.stepperLine}></div>
+
+                    {/* Step 1: You Share */}
+                    <article className={styles.stepperItem}>
+                        <div className={styles.stepperIcon}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M17 3H7a2 2 0 0 0-2 2v11a2 2 0 0 0 2 2h7l5 5V5a2 2 0 0 0-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div className={styles.stepperContent}>
+                            <h4 className={styles.stepperTitle}>You Share What's on Your Mind</h4>
+                            <p className={styles.stepperText}>No judgment. No forms to fill out. Just open the conversation and say what you need to say.</p>
+                        </div>
+                    </article>
+
+                    {/* Step 2: Serena Acknowledges */}
+                    <article className={styles.stepperItem}>
+                        <div className={styles.stepperIcon}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                            </svg>
+                        </div>
+                        <div className={styles.stepperContent}>
+                            <h4 className={styles.stepperTitle}>Serena Acknowledges You</h4>
+                            <p className={styles.stepperText}>She validates what you're experiencing. She shows she understands. Not with a script—with genuine empathy grounded in CBT principles.</p>
+                        </div>
+                    </article>
+
+                    {/* Step 3: You Figure It Out */}
+                    <article className={styles.stepperItem}>
+                        <div className={styles.stepperIcon}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 2a7 7 0 0 0-7 7c0 3.03 1.23 5.76 3.2 7.76.01.01 0 0 0 0V20a2 2 0 0 0 2 2h3.6a2 2 0 0 0 2-2v-3.24c.01 0 0 0 0 0C17.77 14.76 19 12.03 19 9a7 7 0 0 0-7-7z"></path>
+                                <line x1="12" y1="22" x2="12" y2="23"></line>
+                                <line x1="8" y1="17" x2="16" y2="17"></line>
+                            </svg>
+                        </div>
+                        <div className={styles.stepperContent}>
+                            <h4 className={styles.stepperTitle}>You Figure It Out</h4>
+                            <p className={styles.stepperText}>The insight is yours. The realization is yours. Serena is the mirror that helps you see more clearly. Being heard is sometimes enough.</p>
+                        </div>
+                    </article>
+
+                    {/* Step 4: She Remembers */}
+                    <article className={styles.stepperItem}>
+                        <div className={styles.stepperIcon}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                        </div>
+                        <div className={styles.stepperContent}>
+                            <h4 className={styles.stepperTitle}>She Remembers</h4>
+                            <p className={styles.stepperText}>Next time you talk, Serena knows what you've been dealing with. Not to judge or analyze, but to honor the work you've already done.</p>
+                        </div>
+                    </article>
                 </div>
             </section>
 
@@ -676,7 +775,7 @@ export default function Landing() {
                             <span className={styles.faqIcon}>+</span>
                         </summary>
                         <p className={styles.faqAnswer}>
-                            Most chatbots either forget everything or remember everything indiscriminately. Serena intelligently curates what matters using Vertex AI Vector Search. She remembers the significant moments—the breakthroughs, the challenges, the patterns. Not the noise.
+                            Most chatbots either forget everything or remember everything indiscriminately. Serena intelligently curates what matters using her Inetelligent Memory System. She remembers the significant moments—the breakthroughs, the challenges, the patterns. Not the noise.
                         </p>
                     </details>
                     
@@ -739,9 +838,9 @@ export default function Landing() {
                         <span className={styles.brandName}>Serena</span>
                         <p className={styles.footerTagline}>Mental health support that remembers</p>
                     </div>
-                    <div className={styles.footerLinks}>
+                    {/* <div className={styles.footerLinks}>
                         <a href="#" className={styles.footerLink}>Contact Us</a>
-                    </div>
+                    </div> */}
                 </div>
                 <div className={styles.footerBottom}>
                     <p>A Student Research Project</p>

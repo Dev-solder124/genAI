@@ -5,7 +5,50 @@ import { useAuth } from '../contexts/AuthContext';
 import { api } from '../lib/api';
 import styles from './Sidebar.module.css';
 import { CloseIcon } from './icons/CloseIcon';
-import ToggleSwitch from './ToggleSwitch'; // Import the new toggle
+import ToggleSwitch from './ToggleSwitch';
+
+// --- NEW: Info Icon SVG Component ---
+const InfoSvgIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"></circle>
+    <path d="M12 16v-4"></path>
+    <path d="M12 8h.01"></path>
+  </svg>
+);
+
+// --- NEW: Reusable InfoTooltip Component ---
+const InfoTooltip = ({ content }) => {
+  const [show, setShow] = useState(false);
+
+  return (
+    <div className={styles.infoIconWrapper}>
+      <button
+        className={styles.infoIcon}
+        aria-label="More info"
+        onMouseEnter={() => setShow(true)}
+        onMouseLeave={() => setShow(false)}
+        onClick={() => setShow(s => !s)} // Toggle on click
+        onFocus={() => setShow(true)}
+        onBlur={() => setShow(false)}
+      >
+        <InfoSvgIcon /> {/* Using the new SVG icon */}
+      </button>
+      {show && (
+        <div className={styles.tooltip}>
+          {content}
+          <div className={styles.tooltipArrow}></div> {/* Arrow for styling */}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// --- Content for Tooltips (from README.md) ---
+const consentInfo = "Turn this on, and Serena will remember the important parts of your chats. This helps her understand you better and pick up where you left off next time.";
+
+const resetInfo = "This makes Serena forget any special instructions you've given her. It's like meeting her again for the first time, so you can build a new connection.";
+
+const deleteInfo = "This erases everything Serena remembers about your past conversations. This is permanent and cannot be undone.";
 
 export default function Sidebar({ isOpen, onClose }) {
   const navigate = useNavigate();
@@ -38,7 +81,7 @@ export default function Sidebar({ isOpen, onClose }) {
     fetchProfile();
   }, [user, isOpen]);
 
-  // --- Settings Handlers ---
+  // --- Settings Handlers (unchanged) ---
   const handleConsentChange = async () => {
     setUpdating(true);
     setError(null);
@@ -79,7 +122,7 @@ export default function Sidebar({ isOpen, onClose }) {
   };
 
   const handleResetInstructions = async () => {
-    if (window.confirm('Are you sure you want to reset Serena? This will clear all custom instructions.')) {
+    if (window.confirm('Are you sure you want to reset Serena? This will clear all custom instructions and reset your conversation stage.')) {
       setResetting(true);
       setError(null);
       try {
@@ -93,7 +136,7 @@ export default function Sidebar({ isOpen, onClose }) {
     }
   };
 
-  // --- Sign Out Handler ---
+  // --- Sign Out Handler (unchanged) ---
   const handleSignOut = async () => {
     onClose();
     await signOut();
@@ -110,7 +153,7 @@ export default function Sidebar({ isOpen, onClose }) {
       
       <aside className={`${styles.sidebar} ${isOpen ? styles.sidebarOpen : ''}`}>
         
-        {/* HEADER: Title and close button on the same line */}
+        {/* HEADER (unchanged) */}
         <div className={styles.sidebarHeader}>
           <h3 className={styles.headerTitle}>Settings</h3>
           <button onClick={onClose} className={styles.closeButton} aria-label="Close menu">
@@ -118,14 +161,16 @@ export default function Sidebar({ isOpen, onClose }) {
           </button>
         </div>
         
-        {/* SETTINGS SECTION: Styled as a clean list */}
+        {/* SETTINGS SECTION: Updated with info tooltips */}
         <nav className={styles.sidebarNav}>
-          {/* <h4 className={styles.sectionTitle}>Settings</h4> <-- REMOVED FROM HERE */}
           
           {error && <p className={styles.error}>{error}</p>}
           
           <div className={styles.navItem}>
-            <span>Conversation Memory</span>
+            <div className={styles.navItemLabel}>
+              <span>Conversation Memory</span>
+              <InfoTooltip content={consentInfo} />
+            </div>
             <ToggleSwitch
               id="consent-toggle"
               isOn={consent}
@@ -135,31 +180,35 @@ export default function Sidebar({ isOpen, onClose }) {
           </div>
 
           <div className={styles.navItem}>
-            <span>Reset Serena</span>
+            <div className={styles.navItemLabel}>
+              <span>Reset Serena</span>
+              <InfoTooltip content={resetInfo} />
+            </div>
             <button
               onClick={handleResetInstructions}
               disabled={resetting}
               className={styles.navButton}
-              title="Restore default settings. This action cannot be undone!"
             >
               {resetting ? 'Resetting...' : 'Reset'}
             </button>
           </div>
 
           <div className={styles.navItem}>
-            <span>Delete All Memories</span>
+             <div className={styles.navItemLabel}>
+              <span>Delete All Memories</span>
+              <InfoTooltip content={deleteInfo} />
+            </div>
             <button
               onClick={handleDeleteMemories}
               disabled={deleting}
               className={`${styles.navButton} ${styles.deleteButton}`}
-              title="Delete all your saved memories permanently. This action cannot be undone!"
             >
               {deleting ? 'Deleting...' : 'Delete'}
             </button>
           </div>
         </nav>
 
-        {/* FOOTER: This is now pushed to the bottom */}
+        {/* FOOTER (unchanged) */}
         <div className={styles.sidebarFooter}>
           <button onClick={handleSignOut} className={styles.signOutButton}>
             Sign Out

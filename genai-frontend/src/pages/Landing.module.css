@@ -89,6 +89,72 @@
     gap: 16px;
 }
 
+/* ... after .navLink:hover style ... */
+
+.navDropdownContainer {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdownArrow {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 6px;
+    transition: transform 0.2s ease;
+}
+
+.dropdownArrow.isOpen {
+    transform: rotate(180deg);
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: var(--white);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.15);
+    border: 1px solid rgba(139, 90, 60, 0.1);
+    min-width: 160px;
+    z-index: 1001;
+    overflow: hidden; /* Ensures border-radius applies to items */
+    padding: 8px 0;
+    
+    /* Animation */
+    opacity: 0;
+    transform: translateY(10px);
+    animation: fadeInDropdown 0.2s ease-out forwards;
+}
+
+.dropdownItem {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.dropdownItem:hover {
+    background-color: var(--light-beige);
+    color: var(--primary-brown-dark);
+}
+
+@keyframes fadeInDropdown {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .loginButton {
     padding: 10px 24px;
     background: transparent;
@@ -688,53 +754,73 @@
         transform: translateY(0);
     }
 }
-
-/* Comparison Table Section */
-.comparisonSection {
+/* How It Feels Section (Replaces Comparison Section) */
+.howItFeelsSection {
     padding: 80px 32px;
-    background: var(--light-beige);
-}
-
-.comparisonTable {
-    max-width: 900px;
-    margin: 48px auto 0;
-    background: var(--white);
-    border-radius: 12px;
+    background: var(--light-beige); /* The "dark" background */
+    position: relative;
     overflow: hidden;
-    box-shadow: 0 4px 12px rgba(139, 90, 60, 0.1);
 }
 
-.comparisonTable table {
-    width: 100%;
-    border-collapse: collapse;
+.stepperContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 700px;
+    margin: 48px auto 0;
+    position: relative; /* For the line */
+    z-index: 1;
 }
 
-.comparisonTable th,
-.comparisonTable td {
-    padding: 20px;
-    text-align: left;
-    border-bottom: 1px solid rgba(139, 90, 60, 0.1);
+.stepperLine {
+    position: absolute;
+    left: 40px; /* Aligns with the center of the icon */
+    top: 40px;  /* Starts at the center of the first icon */
+    bottom: 40px; /* Ends at the center of the last icon */
+    width: 2px;
+    background: var(--primary-brown-light);
+    z-index: 0;
 }
 
-.comparisonTable th {
-    background: var(--primary-transparent-10);
-    color: var(--text-primary);
+.stepperItem {
+    display: grid;
+    grid-template-columns: 80px 1fr; /* Icon column | Text column */
+    gap: 32px;
+    align-items: start;
+    position: relative;
+    z-index: 1;
+}
+
+.stepperIcon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary-brown-dark);
+    flex-shrink: 0;
+    border: 3px solid var(--light-beige); /* Creates cutout effect */
+    box-shadow: 0 0 0 2px var(--primary-brown-light); /* Outer ring */
+}
+
+.stepperContent {
+    padding-top: 24px; /* Aligns text with center of icon */
+}
+
+.stepperTitle {
+    font-size: 20px;
     font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 8px 0;
+}
+
+.stepperText {
     font-size: 16px;
-}
-
-.comparisonTable td {
+    line-height: 1.6;
     color: var(--text-secondary);
-    font-size: 15px;
-}
-
-.comparisonTable tr:last-child td {
-    border-bottom: none;
-}
-
-.comparisonTable td:first-child {
-    font-weight: 600;
-    color: var(--text-primary);
+    margin: 0;
 }
 
 /* Highlight Serena column */

@@ -49,7 +49,6 @@
     border-bottom: 1px solid #F4F1E8;
 }
 
-/* Add this new rule */
 .headerTitle {
     color: #8B5A3C;
     font-weight: 600;
@@ -91,6 +90,102 @@
     color: #5D3E2A;
 }
 
+/* --- TOOLTIP STYLES --- */
+
+.navItemLabel {
+    display: flex;
+    align-items: center;
+    gap: 6px; 
+}
+
+.infoIconWrapper {
+    position: relative;
+    display: flex; 
+    align-items: center;
+    height: 100%; 
+}
+
+.infoIcon {
+    background: none;
+    border: none;
+    color: #A67B5B; /* Faint brown */
+    cursor: help;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    transition: color 0.2s, transform 0.1s ease-out;
+    user-select: none;
+    flex-shrink: 0; 
+}
+
+.infoIcon:hover, .infoIcon:focus {
+    color: #8B5A3C; /* Slightly darker on hover */
+    transform: scale(1.05);
+    outline: none;
+}
+
+.infoIcon svg {
+    width: 18px; 
+    height: 18px;
+}
+
+.tooltip {
+    position: absolute;
+    top: 100%; 
+    
+    /* --- FIX: POSITIONING LOGIC --- */
+    /* 1. Start from the center of the icon (50% of 20px = 10px) */
+    left: 50%; 
+    /* 2. Nudge it left by half the tooltip's width to center it */
+    transform: translateX(-50%) translateY(0);
+    /* 3. Set a width that fits, with padding (320px sidebar - 40px padding = 280px) */
+    width: 220px; /* Reduced from 250px */
+    
+    margin-top: 15px; /* Gap below icon */
+    
+    /* Light theme */
+    background: #FFFFFF;
+    color: #5D3E2A;
+    padding: 14px; /* Added more padding */
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(139, 90, 60, 0.15); 
+    border: 1px solid rgba(166, 123, 91, 0.1);
+    
+    font-size: 0.9em;
+    line-height: 1.5;
+    z-index: 20;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease-out, transform 0.15s ease-out;
+}
+
+.infoIconWrapper:hover .tooltip,
+.infoIconWrapper:focus-within .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(5px); 
+}
+
+.tooltipArrow {
+    position: absolute;
+    top: -6px; 
+    left: 50%;
+    /* 1. Nudge left by half its *own* width */
+    transform: translateX(-50%) rotate(45deg);
+    width: 12px;
+    height: 12px;
+    background: #FFFFFF;
+    z-index: -1; 
+    border-radius: 2px 0 0 0;
+    border-left: 1px solid rgba(166, 123, 91, 0.1);
+    border-top: 1px solid rgba(166, 123, 91, 0.1);
+}
+
+/* --- END TOOLTIP STYLES --- */
+
+
 .navButton {
     padding: 6px 14px;
     border: none;
@@ -98,7 +193,7 @@
     cursor: pointer;
     background-color: #F4F1E8;
     color: #5D3E2A;
-    font-weight: 500;
+    font-weight: 600; /* Bolder button text */
     font-size: 0.9em;
     transition: all 0.2s;
 }
