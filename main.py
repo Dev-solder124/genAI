@@ -1284,6 +1284,7 @@ def dialogflow_webhook():
 
         user_profile = get_user_profile(user_id) or {}
         profile = user_profile.get("profile", {})
+        username = profile.get("username", "User")
 
         # --- LOAD CONTEXT ---
         bot_context = profile.get("context", "")
@@ -1405,6 +1406,7 @@ def dialogflow_webhook():
         # --- BUILD USER PROMPT ---
         prompt = (
             "# --- CONTEXT FOR THIS RESPONSE ---\n\n"
+            f"[User's Name]\n{username}\n\n"
             f"[Your Context Notes]\n{bot_context if bot_context else 'No notes yet - this is a fresh start'}\n\n"
             f"[Time Context]\n{time_context if time_context else 'Ongoing conversation'}\n\n"
             f"[Current Stage]\n{current_stage}\n\n"

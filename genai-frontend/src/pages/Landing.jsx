@@ -382,6 +382,19 @@ export default function Landing() {
                     <div className={styles.featureCard}>
                         <div className={styles.featureIcon}>
                             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                                <circle cx="24" cy="24" r="18" stroke="#8B5A3C" strokeWidth="2.5"/>
+                                <path d="M24 14V24M24 24L30 30M24 24L18 30" stroke="#8B5A3C" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M16 8L18 10M32 8L30 10M8 16L10 18M40 16L38 18" stroke="#8B5A3C" strokeWidth="2" strokeLinecap="round"/>
+                            </svg>
+                        </div>
+                        <h3 className={styles.featureTitle}>Personalized Experience</h3>
+                        <p className={styles.featureDescription}>
+                            Set preferences, communication styles, and personal details that persist across all conversations.
+                        </p>
+                    </div>
+                    <div className={styles.featureCard}>
+                        <div className={styles.featureIcon}>
+                            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                                 <rect x="12" y="16" width="24" height="24" rx="3" stroke="#8B5A3C" strokeWidth="2.5"/>
                                 <path d="M18 16V12C18 9.8 19.8 8 22 8H26C28.2 8 30 9.8 30 12V16" stroke="#8B5A3C" strokeWidth="2.5" strokeLinecap="round"/>
                                 <circle cx="24" cy="28" r="3" stroke="#8B5A3C" strokeWidth="2.5"/>
@@ -768,7 +781,15 @@ export default function Landing() {
                             No. Serena is a supportive companion designed to complement—not replace—professional mental health care. She's there for the moments between therapy, the late-night thoughts, or when you just need to be heard.
                         </p>
                     </details>
-                    
+                    <details className={styles.faqItem}>
+                        <summary className={styles.faqQuestion}>
+                            How Can I Personalize Serena?
+                            <span className={styles.faqIcon}>+</span>
+                        </summary>
+                        <p className={styles.faqAnswer}>
+                            You can give Serena direct instructions about how you'd like to interact. Tell her your preferences, communication styles, or personal details—like "Always call me Captain" or "I prefer brief responses." These instructions are encrypted, saved securely, and remembered across all your conversations, making each interaction truly yours.
+                        </p>
+                    </details>
                     <details className={styles.faqItem}>
                         <summary className={styles.faqQuestion}>
                             What Makes the Memory System Different?
