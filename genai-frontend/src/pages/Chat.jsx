@@ -84,6 +84,12 @@ export default function Chat() {
 
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+
+        // Check if there are messages and the last one is from the bot
+        if (messages.length > 0 && messages[messages.length - 1].role === 'bot') {
+            // Re-focus the input field so the user can type immediately
+            textareaRef.current?.focus();
+        }
     }, [messages]);
 
     const handleSend = async () => {
